@@ -86,3 +86,21 @@ src/
 ├── server/               # Server actions
 └── generated/prisma/     # Client Prisma généré (ne pas modifier)
 ```
+
+## Bonnes pratiques — branches Git
+
+### Nommage
+
+- Utilisez un **préfixe** qui indique le type de travail, puis une **description courte** en **kebab-case** (minuscules, tirets).
+- Forme recommandée : `<type>/<description>`.
+
+| Préfixe     | Usage                                    |
+| ----------- | ---------------------------------------- |
+| `feature/`  | Nouvelle fonctionnalité                  |
+| `fix/`      | Correction de bug                        |
+| `hotfix/`   | Correctif urgent en production           |
+| `chore/`    | Tâches techniques (deps, config, CI)     |
+| `docs/`     | Documentation uniquement                 |
+| `refactor/` | Refactor sans changement de comportement |
+
+Exemples : `feature/user-profile`, `fix/login-redirect`, `chore/update-eslint`.
