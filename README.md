@@ -89,7 +89,7 @@ src/
 
 ## Bonnes pratiques — branches Git
 
-### Nommage
+### Nommagesdadza
 
 - Utilisez un **préfixe** qui indique le type de travail, puis une **description courte** en **kebab-case** (minuscules, tirets).
 - Forme recommandée : `<type>/<description>`.
