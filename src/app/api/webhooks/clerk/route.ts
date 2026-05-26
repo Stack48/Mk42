@@ -91,7 +91,7 @@ async function handleUserCreated(data: ClerkUserData) {
   const typeApporteur = data.unsafe_metadata?.typeApporteur
   const isEntreprise  = typeApporteur === 'entreprise'
 
-  await prisma.user.upsert({
+  await prisma.utilisateur.upsert({
     where:  { clerkId: data.id },
     update: { email },
     create: {
@@ -103,7 +103,7 @@ async function handleUserCreated(data: ClerkUserData) {
             nom:       data.last_name  ?? '',
             prenom:    data.first_name ?? '',
             type:      typeApporteur === 'professionnel' ? 'PROFESSIONNEL' : 'PARTICULIER',
-            telephone: data.unsafe_metadata?.telephone ?? null,
+            telephone: data.unsafe_metadata?.telephone ?? '',
           },
         },
       }),
@@ -117,11 +117,10 @@ async function handleUserUpdated(data: ClerkUserData) {
   const email = getPrimaryEmail(data)
   if (!email) return
 
-  await prisma.user.update({
+  await prisma.utilisateur.update({
     where: { clerkId: data.id },
     data:  { email },
   }).catch(() => {
-    // L'utilisateur n'existe pas encore en DB (inscription antérieure au webhook)
     console.warn('[webhook/clerk] user.updated — utilisateur introuvable, clerkId:', data.id)
   })
 }
@@ -129,7 +128,7 @@ async function handleUserUpdated(data: ClerkUserData) {
 async function handleUserDeleted(data: { id?: string }) {
   if (!data.id) return
 
-  await prisma.user.delete({
+  await prisma.utilisateur.delete({
     where: { clerkId: data.id },
   }).catch(() => {
     console.warn('[webhook/clerk] user.deleted — utilisateur introuvable, clerkId:', data.id)
