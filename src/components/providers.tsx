@@ -1,7 +1,12 @@
-'use client'
+'use client';
 
-import { ClerkProvider } from '@clerk/nextjs'
+import { ClerkProvider } from '@clerk/nextjs';
+import { ReactNode } from 'react';
 
-export function Providers({ children }: { children: React.ReactNode }) {
-  return <ClerkProvider>{children}</ClerkProvider>
+interface ProvidersProps {
+  children: ReactNode;
+}
+
+export function Providers({ children }: ProvidersProps) {
+  return <ClerkProvider>{children}</ClerkProvider>;
 }
