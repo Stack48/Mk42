@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Mk42',
-  description: 'Next.js + Prisma + PostgreSQL',
+  title: "Opus — Gestion des apporteurs d'affaires BTP",
+  description: "Légalisez et automatisez vos commissions d'apporteurs d'affaires.",
 };
 
 export default function RootLayout({

@@ -7,10 +7,302 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum TypeApporteur {
+  PARTICULIER
+  PROFESSIONNEL
+}
+
+enum StatutKYC {
+  EN_ATTENTE
+  VALIDE
+  REFUSE
+}
+
+enum StatutOpportunite {
+  SOUMISE
+  ACCEPTEE
+  REFUSEE
+  EN_NEGOCIATION
+}
+
+enum StatutChantier {
+  PROSPECTION
+  CHIFFRAGE
+  SIGNE
+  EN_COURS
+  TERMINE
+}
+
+enum StatutContrat {
+  GENERE
+  EN_ATTENTE_SIGNATURE
+  SIGNE
+  EXPIRE
+}
+
+enum StatutFacture {
+  GENEREE
+  ENVOYEE
+  PAYEE
+  ANNULEE
+}
+
+enum TypeDocument {
+  CONTRAT
+  FACTURE
+  RECU
+  KYC_IDENTITE
+  KYC_KBIS
+  KYC_DOMICILE
+  RIB
+  DAS2_EXPORT
+}
+
+// ─── Utilisateurs & Auth ──────────────────────────────────────────────────────
+
+model Utilisateur {
   id        String   @id @default(cuid())
+  clerkId   String   @unique
   email     String   @unique
-  name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  entreprise Entreprise?
+  apporteur  Apporteur?
+}
+
+model Entreprise {
+  id            String      @id @default(cuid())
+  utilisateurId String      @unique
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id])
+
+  raisonSociale        String
+  siret                String    @unique
+  adresseSiege         String
+  codeApe              String?
+  representantLegal    String
+  telephone            String
+  iban                 String?
+  bic                  String?
+  nomTitulaireIban     String?
+  tauxCommissionDefaut Float?
+  montantFixeDefaut    Float?
+  statutKyc            StatutKYC @default(EN_ATTENTE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  opportunites Opportunite[]
+  chantiers    Chantier[]
+  contrats     Contrat[]
+  factures     Facture[]
+  das2         DAS2[]
+  documents    Document[]
+}
+
+model Apporteur {
+  id            String        @id @default(cuid())
+  utilisateurId String        @unique
+  utilisateur   Utilisateur   @relation(fields: [utilisateurId], references: [id])
+
+  type      TypeApporteur
+  nom       String
+  prenom    String
+  telephone String
+  adresse   String?
+  iban      String?
+  bic       String?
+
+  // Pro uniquement
+  raisonSociale String?
+  siret         String?  @unique
+  numeroTva     String?
+
+  // Particulier uniquement (requis DAS2)
+  dateNaissance DateTime?
+  lieuNaissance String?
+
+  statutKyc StatutKYC @default(EN_ATTENTE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  opportunites Opportunite[]
+  contrats     Contrat[]
+  factures     Facture[]
+  recus        Recu[]
+  documents    Document[]
+}
+
+// ─── Clients & Opportunités ───────────────────────────────────────────────────
+
+model Client {
+  id               String  @id @default(cuid())
+  estProfessionnel Boolean @default(false)
+
+  // Particulier
+  nom    String?
+  prenom String?
+
+  // Professionnel
+  raisonSociale String?
+  siret         String?
+
+  // Commun
+  telephone       String
+  email           String
+  adresseSiege    String?
+  adresseChantier String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  opportunites Opportunite[]
+}
+
+model Opportunite {
+  id           String            @id @default(cuid())
+  apporteurId  String
+  apporteur    Apporteur         @relation(fields: [apporteurId], references: [id])
+  entrepriseId String
+  entreprise   Entreprise        @relation(fields: [entrepriseId], references: [id])
+  clientId     String
+  client       Client            @relation(fields: [clientId], references: [id])
+
+  statut        StatutOpportunite @default(SOUMISE)
+  typeTravaux   String
+  description   String?
+  delaiSouhaite String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chantier Chantier?
+}
+
+// ─── Chantiers & Contrats ─────────────────────────────────────────────────────
+
+model Chantier {
+  id            String         @id @default(cuid())
+  opportuniteId String         @unique
+  opportunite   Opportunite    @relation(fields: [opportuniteId], references: [id])
+  entrepriseId  String
+  entreprise    Entreprise     @relation(fields: [entrepriseId], references: [id])
+
+  reference         String         @unique
+  statut            StatutChantier @default(PROSPECTION)
+  montantHT         Float?
+  tauxCommission    Float?
+  montantCommission Float?
+  dateDebut         DateTime?
+  dateFin           DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contrat Contrat?
+  facture Facture?
+  recu    Recu?
+}
+
+model Contrat {
+  id           String        @id @default(cuid())
+  chantierId   String        @unique
+  chantier     Chantier      @relation(fields: [chantierId], references: [id])
+  entrepriseId String
+  entreprise   Entreprise    @relation(fields: [entrepriseId], references: [id])
+  apporteurId  String
+  apporteur    Apporteur     @relation(fields: [apporteurId], references: [id])
+
+  numero                  String        @unique
+  statut                  StatutContrat @default(GENERE)
+  urlDocument             String?
+  signatureEntrepriseAt   DateTime?
+  signatureApporteurAt    DateTime?
+  horodatage              String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─── Factures, Reçus & DAS2 ───────────────────────────────────────────────────
+
+model Facture {
+  id           String        @id @default(cuid())
+  chantierId   String        @unique
+  chantier     Chantier      @relation(fields: [chantierId], references: [id])
+  entrepriseId String
+  entreprise   Entreprise    @relation(fields: [entrepriseId], references: [id])
+  apporteurId  String
+  apporteur    Apporteur     @relation(fields: [apporteurId], references: [id])
+
+  numero         String        @unique
+  statut         StatutFacture @default(GENEREE)
+  montantHT      Float
+  tauxTva        Float         @default(20.0)
+  montantTva     Float
+  montantTTC     Float
+  dateEmission   DateTime      @default(now())
+  datePrestation DateTime?
+  dateEcheance   DateTime?
+  datePaiement   DateTime?
+  urlDocument    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Recu {
+  id          String    @id @default(cuid())
+  chantierId  String    @unique
+  chantier    Chantier  @relation(fields: [chantierId], references: [id])
+  apporteurId String
+  apporteur   Apporteur @relation(fields: [apporteurId], references: [id])
+
+  numero        String    @unique
+  montant       Float
+  dateVersement DateTime?
+  urlDocument   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DAS2 {
+  id           String     @id @default(cuid())
+  entrepriseId String
+  entreprise   Entreprise @relation(fields: [entrepriseId], references: [id])
+
+  annee                     Int
+  nomBeneficiaire           String
+  adresseBeneficiaire       String
+  siretBeneficiaire         String?
+  dateNaissanceBeneficiaire DateTime?
+  lieuNaissanceBeneficiaire String?
+  montantTotal              Float
+  urlExport                 String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([entrepriseId, annee, nomBeneficiaire])
+}
+
+// ─── Documents (Coffre-fort) ──────────────────────────────────────────────────
+
+model Document {
+  id         String       @id @default(cuid())
+  type       TypeDocument
+  urlS3      String
+  nomFichier String
+  horodatage String?
+
+  entrepriseId String?
+  entreprise   Entreprise? @relation(fields: [entrepriseId], references: [id])
+  apporteurId  String?
+  apporteur    Apporteur?  @relation(fields: [apporteurId], references: [id])
+
+  createdAt DateTime @default(now())
 }
