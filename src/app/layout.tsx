@@ -31,8 +31,12 @@ export default function RootLayout({
       <body className="antialiased">
 =======
     <html lang='fr'>
+<<<<<<< HEAD
       <body className='antialiased'>
 >>>>>>> 411585d (WIP Fix bug layout.tsx)
+=======
+      <body className="antialiased">
+>>>>>>> 9681f8d (Fix bug)
         <Providers>{children}</Providers>
       </body>
     </html>
