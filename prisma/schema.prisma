@@ -12,6 +12,7 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -336,6 +337,8 @@ model ClientEvenement {
 =======
 // ── Enums ──────────────────────────────────────────────────────────────────────
 =======
+=======
+>>>>>>> 7d95a31 (Fix Prisma)
 // ─── Enums ────────────────────────────────────────────────────────────────────
 >>>>>>> f154208 (feat(s1): setup infrastructure — Prisma schema + Clerk + Resend + S3)
 
