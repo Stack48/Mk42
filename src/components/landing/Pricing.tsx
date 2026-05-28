@@ -80,9 +80,17 @@ export default function Pricing() {
           <h2 style={{
             fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800,
             color: 'var(--opus-ink)', letterSpacing: '-0.02em',
+            marginBottom: '12px',
           }}>
             Choisissez votre forfait
           </h2>
+          <p style={{
+            fontSize: '18px',
+            color: 'var(--opus-muted)',
+            lineHeight: 1.6,
+          }}>
+            Des prix justes qui évoluent avec votre entreprise
+          </p>
         </div>
 
         {/* Plans */}

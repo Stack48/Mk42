@@ -1,8 +1,11 @@
 'use client'
 import Link from 'next/link'
+import { useState } from 'react'
 import DashboardPreview from './DashboardPreview'
 
 export default function Hero() {
+  const [email, setEmail] = useState('')
+
   return (
     <section style={{
       backgroundColor: 'var(--opus-bg)',
@@ -12,26 +15,24 @@ export default function Hero() {
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
 
-        {/* Eyebrow */}
+        {/* Eyebrow badge */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '28px' }}>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: '7px',
-            padding: '6px 14px',
+            padding: '6px 16px',
             borderRadius: '100px',
             border: '1px solid var(--opus-border)',
             backgroundColor: 'var(--opus-primary-xl)',
             fontSize: '13px',
             fontWeight: 500,
             color: 'var(--opus-primary-dk)',
-            fontFamily: 'var(--font-dm-mono, monospace)',
-            letterSpacing: '0.02em',
+            letterSpacing: '0.01em',
           }}>
-            <span style={{
-              width: '6px', height: '6px', borderRadius: '50%',
-              background: 'var(--opus-primary)', display: 'inline-block',
-              animation: 'pulse 2s ease-in-out infinite',
-            }} />
-            Conformité DAS2 · Factures légales · Coffre-fort
+            {/* Sparkle icon */}
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M7 1L8.04 4.52L11.5 5L8.68 7.48L9.56 11L7 9.26L4.44 11L5.32 7.48L2.5 5L5.96 4.52Z" fill="var(--opus-primary)" />
+            </svg>
+            Obtenez tout en un pour la croissance de votre entreprise
           </span>
         </div>
 
@@ -46,87 +47,76 @@ export default function Hero() {
           maxWidth: '800px',
           margin: '0 auto 24px',
         }}>
-          Simplifiez vos opérations.{' '}
-          <span style={{ color: 'var(--opus-primary)' }}>
-            Accélérez votre croissance.
-          </span>
+          Simplifiez vos opérations.
+          <br />
+          Accélérez votre croissance.
         </h1>
 
         {/* Subtitle */}
         <p style={{
           textAlign: 'center',
-          fontSize: 'clamp(18px, 2vw, 21px)',
+          fontSize: 'clamp(17px, 1.8vw, 20px)',
           fontWeight: 400,
           color: 'var(--opus-muted)',
           lineHeight: 1.65,
-          maxWidth: '580px',
+          maxWidth: '600px',
           margin: '0 auto 40px',
         }}>
-          Opus automatise la conformité de vos commissions d'apporteurs d'affaires — contrats, factures, DAS2 — sans risque de redressement fiscal.
+          La plateforme SaaS tout-en-un pour rationaliser vos projets, automatiser vos ventes et fluidifier vos flux de travail pour toute entreprise du bâtiment.
         </p>
 
-        {/* CTA row */}
-        <div style={{
-          display: 'flex', flexWrap: 'wrap',
-          gap: '12px', justifyContent: 'center',
-          marginBottom: '64px',
-        }}>
-          <Link
-            href="/inscription"
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: '8px',
-              backgroundColor: 'var(--opus-primary)',
-              color: 'white',
-              padding: '14px 28px',
-              borderRadius: '10px',
-              fontSize: '16px',
-              fontWeight: 600,
-              textDecoration: 'none',
-              boxShadow: '0 4px 16px rgba(34,116,165,0.35)',
-              transition: 'background 150ms, box-shadow 150ms, transform 150ms',
-            }}
-            onMouseEnter={e => {
-              const t = e.currentTarget
-              t.style.backgroundColor = 'var(--opus-primary-dk)'
-              t.style.transform = 'translateY(-1px)'
-            }}
-            onMouseLeave={e => {
-              const t = e.currentTarget
-              t.style.backgroundColor = 'var(--opus-primary)'
-              t.style.transform = 'translateY(0)'
-            }}
-          >
-            Essayer gratuitement
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M3 8h10M9 4l4 4-4 4" />
-            </svg>
-          </Link>
-
-          <Link
-            href="/connexion"
-            style={{
-              display: 'inline-flex', alignItems: 'center',
-              padding: '14px 24px',
-              borderRadius: '10px',
-              fontSize: '16px',
-              fontWeight: 500,
-              color: 'var(--opus-text)',
-              textDecoration: 'none',
-              border: '1px solid var(--opus-border)',
-              background: 'white',
-              transition: 'border-color 150ms, background 150ms',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = 'var(--opus-primary)'
-              e.currentTarget.style.background = 'var(--opus-primary-xl)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'var(--opus-border)'
-              e.currentTarget.style.background = 'white'
-            }}
-          >
-            Se connecter
-          </Link>
+        {/* Email input + CTA */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '64px' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            background: 'white',
+            border: '1px solid var(--opus-border)',
+            borderRadius: '10px',
+            padding: '6px 6px 6px 18px',
+            boxShadow: '0 4px 20px rgba(34,116,165,0.08)',
+            width: '100%',
+            maxWidth: '460px',
+          }}>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              style={{
+                flex: 1,
+                border: 'none',
+                outline: 'none',
+                fontSize: '15px',
+                color: 'var(--opus-ink)',
+                background: 'transparent',
+                minWidth: 0,
+                fontFamily: 'inherit',
+              }}
+            />
+            <Link
+              href={`/inscription${email ? `?email=${encodeURIComponent(email)}` : ''}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                backgroundColor: 'var(--opus-primary)',
+                color: 'white',
+                padding: '10px 20px',
+                borderRadius: '7px',
+                fontSize: '14px',
+                fontWeight: 600,
+                textDecoration: 'none',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+                transition: 'background 150ms',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--opus-primary-dk)')}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'var(--opus-primary)')}
+            >
+              Démarrer maintenant
+            </Link>
+          </div>
         </div>
 
         {/* Dashboard preview */}
@@ -135,13 +125,6 @@ export default function Hero() {
         </div>
 
       </div>
-
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.4; }
-        }
-      `}</style>
     </section>
   )
 }

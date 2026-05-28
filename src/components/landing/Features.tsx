@@ -10,7 +10,7 @@ const FEATURES = [
         <line x1="8" y1="17" x2="12" y2="17" />
       </svg>
     ),
-    title: 'Contrats légaux en 2 min',
+    title: 'Contrats légaux en 2 clics',
     desc: "Générez des contrats d'apport conformes au droit français. Signature électronique eIDAS incluse.",
   },
   {
@@ -36,7 +36,7 @@ const FEATURES = [
       </svg>
     ),
     title: 'Factures automatiques',
-    desc: 'Facture légale ou reçu de commission générés dès le chantier terminé. Numérotation séquentielle incluse.',
+    desc: 'Facture légale ou reçu de commission générés dès le chantier terminé. Exportables en PDF.',
   },
   {
     icon: (
@@ -46,7 +46,7 @@ const FEATURES = [
       </svg>
     ),
     title: 'Coffre-fort sécurisé',
-    desc: "Conservation 6 ans avec valeur probante. Horodatage tiers pour vos contrôles fiscaux.",
+    desc: "Documents accessibles immédiatement en cas de contrôle fiscal.",
   },
 ]
 
@@ -61,137 +61,139 @@ export default function Features() {
     >
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
-        {/* Section header */}
-        <div style={{ textAlign: 'center', marginBottom: '56px' }}>
-          <p style={{
-            fontSize: '13px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase',
-            color: 'var(--opus-primary)', fontFamily: 'var(--font-dm-mono, monospace)',
-            marginBottom: '12px',
-          }}>
-            Fonctionnalités
-          </p>
-          <h2 style={{
-            fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800,
-            color: 'var(--opus-ink)', letterSpacing: '-0.02em', lineHeight: 1.15,
-            maxWidth: '600px', margin: '0 auto 16px',
-          }}>
-            Toutes les fonctionnalités, sans les maux de tête
-          </h2>
-          <p style={{
-            fontSize: '18px', color: 'var(--opus-muted)', lineHeight: 1.6,
-            maxWidth: '520px', margin: '0 auto',
-          }}>
-            Un outil pensé pour les entreprises BTP et leurs réseaux d'apporteurs.
-          </p>
-        </div>
+        {/* Section label */}
+        <p style={{
+          fontSize: '12px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase',
+          color: 'var(--opus-primary)', fontFamily: 'var(--font-dm-mono, monospace)',
+          marginBottom: '16px',
+        }}>
+          Fonctionnalités
+        </p>
 
-        {/* Grid + promo card */}
+        {/* Heading */}
+        <h2 style={{
+          fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800,
+          color: 'var(--opus-ink)', letterSpacing: '-0.02em', lineHeight: 1.15,
+          maxWidth: '480px', marginBottom: '48px',
+        }}>
+          Toutes les fonctionnalités, sans les maux de tête
+        </h2>
+
+        {/* 2-col: cards left / photo right */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(12, 1fr)',
-          gap: '16px',
-        }}>
-          {/* 2x2 feature cards */}
-          {FEATURES.map((f, i) => (
-            <div
-              key={f.title}
-              style={{
-                gridColumn: 'span 3',
-                backgroundColor: 'white',
-                border: '1px solid var(--opus-border)',
-                borderRadius: '12px',
-                padding: '28px 24px',
-                transition: 'box-shadow 200ms, border-color 200ms, transform 200ms',
-                cursor: 'default',
-              }}
-              onMouseEnter={e => {
-                const t = e.currentTarget
-                t.style.boxShadow = '0 8px 32px rgba(34,116,165,0.12)'
-                t.style.borderColor = 'var(--opus-primary-lt)'
-                t.style.transform = 'translateY(-2px)'
-              }}
-              onMouseLeave={e => {
-                const t = e.currentTarget
-                t.style.boxShadow = 'none'
-                t.style.borderColor = 'var(--opus-border)'
-                t.style.transform = 'translateY(0)'
-              }}
-            >
-              <div style={{
-                width: '44px', height: '44px', borderRadius: '10px',
-                backgroundColor: 'var(--opus-primary-xl)',
-                color: 'var(--opus-primary)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                marginBottom: '16px',
-                flexShrink: 0,
-              }}>
-                {f.icon}
-              </div>
-              <h3 style={{
-                fontSize: '17px', fontWeight: 700,
-                color: 'var(--opus-ink)', marginBottom: '8px', lineHeight: 1.3,
-              }}>
-                {f.title}
-              </h3>
-              <p style={{
-                fontSize: '15px', color: 'var(--opus-muted)',
-                lineHeight: 1.6,
-              }}>
-                {f.desc}
-              </p>
-            </div>
-          ))}
-
-          {/* Promo card — full-width bottom */}
+          gridTemplateColumns: '1fr 1fr',
+          gap: '32px',
+          alignItems: 'center',
+        }}
+          className="features-grid"
+        >
+          {/* Left — 2×2 cards */}
           <div style={{
-            gridColumn: 'span 12',
-            background: 'linear-gradient(135deg, var(--opus-primary) 0%, var(--opus-primary-lt) 100%)',
-            borderRadius: '12px',
-            padding: '36px 40px',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '16px',
+          }}>
+            {FEATURES.map(f => (
+              <div
+                key={f.title}
+                style={{
+                  backgroundColor: 'white',
+                  border: '1px solid var(--opus-border)',
+                  borderRadius: '12px',
+                  padding: '24px 20px',
+                  transition: 'box-shadow 200ms, border-color 200ms, transform 200ms',
+                  cursor: 'default',
+                }}
+                onMouseEnter={e => {
+                  const t = e.currentTarget
+                  t.style.boxShadow = '0 8px 32px rgba(34,116,165,0.12)'
+                  t.style.borderColor = 'var(--opus-primary-lt)'
+                  t.style.transform = 'translateY(-2px)'
+                }}
+                onMouseLeave={e => {
+                  const t = e.currentTarget
+                  t.style.boxShadow = 'none'
+                  t.style.borderColor = 'var(--opus-border)'
+                  t.style.transform = 'translateY(0)'
+                }}
+              >
+                <div style={{
+                  width: '40px', height: '40px', borderRadius: '10px',
+                  backgroundColor: 'var(--opus-primary-xl)',
+                  color: 'var(--opus-primary)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  marginBottom: '14px',
+                  flexShrink: 0,
+                }}>
+                  {f.icon}
+                </div>
+                <h3 style={{
+                  fontSize: '16px', fontWeight: 700,
+                  color: 'var(--opus-ink)', marginBottom: '6px', lineHeight: 1.3,
+                }}>
+                  {f.title}
+                </h3>
+                <p style={{
+                  fontSize: '14px', color: 'var(--opus-muted)',
+                  lineHeight: 1.6,
+                }}>
+                  {f.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Right — construction photo */}
+          <div style={{
+            borderRadius: '14px',
+            overflow: 'hidden',
+            aspectRatio: '4 / 3',
+            backgroundColor: '#D5E8F2',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '24px',
+            justifyContent: 'center',
+            position: 'relative',
           }}>
-            <div>
-              <p style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '8px', fontFamily: 'var(--font-dm-mono, monospace)' }}>
-                Prêt à commencer ?
-              </p>
-              <h3 style={{ fontSize: 'clamp(20px, 2.5vw, 26px)', fontWeight: 700, color: 'white', lineHeight: 1.25 }}>
-                Conformez-vous en 10 minutes chrono.
-              </h3>
+            {/* Placeholder — remplacer par <Image src="/chantier.jpg" .../> quand disponible */}
+            <div style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px',
+              color: 'var(--opus-primary)', opacity: 0.5,
+            }}>
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="4" y="10" width="40" height="30" rx="4" />
+                <circle cx="24" cy="25" r="8" />
+                <circle cx="24" cy="25" r="3" />
+                <line x1="4" y1="18" x2="44" y2="18" />
+              </svg>
+              <span style={{ fontSize: '13px', fontWeight: 500, fontFamily: 'var(--font-dm-mono, monospace)' }}>
+                Photo chantier
+              </span>
             </div>
-            <a
-              href="/inscription"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '8px',
-                backgroundColor: 'white',
-                color: 'var(--opus-primary)',
-                padding: '12px 24px',
-                borderRadius: '8px',
-                fontSize: '15px',
-                fontWeight: 700,
-                textDecoration: 'none',
-                flexShrink: 0,
-                transition: 'opacity 150ms',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-            >
-              Créer mon compte gratuit
-            </a>
           </div>
         </div>
+
+        {/* Bottom tagline */}
+        <p style={{
+          marginTop: '40px',
+          fontSize: '15px',
+          color: 'var(--opus-muted)',
+          fontStyle: 'italic',
+        }}>
+          Parce que gérer une entreprise ne devrait pas ressembler à un contrôle fiscal.
+        </p>
       </div>
 
-      {/* Mobile responsive override */}
       <style>{`
-        @media (max-width: 900px) {
-          #fonctionnalites [style*="span 3"] { grid-column: span 6 !important; }
+        @media (max-width: 768px) {
+          .features-grid {
+            grid-template-columns: 1fr !important;
+          }
         }
-        @media (max-width: 600px) {
-          #fonctionnalites [style*="span 3"] { grid-column: span 12 !important; }
+        @media (max-width: 500px) {
+          .features-grid > div:first-child {
+            grid-template-columns: 1fr !important;
+          }
         }
       `}</style>
     </section>

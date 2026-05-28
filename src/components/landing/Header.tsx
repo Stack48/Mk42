@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 const NAV = [
   { href: '#fonctionnalites', label: 'Fonctionnalités' },
   { href: '#temoignages', label: 'Témoignages' },
-  { href: '#prix', label: 'Prix' },
+  { href: '#prix', label: 'Tarifs' },
   { href: '#faq', label: 'FAQ' },
 ]
 
@@ -107,7 +107,7 @@ export default function Header() {
           onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--opus-primary-dk)')}
           onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'var(--opus-primary)')}
         >
-          Commencer gratuitement
+          Démo Gratuit
         </Link>
 
         {/* Mobile burger */}
@@ -166,7 +166,7 @@ export default function Header() {
               textDecoration: 'none', fontSize: '15px',
             }}
           >
-            Commencer gratuitement
+            Démo Gratuit
           </Link>
         </div>
       )}
