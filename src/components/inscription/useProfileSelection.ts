@@ -86,7 +86,7 @@ export function useProfileSelection(): UseProfileSelectionReturn {
 
   const handleContinue = useCallback(() => {
     if (!selectedId) return
-    router.push('/inscription/compte')
+    router.push('/inscription/etape-2')
   }, [selectedId, router])
 
   return {

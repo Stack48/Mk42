@@ -1,46 +1,54 @@
-import Link from 'next/link';
-import { prisma } from '@/lib/prisma';
+import type { Metadata } from 'next'
+import Header from '@/components/landing/Header'
+import Hero from '@/components/landing/Hero'
+import ProofStrip from '@/components/landing/ProofStrip'
+import Features from '@/components/landing/Features'
+import WhyOpus from '@/components/landing/WhyOpus'
+import Testimonials from '@/components/landing/Testimonials'
+import Pricing from '@/components/landing/Pricing'
+import Faq from '@/components/landing/Faq'
+import Footer from '@/components/landing/Footer'
+import ScrollReveal from '@/components/landing/ScrollReveal'
 
-export const dynamic = 'force-dynamic';
+export const metadata: Metadata = {
+  title: "Opus — Simplifiez vos commissions d'apporteurs d'affaires BTP",
+  description:
+    "Contrats légaux, factures, DAS2 et coffre-fort automatisés. Évitez les redressements fiscaux et conformez-vous en 10 minutes.",
+  openGraph: {
+    title: "Opus — Simplifiez vos commissions d'apporteurs d'affaires BTP",
+    description:
+      "Contrats légaux, factures, DAS2 et coffre-fort automatisés. Évitez les redressements fiscaux.",
+    type: 'website',
+    locale: 'fr_FR',
+  },
+}
 
-export default async function Home() {
-  let dbStatus: 'ok' | 'error' = 'ok';
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-  } catch {
-    dbStatus = 'error';
-  }
-
-  const userCount = dbStatus === 'ok' ? await prisma.user.count() : null;
-
+export default function LandingPage() {
   return (
-    <main className='mx-auto flex min-h-screen max-w-2xl flex-col justify-center gap-6 px-6'>
-      <h1 className='text-3xl font-semibold tracking-tight'>Nara</h1>
-      <p className='text-neutral-600 dark:text-neutral-400'>
-        Boilerplate Next.js, Prisma, PostgreSQL et Docker (pgAdmin inclus).
-      </p>
-      <dl className='grid gap-2 rounded-lg border border-neutral-200 p-4 text-sm dark:border-neutral-800'>
-        <div className='flex justify-between gap-4'>
-          <dt className='text-neutral-500'>Base de données</dt>
-          <dd className='font-medium'>
-            {dbStatus === 'ok' ? 'Connectée' : 'Non disponible'}
-          </dd>
-        </div>
-        {userCount !== null && (
-          <div className='flex justify-between gap-4'>
-            <dt className='text-neutral-500'>Utilisateurs (exemple)</dt>
-            <dd className='font-medium'>{userCount}</dd>
-          </div>
-        )}
-      </dl>
-      <p>
-        <Link
-          href='/users'
-          className='font-medium text-neutral-900 underline underline-offset-4 hover:text-neutral-600 dark:text-neutral-100 dark:hover:text-neutral-300'
-        >
-          CRUD utilisateurs (exemple)
-        </Link>
-      </p>
-    </main>
-  );
+    <>
+      <Header />
+      <main>
+        <Hero />
+        <ScrollReveal>
+          <ProofStrip />
+        </ScrollReveal>
+        <ScrollReveal>
+          <Features />
+        </ScrollReveal>
+        <ScrollReveal>
+          <WhyOpus />
+        </ScrollReveal>
+        <ScrollReveal>
+          <Testimonials />
+        </ScrollReveal>
+        <ScrollReveal>
+          <Pricing />
+        </ScrollReveal>
+        <ScrollReveal>
+          <Faq />
+        </ScrollReveal>
+      </main>
+      <Footer />
+    </>
+  )
 }

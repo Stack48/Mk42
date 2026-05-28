@@ -101,7 +101,7 @@ export default function ComptePage() {
           flexDirection: 'column',
           justifyContent: 'center',
           padding: '64px 56px',
-          background: 'linear-gradient(145deg, #1A5C85 0%, #2274A5 45%, #3A96C4 100%)',
+          background: 'linear-gradient(145deg, #3533B0 0%, #4648D4 45%, #6669E0 100%)',
           position: 'relative',
           overflow: 'hidden',
         }}
