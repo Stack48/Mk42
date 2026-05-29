@@ -61,6 +61,14 @@ enum TypeDocument {
   DAS2_EXPORT
 }
 
+// ─── Enums Auth & Rôles ───────────────────────────────────────────────────────
+
+enum RoleOrganisation {
+  ADMIN
+  MEMBRE
+  REFERRER_INTERNE
+}
+
 // ─── Utilisateurs & Auth ──────────────────────────────────────────────────────
 
 model Utilisateur {
@@ -70,14 +78,29 @@ model Utilisateur {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  entreprise Entreprise?
-  apporteur  Apporteur?
+  entreprise  Entreprise?
+  apporteur   Apporteur?
+  memberships MembreEntreprise[]
+}
+
+model MembreEntreprise {
+  id                String           @id @default(cuid())
+  utilisateurId     String
+  utilisateur       Utilisateur      @relation(fields: [utilisateurId], references: [id])
+  entrepriseId      String
+  entreprise        Entreprise       @relation(fields: [entrepriseId], references: [id])
+  role              RoleOrganisation
+  clerkMembershipId String?          @unique
+  createdAt         DateTime         @default(now())
+
+  @@unique([utilisateurId, entrepriseId])
 }
 
 model Entreprise {
   id            String      @id @default(cuid())
   utilisateurId String      @unique
   utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id])
+  clerkOrgId    String?     @unique
 
   raisonSociale        String
   siret                String    @unique
@@ -95,6 +118,7 @@ model Entreprise {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  membres      MembreEntreprise[]
   opportunites Opportunite[]
   chantiers    Chantier[]
   contrats     Contrat[]

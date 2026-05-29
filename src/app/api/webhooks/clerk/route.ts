@@ -1,34 +1,19 @@
+import { WebhookEvent } from '@clerk/nextjs/server'
 import { headers } from 'next/headers'
 import { Webhook } from 'svix'
 import { prisma } from '@/lib/prisma'
+import { RoleOrganisation } from '@/generated/prisma/client'
 
-// ── Types Clerk webhook payload ────────────────────────────────────────────────
-
-type ClerkEmailAddress = {
-  id: string
-  email_address: string
-}
-
-type ClerkUnsafeMetadata = {
+type UserUnsafeMetadata = {
   typeApporteur?: 'particulier' | 'professionnel' | 'entreprise'
   telephone?: string
 }
 
-type ClerkUserData = {
-  id: string
-  email_addresses: ClerkEmailAddress[]
-  primary_email_address_id: string
-  first_name: string | null
-  last_name: string | null
-  unsafe_metadata: ClerkUnsafeMetadata
+function clerkRoleToDb(role: string): RoleOrganisation {
+  if (role === 'org:admin') return RoleOrganisation.ADMIN
+  if (role === 'org:referrer') return RoleOrganisation.REFERRER_INTERNE
+  return RoleOrganisation.MEMBRE
 }
-
-type ClerkWebhookEvent =
-  | { type: 'user.created'; data: ClerkUserData }
-  | { type: 'user.updated'; data: ClerkUserData }
-  | { type: 'user.deleted'; data: { id?: string } }
-
-// ── Handler ────────────────────────────────────────────────────────────────────
 
 export async function POST(req: Request) {
   const secret = process.env.CLERK_WEBHOOK_SECRET
@@ -48,98 +33,136 @@ export async function POST(req: Request) {
 
   const body = await req.text()
 
-  let event: ClerkWebhookEvent
+  let event: WebhookEvent
   try {
     event = new Webhook(secret).verify(body, {
       'svix-id':        svixId,
       'svix-timestamp': svixTimestamp,
       'svix-signature': svixSignature,
-    }) as ClerkWebhookEvent
+    }) as WebhookEvent
   } catch {
     return new Response('Signature invalide', { status: 400 })
   }
 
   try {
-    switch (event.type) {
-      case 'user.created':
-        await handleUserCreated(event.data)
-        break
-      case 'user.updated':
-        await handleUserUpdated(event.data)
-        break
-      case 'user.deleted':
-        await handleUserDeleted(event.data)
-        break
+    // ─── Utilisateur créé ─────────────────────────────────────────────────────
+    if (event.type === 'user.created') {
+      const { id: clerkId, email_addresses, primary_email_address_id, first_name, last_name, unsafe_metadata } = event.data
+      const email = email_addresses.find(e => e.id === primary_email_address_id)?.email_address
+      if (!email) {
+        console.warn('[webhook/clerk] user.created sans email principal, clerkId:', clerkId)
+        return new Response('OK', { status: 200 })
+      }
+
+      const meta        = unsafe_metadata as UserUnsafeMetadata
+      const typeApporteur = meta?.typeApporteur
+      const isEntreprise  = typeApporteur === 'entreprise'
+
+      await prisma.utilisateur.upsert({
+        where:  { clerkId },
+        update: { email },
+        create: {
+          clerkId,
+          email,
+          ...(!isEntreprise && {
+            apporteur: {
+              create: {
+                nom:       last_name  ?? '',
+                prenom:    first_name ?? '',
+                type:      typeApporteur === 'professionnel' ? 'PROFESSIONNEL' : 'PARTICULIER',
+                telephone: meta?.telephone ?? '',
+              },
+            },
+          }),
+        },
+      })
+
+      console.log(`[webhook/clerk] Utilisateur créé — clerkId: ${clerkId}, type: ${typeApporteur ?? 'particulier (défaut)'}`)
+    }
+
+    // ─── Utilisateur mis à jour ───────────────────────────────────────────────
+    if (event.type === 'user.updated') {
+      const { id: clerkId, email_addresses, primary_email_address_id } = event.data
+      const email = email_addresses.find(e => e.id === primary_email_address_id)?.email_address
+      if (!email) return new Response('OK', { status: 200 })
+
+      await prisma.utilisateur.update({
+        where: { clerkId },
+        data:  { email },
+      }).catch(() => {
+        console.warn('[webhook/clerk] user.updated — utilisateur introuvable, clerkId:', clerkId)
+      })
+    }
+
+    // ─── Utilisateur supprimé ─────────────────────────────────────────────────
+    if (event.type === 'user.deleted') {
+      const { id: clerkId } = event.data
+      if (clerkId) {
+        await prisma.utilisateur.delete({
+          where: { clerkId },
+        }).catch(() => {
+          console.warn('[webhook/clerk] user.deleted — utilisateur introuvable, clerkId:', clerkId)
+        })
+      }
+    }
+
+    // ─── Organisation créée → lier clerkOrgId à l'Entreprise de l'admin ──────
+    if (event.type === 'organization.created') {
+      const { id: clerkOrgId, created_by } = event.data
+      if (created_by) {
+        await prisma.entreprise.updateMany({
+          where: { utilisateur: { clerkId: created_by } },
+          data:  { clerkOrgId },
+        })
+      }
+    }
+
+    // ─── Membre ajouté à l'organisation ──────────────────────────────────────
+    if (event.type === 'organizationMembership.created') {
+      const { organization, public_user_data, role } = event.data
+      const clerkOrgId  = organization.id
+      const clerkUserId = public_user_data.user_id
+
+      const [utilisateur, entreprise] = await Promise.all([
+        prisma.utilisateur.findUnique({ where: { clerkId: clerkUserId } }),
+        prisma.entreprise.findUnique({ where: { clerkOrgId } }),
+      ])
+
+      if (utilisateur && entreprise) {
+        await prisma.membreEntreprise.upsert({
+          where:  { utilisateurId_entrepriseId: { utilisateurId: utilisateur.id, entrepriseId: entreprise.id } },
+          create: {
+            utilisateurId:     utilisateur.id,
+            entrepriseId:      entreprise.id,
+            role:              clerkRoleToDb(role),
+            clerkMembershipId: `${clerkOrgId}_${clerkUserId}`,
+          },
+          update: { role: clerkRoleToDb(role) },
+        })
+      }
+    }
+
+    // ─── Membre retiré de l'organisation ─────────────────────────────────────
+    if (event.type === 'organizationMembership.deleted') {
+      const { organization, public_user_data } = event.data
+      const clerkOrgId  = organization.id
+      const clerkUserId = public_user_data.user_id
+
+      const [utilisateur, entreprise] = await Promise.all([
+        prisma.utilisateur.findUnique({ where: { clerkId: clerkUserId } }),
+        prisma.entreprise.findUnique({ where: { clerkOrgId } }),
+      ])
+
+      if (utilisateur && entreprise) {
+        await prisma.membreEntreprise.deleteMany({
+          where: { utilisateurId: utilisateur.id, entrepriseId: entreprise.id },
+        })
+      }
     }
   } catch (err) {
-    console.error(`[webhook/clerk] Erreur sur ${event.type}:`, err)
+    console.error('[webhook/clerk] Erreur:', err)
     return new Response('Erreur interne', { status: 500 })
   }
 
   return new Response('OK', { status: 200 })
-}
-
-// ── Handlers ───────────────────────────────────────────────────────────────────
-
-async function handleUserCreated(data: ClerkUserData) {
-  const email = getPrimaryEmail(data)
-  if (!email) {
-    console.warn('[webhook/clerk] user.created sans email principal, clerkId:', data.id)
-    return
-  }
-
-  const typeApporteur = data.unsafe_metadata?.typeApporteur
-  const isEntreprise  = typeApporteur === 'entreprise'
-
-  await prisma.utilisateur.upsert({
-    where:  { clerkId: data.id },
-    update: { email },
-    create: {
-      clerkId: data.id,
-      email,
-      ...(!isEntreprise && {
-        apporteur: {
-          create: {
-            nom:       data.last_name  ?? '',
-            prenom:    data.first_name ?? '',
-            type:      typeApporteur === 'professionnel' ? 'PROFESSIONNEL' : 'PARTICULIER',
-            telephone: data.unsafe_metadata?.telephone ?? '',
-          },
-        },
-      }),
-    },
-  })
-
-  console.log(`[webhook/clerk] Utilisateur créé — clerkId: ${data.id}, type: ${typeApporteur ?? 'particulier (défaut)'}`)
-}
-
-async function handleUserUpdated(data: ClerkUserData) {
-  const email = getPrimaryEmail(data)
-  if (!email) return
-
-  await prisma.utilisateur.update({
-    where: { clerkId: data.id },
-    data:  { email },
-  }).catch(() => {
-    console.warn('[webhook/clerk] user.updated — utilisateur introuvable, clerkId:', data.id)
-  })
-}
-
-async function handleUserDeleted(data: { id?: string }) {
-  if (!data.id) return
-
-  await prisma.utilisateur.delete({
-    where: { clerkId: data.id },
-  }).catch(() => {
-    console.warn('[webhook/clerk] user.deleted — utilisateur introuvable, clerkId:', data.id)
-  })
-}
-
-// ── Helpers ────────────────────────────────────────────────────────────────────
-
-function getPrimaryEmail(data: ClerkUserData): string | null {
-  return (
-    data.email_addresses.find(e => e.id === data.primary_email_address_id)
-      ?.email_address ?? null
-  )
 }
