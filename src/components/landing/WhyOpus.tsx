@@ -31,7 +31,7 @@ function MiniDash({ title, stats }: { title: string, stats: { label: string, val
 }
 
 const DASHBOARDS = [
-  { title: 'Suivi automatisé', stats: [{ label: 'Montant annuel', value: '2 506€' }, { label: 'Montant annuel', value: '204 850' }, { label: 'Montant AN', value: '204 850' }] },
+  { title: 'Suivi automatisé', stats: [{ label: 'Commissions', value: '2 506€' }, { label: 'Total annuel', value: '204 850' }, { label: 'Montant AN', value: '204 850' }] },
   { title: 'Suivi automatisé', stats: [{ label: 'Commissions', value: '2 506€' }, { label: 'Annual', value: '204 850' }] },
   { title: 'Dashboard', stats: [{ label: 'Opportunités', value: '12' }, { label: 'Contrats', value: '8' }, { label: 'DAS2', value: '100%' }] },
   { title: 'Suivi automatisé', stats: [{ label: 'Montant', value: '2 506€' }, { label: 'Annual', value: '204 850' }] },

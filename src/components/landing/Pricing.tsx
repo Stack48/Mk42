@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 
-const C = { primary: '#4648D4', primaryDk: '#3533B0', primaryXL: '#EEEEFF', ink: '#111111', muted: '#6B7280', border: '#E5E7EB' }
+const C = { primary: '#4648D4', primaryDk: '#3533B0', primaryXL: '#EEEEFF', ink: '#111111', muted: '#6B7280', border: '#E5E7EB', text: '#374151' }
 
 const CHECK = (color: string) => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">

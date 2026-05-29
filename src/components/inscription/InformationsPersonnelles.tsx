@@ -74,7 +74,15 @@ export default function InformationsPersonnelles() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    router.push('/inscription/etape-3')
+    /* Routage conditionnel : Rapporteur particulier → saute l'étape 3 (SIRET) */
+    const profile = typeof window !== 'undefined'
+      ? sessionStorage.getItem('opus_profile')
+      : null
+    if (profile === 'particulier') {
+      router.push('/inscription/etape-4')
+    } else {
+      router.push('/inscription/etape-3')
+    }
   }
 
   return (
