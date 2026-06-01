@@ -1,88 +1,189 @@
 'use client'
 
-const C = { primary: '#4648D4' }
+import Link from 'next/link'
+import s from './Footer.module.css'
 
+/* ── Icône Opus — path exact du Footer.svg Figma ───────────────── */
+function OpusIcon() {
+  return (
+    <svg width="24" height="22" viewBox="33 66 22 22" fill="none" aria-hidden="true"
+      style={{ display: 'block', flexShrink: 0 }}>
+      <path
+        d="M44 67L34 72L44 77L54 72L44 67Z M34 82L44 87L54 82H34Z M34 77L44 82L54 77H34Z"
+        fill="#4648D4"
+      />
+    </svg>
+  )
+}
+
+/* ── Tokens ─────────────────────────────────────────────────────── */
+const ink   = '#131B23'
+const text  = '#2A3A48'
+const muted = '#5A6E7C'
+const blue  = '#4648D4'
+
+/* ── Footer ─────────────────────────────────────────────────────── */
 export default function Footer() {
   return (
-    <footer style={{ background: '#111111', color: 'rgba(255,255,255,0.55)', position: 'relative', overflow: 'hidden', paddingTop: 56, paddingBottom: 28 }}>
+    <footer
+      className={s.footer}
+      style={{
+        background: '#ffffff',
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: 540,
+      }}
+    >
+      {/* ── Zone principale ── */}
+      <div style={{
+        position: 'relative', zIndex: 1,
+        flex: 1,
+        maxWidth: 1200, margin: '0 auto', width: '100%',
+        padding: '56px 40px 0',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'stretch',   /* colonne gauche prend toute la hauteur */
+        boxSizing: 'border-box',
+      }}>
 
-      {/* OPUS watermark */}
-      <div aria-hidden="true" style={{
-        position: 'absolute', bottom: -20, left: '50%', transform: 'translateX(-50%)',
-        fontSize: 'clamp(100px,18vw,180px)', fontWeight: 900,
-        color: 'rgba(255,255,255,0.04)', letterSpacing: '-0.04em',
-        userSelect: 'none', whiteSpace: 'nowrap', pointerEvents: 'none', lineHeight: 1,
-      }}>OPUS</div>
+        {/* ── Colonne gauche : tagline en haut, logo en bas ── */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',  /* tagline haut / logo bas */
+          width: 255,
+          paddingBottom: 32,
+        }}>
+          {/* Tagline (haut) */}
+          <p style={{
+            fontSize: 13, fontWeight: 400, lineHeight: 1.7,
+            color: text, margin: 0, fontFamily: 'inherit',
+          }}>
+            Nous fournissons une plateforme rationalisée
+            pour les entreprises du bâtiment de toute envergure.
+          </p>
 
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1 }}>
+          {/* Logo [icon] OPUS (bas — sur la barre horizontale) */}
+          <Link href="/" aria-label="Accueil Opus" style={{
+            display: 'flex', flexDirection: 'row',
+            alignItems: 'center', gap: 9,
+            textDecoration: 'none',
+          }}>
+            <OpusIcon />
+            <span style={{
+              fontSize: 16, fontWeight: 800,
+              color: ink, letterSpacing: '0.04em',
+              lineHeight: 1, fontFamily: 'inherit',
+            }}>
+              OPUS
+            </span>
+          </Link>
+        </div>
 
-        {/* Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: 40, marginBottom: 48 }}>
+        {/* ── 3 colonnes navigation ── */}
+        <div style={{
+          display: 'flex', gap: 80,
+          alignItems: 'flex-start',
+          paddingBottom: 32,
+        }}>
 
-          {/* Brand */}
+          {/* Colonne 1 */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-              <span style={{
-                width: 28, height: 28, borderRadius: 6, background: C.primary,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                  <rect x="2.5" y="2.5" width="4.5" height="4.5" rx="1.2" fill="white"/>
-                  <rect x="9" y="2.5" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.55"/>
-                  <rect x="2.5" y="9" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.55"/>
-                  <rect x="9" y="9" width="4.5" height="4.5" rx="1.2" fill="white"/>
-                </svg>
-              </span>
-              <span style={{ fontWeight: 800, fontSize: 16, color: '#fff' }}>OPUS</span>
-            </div>
-            <p style={{ fontSize: 13, lineHeight: 1.7, maxWidth: 220, marginBottom: 10 }}>
-              La plateforme qui automatise la gestion des commissions d'apporteurs d'affaires pour les professionnels du bâtiment.
-            </p>
-            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>SIRET : 123 456 789 00010</p>
+            <p style={{
+              fontSize: 11, fontWeight: 700, letterSpacing: '0.13em',
+              textTransform: 'uppercase', color: ink,
+              margin: '0 0 16px', fontFamily: 'inherit',
+            }}>Menu</p>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <li><Link href="/"                style={{ fontSize: 13, fontWeight: 400, color: blue,  textDecoration: 'none', display: 'block', fontFamily: 'inherit' }}>Accueil</Link></li>
+              <li><Link href="/#about"          style={{ fontSize: 13, fontWeight: 400, color: text,  textDecoration: 'none', display: 'block', fontFamily: 'inherit' }}>À propos</Link></li>
+              <li><Link href="/#fonctionnalites"style={{ fontSize: 13, fontWeight: 400, color: text,  textDecoration: 'none', display: 'block', fontFamily: 'inherit' }}>Fonctionnalités</Link></li>
+              <li><Link href="/blog"            style={{ fontSize: 13, fontWeight: 400, color: text,  textDecoration: 'none', display: 'block', fontFamily: 'inherit' }}>Blog</Link></li>
+              <li><Link href="/contact"         style={{ fontSize: 13, fontWeight: 400, color: text,  textDecoration: 'none', display: 'block', fontFamily: 'inherit' }}>Contact</Link></li>
+            </ul>
           </div>
 
-          {/* Menu */}
+          {/* Colonne 2 */}
           <div>
-            <h3 style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', marginBottom: 14, fontFamily: "'DM Mono', monospace" }}>Menu</h3>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 9 }}>
-              {['Dashboard', 'App store', 'Fonctionnalités', 'Tarifs', 'Contact'].map(item => (
-                <li key={item}>
-                  <a href="#" style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', textDecoration: 'none', transition: 'color 150ms' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}
-                  >{item}</a>
+            <p style={{
+              fontSize: 11, fontWeight: 700, letterSpacing: '0.13em',
+              textTransform: 'uppercase', color: ink,
+              margin: '0 0 16px', fontFamily: 'inherit',
+            }}>Menu</p>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <li><Link href="/"       style={{ fontSize: 13, fontWeight: 400, color: text, textDecoration: 'none', display: 'block', fontFamily: 'inherit' }}>Accueil</Link></li>
+              <li><Link href="/#about" style={{ fontSize: 13, fontWeight: 400, color: text, textDecoration: 'none', display: 'block', fontFamily: 'inherit' }}>À propos</Link></li>
+            </ul>
+          </div>
+
+          {/* Colonne 3 */}
+          <div>
+            <p style={{
+              fontSize: 11, fontWeight: 700, letterSpacing: '0.13em',
+              textTransform: 'uppercase', color: ink,
+              margin: '0 0 16px', fontFamily: 'inherit',
+            }}>Menu</p>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <li><Link href="/" style={{ fontSize: 13, fontWeight: 400, color: text, textDecoration: 'none', display: 'block', fontFamily: 'inherit' }}>Accueil</Link></li>
+            </ul>
+
+            <p style={{
+              fontSize: 11, fontWeight: 700, letterSpacing: '0.13em',
+              textTransform: 'uppercase', color: ink,
+              margin: '24px 0 14px', fontFamily: 'inherit',
+            }}>Autres</p>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {['Instagram','Facebook','LinkedIn','Twitter'].map(name => (
+                <li key={name}>
+                  <a
+                    href={`https://${name.toLowerCase()}.com`}
+                    target="_blank" rel="noopener noreferrer"
+                    style={{
+                      fontSize: 13, fontWeight: 400, color: text,
+                      textDecoration: 'underline', textUnderlineOffset: 3,
+                      textDecorationColor: 'rgba(42,58,72,0.4)',
+                      display: 'block', fontFamily: 'inherit',
+                    }}
+                  >
+                    {name}
+                  </a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Legal */}
-          <div>
-            <h3 style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', marginBottom: 14, fontFamily: "'DM Mono', monospace" }}>Légal</h3>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 9 }}>
-              {['Mentions légales', 'Politique de confidentialité', 'Sécurité'].map(item => (
-                <li key={item}>
-                  <a href="#" style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', textDecoration: 'none', transition: 'color 150ms' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}
-                  >{item}</a>
+        </div>
+      </div>
+
+      {/* ── Barre copyright ── */}
+      <div style={{ position: 'relative', zIndex: 1, padding: '0 40px', boxSizing: 'border-box' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ height: 1, background: '#E4ECF1' }} />
+          <div style={{
+            display: 'flex', justifyContent: 'space-between',
+            alignItems: 'center', padding: '18px 0 24px',
+          }}>
+            <p style={{ fontSize: 13, fontWeight: 400, color: muted, margin: 0, fontFamily: 'inherit' }}>
+              © 2026 OPUS. Tous droits réservés.
+            </p>
+            <ul style={{ display: 'flex', gap: 28, listStyle: 'none', padding: 0, margin: 0 }}>
+              {[
+                ['CGU',              '/cgu'],
+                ['Mentions Légales', '/mentions-legales'],
+                ['Confidentialité',  '/confidentialite'],
+              ].map(([label, href]) => (
+                <li key={label}>
+                  <Link href={href} style={{ fontSize: 13, fontWeight: 400, color: muted, textDecoration: 'none', fontFamily: 'inherit' }}>
+                    {label}
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
         </div>
-
-        {/* Divider + bottom */}
-        <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', marginBottom: 20 }} />
-        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}>
-          © {new Date().getFullYear()} Réservé Opus BTP. Tous droits réservés.
-        </p>
       </div>
 
-      <style>{`
-        @media(max-width:768px){footer [style*="1.5fr 1fr 1fr"]{grid-template-columns:1fr 1fr!important}}
-        @media(max-width:480px){footer [style*="1.5fr 1fr 1fr"]{grid-template-columns:1fr!important}}
-      `}</style>
     </footer>
   )
 }
