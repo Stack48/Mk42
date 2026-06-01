@@ -1,0 +1,30 @@
+/* Ancre uniquement le ::before watermark.
+   Tout le reste est en inline styles dans le TSX. */
+
+.footer {
+  position: relative;
+  overflow: hidden;
+}
+
+/*
+  Filigrane OPUS — centré mathématiquement.
+  top: 62%  = dans la zone décorative basse de la maquette.
+  transform: translate(-50%, -50%) = centrage parfait sur ce point.
+  z-index: 0 = derrière tout le contenu (z-index: 1).
+*/
+.footer::before {
+  content: "OPUS";
+  position: absolute;
+  top: 62%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(110px, 17vw, 215px);
+  font-weight: 900;
+  color: #E4E4E4;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  white-space: nowrap;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
