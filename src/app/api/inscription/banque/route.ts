@@ -1,4 +1,4 @@
-import { auth } from '@clerk/nextjs/server';
+import { getInscriptionUserId } from '@/lib/auth-inscription';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 
@@ -12,7 +12,7 @@ const schema = z.object({
 
 export async function POST(req: Request) {
   try {
-    const { userId } = await auth();
+    const userId = await getInscriptionUserId(req);
     if (!userId) return Response.json({ error: 'Non authentifié' }, { status: 401 });
 
     const body = await req.json();

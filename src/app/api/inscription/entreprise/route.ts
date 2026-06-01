@@ -1,4 +1,5 @@
-import { auth, clerkClient } from '@clerk/nextjs/server';
+import { clerkClient } from '@clerk/nextjs/server';
+import { getInscriptionUserId } from '@/lib/auth-inscription';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@/generated/prisma/client';
@@ -14,7 +15,7 @@ const schema = z.object({
 
 export async function POST(req: Request) {
   try {
-    const { userId } = await auth();
+    const userId = await getInscriptionUserId(req);
     if (!userId) return Response.json({ error: 'Non authentifié' }, { status: 401 });
 
     const body = await req.json();
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
     }
 
     const existant = await prisma.entreprise.findUnique({ where: { utilisateurId: utilisateur.id } });
-    if (existant) return Response.json({ error: 'Entreprise déjà créée' }, { status: 409 });
+    if (existant) return Response.json({ entrepriseId: existant.id }, { status: 200 });
 
     const entreprise = await prisma.entreprise.create({
       data: {

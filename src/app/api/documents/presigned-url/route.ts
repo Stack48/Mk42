@@ -1,4 +1,4 @@
-import { auth } from '@clerk/nextjs/server';
+import { getInscriptionUserId } from '@/lib/auth-inscription';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomUUID } from 'crypto';
@@ -13,7 +13,7 @@ const s3 = new S3Client({
 
 export async function POST(req: Request) {
   try {
-    const { userId } = await auth();
+    const userId = await getInscriptionUserId(req);
     if (!userId) return Response.json({ error: 'Non authentifié' }, { status: 401 });
 
     const { nomFichier, contentType } = await req.json();

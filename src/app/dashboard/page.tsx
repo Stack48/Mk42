@@ -7,6 +7,8 @@ export default async function DashboardPage() {
   if (!userId) redirect('/connexion');
 
   const user = await currentUser();
+  const meta = user?.unsafeMetadata as Record<string, unknown> | undefined;
+  if (!meta?.emailVerified) redirect('/inscription/etape-6');
 
   return (
     <main className="p-8 space-y-4">
