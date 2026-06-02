@@ -1,4 +1,12 @@
 'use client'
+import { motion } from 'framer-motion'
+import {
+  clipRevealVariants,
+  staggerContainerVariants,
+  staggerItemVariants,
+  EASE_POWER3,
+  VIEWPORT,
+} from '@/lib/motion'
 
 const C = { primary: '#4648D4', ink: '#111111', text: '#374151', muted: '#6B7280', border: '#E5E7EB' }
 
@@ -34,34 +42,62 @@ function Stars() {
 
 export default function Testimonials() {
   return (
-    <section style={{ background: '#fff', padding: 'clamp(60px,7vw,90px) 24px' }}>
+    <section id="temoignages-clients" style={{ background: '#fff', padding: 'clamp(60px,7vw,90px) 24px' }}>
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-
         <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 64, alignItems: 'start' }}>
 
-          {/* Left: title + rating */}
+          {/* Colonne gauche sticky — clip reveal */}
           <div style={{ position: 'sticky', top: 100 }}>
-            <h2 style={{ fontSize: 'clamp(28px,4vw,40px)', fontWeight: 800, color: C.ink, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 20 }}>
-              Success<br />Stories.
-            </h2>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <Stars />
-              <span style={{ fontSize: 22, fontWeight: 800, color: C.ink }}>4.9/5</span>
+            <div style={{ overflow: 'hidden', marginBottom: 20 }}>
+              <motion.h2
+                variants={clipRevealVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={VIEWPORT}
+                style={{ fontSize: 'clamp(28px,4vw,40px)', fontWeight: 800, color: C.ink, letterSpacing: '-0.03em', lineHeight: 1.1, margin: 0 }}
+              >
+                Success<br />Stories.
+              </motion.h2>
             </div>
-            <p style={{ fontSize: 13, color: C.muted, lineHeight: 1.6 }}>
-              Basé sur +200 avis de professionnels du bâtiment qui ont transformé leur gestion des commissions avec OPUS.
-            </p>
+
+            <motion.div
+              initial={{ opacity: 0, x: -16 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={VIEWPORT}
+              transition={{ duration: 0.7, delay: 0.2, ease: [0.33, 1, 0.68, 1] }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <Stars />
+                <span style={{ fontSize: 22, fontWeight: 800, color: C.ink }}>4.9/5</span>
+              </div>
+              <p style={{ fontSize: 13, color: C.muted, lineHeight: 1.6 }}>
+                Basé sur +200 avis de professionnels du bâtiment qui ont transformé leur gestion des commissions avec OPUS.
+              </p>
+            </motion.div>
           </div>
 
-          {/* Right: testimonial cards */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {/* Cartes témoignages — stagger */}
+          <motion.div
+            variants={staggerContainerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={VIEWPORT}
+            style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
+          >
             {TESTIMONIALS.map(t => (
-              <div key={t.name} style={{
-                background: '#fff', border: `1px solid ${C.border}`, borderRadius: 12, padding: '22px 24px',
-                transition: 'box-shadow 200ms, transform 200ms',
-              }}
-                onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 4px 20px rgba(70,72,212,0.1)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-                onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none' }}
+              <motion.div
+                key={t.name}
+                variants={staggerItemVariants}
+                whileHover={{
+                  y: -4,
+                  boxShadow: '0 16px 40px rgba(70,72,212,0.12)',
+                  transition: { duration: 0.28, ease: EASE_POWER3 },
+                }}
+                style={{
+                  background: '#fff', border: `1px solid ${C.border}`,
+                  borderRadius: 12, padding: '22px 24px',
+                  willChange: 'transform',
+                }}
               >
                 <Stars />
                 <p style={{ fontSize: 15, color: C.text, lineHeight: 1.7, margin: '12px 0', fontStyle: 'italic' }}>
@@ -76,9 +112,9 @@ export default function Testimonials() {
                     <div style={{ fontSize: 12, color: C.muted }}>{t.role}</div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
 

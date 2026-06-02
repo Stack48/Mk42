@@ -28,6 +28,17 @@ export default function Header() {
     return () => window.removeEventListener('scroll', h)
   }, [])
 
+  /* Scroll fluide vers une ancre en compensant la hauteur de la navbar */
+  const smoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault()
+    const id = href.replace('#', '')
+    const target = document.getElementById(id)
+    if (!target) return
+    const offset = 72 // hauteur navbar (60px) + 12px de respiration
+    const top = target.getBoundingClientRect().top + window.scrollY - offset
+    window.scrollTo({ top, behavior: 'smooth' })
+  }
+
   return (
     <header style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
@@ -49,11 +60,13 @@ export default function Header() {
         {/* Desktop nav */}
         <nav className="hidden md:flex" style={{ display: 'flex', gap: 4, flex: 1, justifyContent: 'center' }}>
           {NAV.map(({ href, label }) => (
-            <a key={href} href={href} style={{
-              padding: '6px 14px', fontSize: 14, fontWeight: 500,
-              color: C.text, textDecoration: 'none', borderRadius: 6,
-              transition: 'color 150ms, background 150ms',
-            }}
+            <a key={href} href={href}
+              onClick={e => smoothScroll(e, href)}
+              style={{
+                padding: '6px 14px', fontSize: 14, fontWeight: 500,
+                color: C.text, textDecoration: 'none', borderRadius: 6,
+                transition: 'color 150ms, background 150ms',
+              }}
               onMouseEnter={e => { e.currentTarget.style.color = C.primary; e.currentTarget.style.background = C.bgTint }}
               onMouseLeave={e => { e.currentTarget.style.color = C.text; e.currentTarget.style.background = 'transparent' }}
             >{label}</a>
@@ -87,10 +100,13 @@ export default function Header() {
       {open && (
         <div style={{ borderTop: `1px solid ${C.border}`, background: '#fff', padding: '12px 24px 20px' }}>
           {NAV.map(({ href, label }) => (
-            <a key={href} href={href} onClick={() => setOpen(false)} style={{
-              display: 'block', padding: '11px 0', fontSize: 15, fontWeight: 500,
-              color: C.text, textDecoration: 'none', borderBottom: `1px solid ${C.border}`,
-            }}>{label}</a>
+            <a key={href} href={href}
+              onClick={e => { smoothScroll(e, href); setOpen(false) }}
+              style={{
+                display: 'block', padding: '11px 0', fontSize: 15, fontWeight: 500,
+                color: C.text, textDecoration: 'none', borderBottom: `1px solid ${C.border}`,
+              }}
+            >{label}</a>
           ))}
           <Link href="/inscription" style={{
             display: 'block', marginTop: 14, textAlign: 'center',
