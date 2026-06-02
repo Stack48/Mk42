@@ -68,9 +68,20 @@
 }
 .progressFill {
   height: 100%;
-  background: var(--progress-fill);
+  background: linear-gradient(90deg, #1C3064 0%, #4648D4 75%, #6669E0 100%);
   border-radius: 0 2px 2px 0;
-  transition: width 450ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 700ms cubic-bezier(0.65, 0, 0.35, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.progressFill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.38) 50%, transparent 100%);
+  animation: shimmer 2.2s ease-in-out infinite;
+  animation-delay: 0.8s;
 }
 
 /* ── MAIN ────────────────────────────────────────────────────────── */
@@ -363,6 +374,30 @@
 .stepSubLabel { font-size: 12px; }
 .validated  { color: var(--muted); }
 .inProgress { color: var(--primary); }
+
+/* ── ANIMATIONS ──────────────────────────────────────────────────── */
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(300%); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInStep {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.main { animation: fadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+.stepItem { animation: slideInStep 0.3s ease both; }
+.stepItem:nth-child(1) { animation-delay: 0.04s; }
+.stepItem:nth-child(2) { animation-delay: 0.10s; }
+.stepItem:nth-child(3) { animation-delay: 0.16s; }
+.stepItem:nth-child(4) { animation-delay: 0.22s; }
+.stepItem:nth-child(5) { animation-delay: 0.28s; }
 
 /* ── RESPONSIVE ──────────────────────────────────────────────────── */
 @media (max-width: 1024px) {

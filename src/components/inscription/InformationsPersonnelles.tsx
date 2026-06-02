@@ -1,21 +1,24 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import styles from './InformationsPersonnelles.module.css'
 
-/* ── Constantes ─────────────────────────────────────────────────── */
-const STEP        = 2
-const TOTAL_STEPS = 6
+/* ── Étapes selon le profil (sans "Choix du profil") ──────────── */
+const STEPS_PARTICULIER = [
+  { num: 1, label: 'Informations personnelles',       status: 'active',   sub: 'En cours' },
+  { num: 2, label: 'Coordonnées bancaires (IBAN)',    status: 'inactive', sub: null },
+  { num: 3, label: "Vérification d'identité (KYC)",  status: 'inactive', sub: null },
+  { num: 4, label: 'Validation email & CGU',          status: 'inactive', sub: null },
+] as const
 
-const STEPS_LIST = [
-  { num: 1, label: 'Choix du profil',                  status: 'done',     sub: 'Validé' },
-  { num: 2, label: 'Informations personnelles',         status: 'active',   sub: 'En cours' },
-  { num: 3, label: 'Vérification SIRET',                status: 'inactive', sub: null },
-  { num: 4, label: 'Coordonnées bancaires (IBAN)',       status: 'inactive', sub: null },
-  { num: 5, label: "Vérification d'identité (KYC)",     status: 'inactive', sub: null },
-  { num: 6, label: 'Validation email & CGU',            status: 'inactive', sub: null },
+const STEPS_PRO = [
+  { num: 1, label: 'Informations personnelles',       status: 'active',   sub: 'En cours' },
+  { num: 2, label: 'Vérification SIRET',              status: 'inactive', sub: null },
+  { num: 3, label: 'Coordonnées bancaires (IBAN)',    status: 'inactive', sub: null },
+  { num: 4, label: "Vérification d'identité (KYC)",  status: 'inactive', sub: null },
+  { num: 5, label: 'Validation email & CGU',          status: 'inactive', sub: null },
 ] as const
 
 const ROLES = [
@@ -54,6 +57,19 @@ function CheckIcon() {
 /* ── Composant principal ────────────────────────────────────────── */
 export default function InformationsPersonnelles() {
   const router = useRouter()
+
+  const [profile, setProfile] = useState<string | null>(null)
+  const [ready,   setReady]   = useState(false)
+
+  useEffect(() => {
+    setProfile(sessionStorage.getItem('opus_profile'))
+    setReady(true)
+  }, [])
+
+  const isParticulier = profile === 'particulier'
+  const step      = 1
+  const total     = isParticulier ? 4 : 5
+  const stepsList = isParticulier ? STEPS_PARTICULIER : STEPS_PRO
 
   const [form, setForm] = useState({
     nom: '',
@@ -105,19 +121,19 @@ export default function InformationsPersonnelles() {
         <div
           className={styles.progressTrack}
           role="progressbar"
-          aria-valuenow={STEP}
+          aria-valuenow={step}
           aria-valuemin={1}
-          aria-valuemax={TOTAL_STEPS}
-          aria-label={`Étape ${STEP} sur ${TOTAL_STEPS}`}
+          aria-valuemax={total}
+          aria-label={`Étape ${step} sur ${total}`}
         >
-          <div className={styles.progressFill} style={{ width: `${(STEP / TOTAL_STEPS) * 100}%` }} />
+          <div className={styles.progressFill} style={{ width: ready ? `${(step / total) * 100}%` : '0%' }} />
         </div>
       </header>
 
       {/* ── CONTENU ────────────────────────────────────────────── */}
       <main className={styles.main}>
 
-        <p className={styles.stepLabel}>Étape {STEP} sur {TOTAL_STEPS}</p>
+        <p className={styles.stepLabel}>Étape {step} sur {total}</p>
         <h1 className={styles.pageTitle}>Informations personnelles</h1>
         <p className={styles.pageSubtitle}>Configurez votre profil utilisateur</p>
 
@@ -286,23 +302,23 @@ export default function InformationsPersonnelles() {
             <p className={styles.sidebarTitle}>Étapes de l'inscription</p>
 
             <ol className={styles.stepsList}>
-              {STEPS_LIST.map(step => (
+              {stepsList.map(s => (
                 <li
-                  key={step.num}
-                  className={`${styles.stepItem} ${styles[step.status]}`}
+                  key={s.num}
+                  className={`${styles.stepItem} ${styles[s.status]}`}
                 >
                   <div className={styles.stepBadge} aria-hidden="true">
-                    {step.status === 'done' ? <CheckIcon /> : step.num}
+                    {s.status === 'done' ? <CheckIcon /> : s.num}
                   </div>
 
                   <div className={styles.stepContent}>
-                    <span className={styles.stepName}>{step.label}</span>
-                    {step.sub && (
+                    <span className={styles.stepName}>{s.label}</span>
+                    {s.sub && (
                       <span className={`${styles.stepSubLabel} ${
-                        step.status === 'done'   ? styles.validated  :
-                        step.status === 'active' ? styles.inProgress : ''
+                        s.status === 'done'   ? styles.validated  :
+                        s.status === 'active' ? styles.inProgress : ''
                       }`}>
-                        {step.sub}
+                        {s.sub}
                       </span>
                     )}
                   </div>
