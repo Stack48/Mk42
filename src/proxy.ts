@@ -10,7 +10,7 @@ const isPublicRoute = createRouteMatcher([
 
 const isAdminRoute = createRouteMatcher(['/admin(.*)']);
 
-export default clerkMiddleware(async (auth, request) => {
+export const proxy = clerkMiddleware(async (auth, request) => {
   if (isPublicRoute(request)) return NextResponse.next();
 
   // Les API routes gèrent leur propre authentification (retournent 401 JSON)
@@ -37,5 +37,6 @@ export const config = {
   matcher: [
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
     '/(api|trpc)(.*)',
+    '/__clerk/(.*)',
   ],
 };

@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(req: Request) {
   try {
-    const { prenom, nom, email, motDePasse, profil } = await req.json();
+    const { prenom, nom, email, motDePasse, profil, telephone, fonction } = await req.json();
 
     if (!prenom || !nom || !email || !motDePasse) {
       return Response.json({ error: 'Tous les champs sont obligatoires.' }, { status: 400 });
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
       lastName: nom,
       emailAddress: [email],
       password: motDePasse,
-      unsafeMetadata: { profil },
+      unsafeMetadata: { profil, telephone, fonction },
     });
 
     await prisma.utilisateur.create({

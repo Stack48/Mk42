@@ -1,12 +1,12 @@
 // PRISMA SCHEMA — CommissionPro BTP
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
   output   = "../src/generated/prisma/client"
 }
 
 datasource db {
-  provider = "postgresql" 
+  provider = "postgresql"
 }
 // ─── Enums ────────────────────────────────────────────────────────────────────
 
