@@ -9,6 +9,7 @@ datasource db {
   provider = "postgresql"
 }
 
+<<<<<<< HEAD
 // ─── ENTREPRISE ──────────────────────────────────────────────────────────────
 model Entreprise {
   id            String  @id @default(cuid())
@@ -327,4 +328,224 @@ model ClientEvenement {
   invitation   ClientInvitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
 
   @@map("client_evenements")
+=======
+// ── Enums ──────────────────────────────────────────────────────────────────────
+
+enum TypeApporteur {
+  PARTICULIER
+  PROFESSIONNEL
+}
+
+enum StatutKYC {
+  EN_ATTENTE
+  VALIDE
+  REFUSE
+}
+
+enum StatutOpportunite {
+  SOUMISE
+  ACCEPTEE
+  REFUSEE
+  EN_NEGOCIATION
+}
+
+enum StatutChantier {
+  PROSPECTION
+  CHIFFRAGE
+  SIGNE
+  EN_COURS
+  TERMINE
+}
+
+enum StatutContrat {
+  GENERE
+  EN_ATTENTE_SIGNATURE
+  SIGNE
+  EXPIRE
+}
+
+enum StatutFacture {
+  GENEREE
+  ENVOYEE
+  PAYEE
+  ANNULEE
+}
+
+enum TypeDocument {
+  CONTRAT
+  FACTURE
+  RECU
+  KYC_IDENTITE
+  KYC_KBIS
+  KYC_DOMICILE
+  RIB
+  DAS2_EXPORT
+}
+
+// ── Modèles ────────────────────────────────────────────────────────────────────
+
+model Utilisateur {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  entreprise Entreprise?
+  apporteur  Apporteur?
+}
+
+model Entreprise {
+  id                   String    @id @default(cuid())
+  utilisateurId        String    @unique
+  utilisateur          Utilisateur @relation(fields: [utilisateurId], references: [id])
+  raisonSociale        String
+  siret                String    @unique
+  adresseSiege         String
+  codeApe              String?
+  representantLegal    String?
+  telephone            String?
+  email                String?
+  iban                 String?
+  bic                  String?
+  nomTitulaireIban     String?
+  tauxCommissionDefaut Float?
+  montantFixeDefaut    Float?
+  statutKyc            StatutKYC @default(EN_ATTENTE)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  opportunites Opportunite[]
+  chantiers    Chantier[]
+  contrats     Contrat[]
+  factures     Facture[]
+  das2         DAS2[]
+}
+
+model Apporteur {
+  id            String        @id @default(cuid())
+  utilisateurId String        @unique
+  utilisateur   Utilisateur   @relation(fields: [utilisateurId], references: [id])
+  type          TypeApporteur
+  nom           String
+  prenom        String
+  telephone     String?
+  adresse       String?
+  iban          String?
+  bic           String?
+  raisonSociale String?
+  siret         String?
+  numeroTva     String?
+  dateNaissance DateTime?
+  lieuNaissance String?
+  statutKyc     StatutKYC     @default(EN_ATTENTE)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  opportunites Opportunite[]
+  contrats     Contrat[]
+  factures     Facture[]
+  recus        Recu[]
+}
+
+model Client {
+  id               String   @id @default(cuid())
+  estProfessionnel Boolean  @default(false)
+  nom              String?
+  prenom           String?
+  raisonSociale    String?
+  siret            String?
+  telephone        String
+  email            String
+  adresseSiege     String?
+  adresseChantier  String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  opportunites Opportunite[]
+}
+
+model Opportunite {
+  id            String            @id @default(cuid())
+  apporteurId   String
+  apporteur     Apporteur         @relation(fields: [apporteurId], references: [id])
+  entrepriseId  String?
+  entreprise    Entreprise?       @relation(fields: [entrepriseId], references: [id])
+  clientId      String?
+  client        Client?           @relation(fields: [clientId], references: [id])
+  statut        StatutOpportunite @default(SOUMISE)
+  typeTravaux   String
+  description   String?
+  delaiSouhaite String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  chantier Chantier?
+}
+
+model Chantier {
+  id            String         @id @default(cuid())
+  opportuniteId String?        @unique
+  opportunite   Opportunite?   @relation(fields: [opportuniteId], references: [id])
+  entrepriseId  String?
+  entreprise    Entreprise?    @relation(fields: [entrepriseId], references: [id])
+  statut        StatutChantier @default(PROSPECTION)
+  montantHT     Float?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  contrats Contrat[]
+}
+
+model Contrat {
+  id           String        @id @default(cuid())
+  apporteurId  String?
+  apporteur    Apporteur?    @relation(fields: [apporteurId], references: [id])
+  chantierId   String?
+  chantier     Chantier?     @relation(fields: [chantierId], references: [id])
+  entrepriseId String?
+  entreprise   Entreprise?   @relation(fields: [entrepriseId], references: [id])
+  statut       StatutContrat @default(GENERE)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Facture {
+  id           String        @id @default(cuid())
+  apporteurId  String?
+  apporteur    Apporteur?    @relation(fields: [apporteurId], references: [id])
+  entrepriseId String?
+  entreprise   Entreprise?   @relation(fields: [entrepriseId], references: [id])
+  statut       StatutFacture @default(GENEREE)
+  montantHT    Float?
+  tva          Float?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Recu {
+  id          String     @id @default(cuid())
+  apporteurId String?
+  apporteur   Apporteur? @relation(fields: [apporteurId], references: [id])
+  montant     Float?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model DAS2 {
+  id           String      @id @default(cuid())
+  entrepriseId String?
+  entreprise   Entreprise? @relation(fields: [entrepriseId], references: [id])
+  annee        Int?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model Document {
+  id        String       @id @default(cuid())
+  type      TypeDocument
+  s3Key     String?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+>>>>>>> 9cae423 (Back-End Page créa opportunité WIP (not tested yet))
 }
