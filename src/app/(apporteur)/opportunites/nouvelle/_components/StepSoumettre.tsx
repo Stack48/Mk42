@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { OpportuniteFormData } from '../page'
+import { createOpportunite } from '@/lib/actions/opportunite'
 import styles from './StepSoumettre.module.css'
 
 const DELAI_LABELS: Record<string, string> = {
@@ -24,16 +25,22 @@ export default function StepSoumettre({ formData, onPrev }: Props) {
   const [confirmed, setConfirmed] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  const [submitError, setSubmitError] = useState<string | null>(null)
+
   const isPro = formData.clientType === 'PRO'
   const clientLabel = isPro ? formData.clientRaisonSociale : `${formData.clientPrenom} ${formData.clientNom}`.trim()
   const delaiLabel = DELAI_LABELS[formData.delai] ?? 'Non défini'
 
-  // 🔌 MOCK — Remplacer par la Server Action createOpportunite() en phase back
-  const handleMockSubmit = async () => {
+  const handleSubmit = async () => {
     setIsSubmitting(true)
-    console.log('[08-FE MOCK] Données opportunité :', formData)
-    await new Promise(resolve => setTimeout(resolve, 1200))
-    router.push('/opportunites/mock-id/confirmation')
+    setSubmitError(null)
+    const result = await createOpportunite(formData)
+    if (result.success) {
+      router.push(`/opportunites/${result.id}/confirmation`)
+    } else {
+      setSubmitError(result.error)
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -115,6 +122,11 @@ export default function StepSoumettre({ formData, onPrev }: Props) {
 
       {/* Confirmation + submit */}
       <div className={styles.confirmCard}>
+        {submitError && (
+          <div role="alert" style={{ marginBottom: 16, padding: '12px 14px', background: '#FEE2E2', border: '1px solid #FECACA', borderRadius: 8, fontSize: 14, color: '#B91C1C' }}>
+            {submitError}
+          </div>
+        )}
         <div className={styles.checkboxRow}>
           <input
             id="confirmation"
@@ -136,7 +148,7 @@ export default function StepSoumettre({ formData, onPrev }: Props) {
           <button
             type="button"
             className={styles.btnSubmit}
-            onClick={handleMockSubmit}
+            onClick={handleSubmit}
             disabled={!confirmed || isSubmitting}
             aria-disabled={!confirmed || isSubmitting}
           >
