@@ -33,7 +33,7 @@ export async function POST(req: Request) {
       console.log('');
     } else {
       const resend = getResend();
-      await resend.emails.send({
+      const { data, error } = await resend.emails.send({
         from: process.env.EMAIL_FROM ?? 'noreply@opus-btp.fr',
         to: email,
         subject: 'Vérifiez votre adresse email — Opus BTP',
@@ -45,6 +45,13 @@ export async function POST(req: Request) {
           <p>Si vous n'avez pas créé de compte, ignorez cet email.</p>
         `,
       });
+
+      if (error) {
+        console.error('[verify-email] Resend error:', error);
+        return Response.json({ error: error.message }, { status: 500 });
+      }
+
+      console.log('[verify-email] Email envoyé, id:', data?.id);
     }
 
     return Response.json({ success: true });

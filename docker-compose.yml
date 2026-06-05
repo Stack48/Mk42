@@ -4,8 +4,30 @@ services:
     container_name: commissionpro_postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: commissionpro
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mk42_dev
+    command:
+      - /bin/sh
+      - -c
+      - |
+        docker-entrypoint.sh postgres &
+        pid=$$!
+        until pg_isready -U "$${POSTGRES_USER:-postgres}" -d "$${POSTGRES_DB:-postgres}"; do
+          sleep 1
+        done
+
+        if [ -z "$(psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='mk42'" -U "$${POSTGRES_USER:-postgres}" -d "$${POSTGRES_DB:-postgres}")" ]; then
+          psql -v ON_ERROR_STOP=1 -U "$${POSTGRES_USER:-postgres}" -d "$${POSTGRES_DB:-postgres}" -c "CREATE ROLE mk42 LOGIN PASSWORD 'mk42password';"
+        fi
+
+        psql -v ON_ERROR_STOP=1 -U "$${POSTGRES_USER:-postgres}" -d "$${POSTGRES_DB:-postgres}" \
+          -c "ALTER ROLE mk42 WITH LOGIN;" \
+          -c "ALTER DATABASE mk42_dev OWNER TO mk42;" \
+          -c "GRANT ALL PRIVILEGES ON DATABASE mk42_dev TO mk42;" \
+          -c "GRANT ALL ON SCHEMA public TO mk42;" \
+          -c "ALTER SCHEMA public OWNER TO mk42;"
+
+        wait $$pid
     ports:
       - "5432:5432"
     volumes:
@@ -25,8 +47,10 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    env_file:
+      - .env.local
     environment:
-      DATABASE_URL: "postgresql://postgres:password@postgres:5432/commissionpro"
+      DATABASE_URL: "postgresql://mk42:mk42password@postgres:5432/mk42_dev?schema=public"
       DEFAULT_COMMISSION_RATE: 5
       STORAGE_DRIVER: "local"
       LOCAL_STORAGE_PATH: "./storage/contrats"
@@ -36,8 +60,20 @@ services:
       - "3000:3000"
     volumes:
       - .:/app
-      - /app/node_modules
+      - mk42_node_modules:/app/node_modules
       - /app/.next
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: mk42_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@opus.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
     restart: unless-stopped
 
 volumes:

@@ -2,7 +2,7 @@ import { WebhookEvent } from '@clerk/nextjs/server'
 import { headers } from 'next/headers'
 import { Webhook } from 'svix'
 import { prisma } from '@/lib/prisma'
-import { RoleOrganisation } from '@/generated/prisma/client'
+import { RoleOrganisation } from '@/generated/prisma/client/client'
 
 type UserUnsafeMetadata = {
   typeApporteur?: 'particulier' | 'professionnel' | 'entreprise'

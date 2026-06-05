@@ -1,0 +1,25 @@
+/* [project]/src/components/landing/Footer.module.css [app-client] (css) */
+.Footer-module__DaFM4q__footer {
+  position: relative;
+  overflow: hidden;
+}
+
+.Footer-module__DaFM4q__footer:before {
+  content: "OPUS";
+  color: #e4e4e4;
+  letter-spacing: -.01em;
+  white-space: nowrap;
+  z-index: 0;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+  font-size: clamp(110px, 17vw, 215px);
+  font-weight: 900;
+  line-height: 1;
+  position: absolute;
+  top: 62%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/*# sourceMappingURL=src_components_landing_Footer_module_0ep7qyb.css.map*/

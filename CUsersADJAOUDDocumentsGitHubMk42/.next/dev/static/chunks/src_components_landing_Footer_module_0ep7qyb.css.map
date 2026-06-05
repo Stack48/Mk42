@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["file:///app/src/components/landing/Footer.module.css"],"sourcesContent":["/* Ancre uniquement le ::before watermark.\r\n   Tout le reste est en inline styles dans le TSX. */\r\n\r\n.footer {\r\n  position: relative;\r\n  overflow: hidden;\r\n}\r\n\r\n/*\r\n  Filigrane OPUS — centré mathématiquement.\r\n  top: 62%  = dans la zone décorative basse de la maquette.\r\n  transform: translate(-50%, -50%) = centrage parfait sur ce point.\r\n  z-index: 0 = derrière tout le contenu (z-index: 1).\r\n*/\r\n.footer::before {\r\n  content: \"OPUS\";\r\n  position: absolute;\r\n  top: 62%;\r\n  left: 50%;\r\n  transform: translate(-50%, -50%);\r\n  font-size: clamp(110px, 17vw, 215px);\r\n  font-weight: 900;\r\n  color: #E4E4E4;\r\n  letter-spacing: -0.01em;\r\n  line-height: 1;\r\n  white-space: nowrap;\r\n  z-index: 0;\r\n  pointer-events: none;\r\n  user-select: none;\r\n}\r\n"],"names":[],"mappings":"AAGA;;;;;AAWA"}}]
+}

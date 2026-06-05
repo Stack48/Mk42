@@ -2,7 +2,7 @@ import { clerkClient } from '@clerk/nextjs/server';
 import { getInscriptionUserId } from '@/lib/auth-inscription';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
-import { TypeApporteur, Prisma } from '@/generated/prisma/client';
+import { TypeApporteur, Prisma } from '@/generated/prisma/client/client';
 
 const schema = z.object({
   siret: z.string().length(14, 'Le SIRET doit contenir 14 chiffres').regex(/^\d{14}$/, 'SIRET invalide'),

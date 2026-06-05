@@ -27,6 +27,12 @@ const ROLES = [
   'Autre',
 ]
 
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/
+
+function isStrongPassword(value: string) {
+  return PASSWORD_REGEX.test(value)
+}
+
 function EyeIcon({ visible }: { visible: boolean }) {
   return visible ? (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -79,6 +85,11 @@ export default function InformationsPersonnelles() {
 
     if (form.motDePasse !== form.confirmation) {
       setErreur('Les mots de passe ne correspondent pas.')
+      return
+    }
+
+    if (!isStrongPassword(form.motDePasse)) {
+      setErreur('Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.')
       return
     }
 

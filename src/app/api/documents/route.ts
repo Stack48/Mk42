@@ -1,7 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
-import { TypeDocument } from '@/generated/prisma/client';
+import { TypeDocument } from '@/generated/prisma/client/client';
 
 const schema = z.object({
   type: z.nativeEnum(TypeDocument),

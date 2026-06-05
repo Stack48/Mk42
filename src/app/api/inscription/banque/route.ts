@@ -2,7 +2,7 @@ import { clerkClient } from '@clerk/nextjs/server';
 import { getInscriptionUserId } from '@/lib/auth-inscription';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
-import { TypeApporteur } from '@/generated/prisma/client';
+import { TypeApporteur } from '@/generated/prisma/client/client';
 
 const schema = z.object({
   iban: z.string().min(14, 'IBAN invalide').max(34),

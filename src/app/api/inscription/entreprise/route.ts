@@ -2,7 +2,7 @@ import { clerkClient } from '@clerk/nextjs/server';
 import { getInscriptionUserId } from '@/lib/auth-inscription';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
-import { Prisma } from '@/generated/prisma/client';
+import { Prisma } from '@/generated/prisma/client/client';
 
 const schema = z.object({
   raisonSociale: z.string().min(1),

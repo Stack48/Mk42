@@ -30,12 +30,25 @@ export async function POST(req: Request) {
 
     return Response.json({ ticket: tokenRes.token }, { status: 201 });
   } catch (err: unknown) {
-    const clerkErr = err as { errors?: { code: string; message: string; longMessage?: string }[] };
+    const clerkErr = err as {
+      errors?: { code?: string; message?: string; longMessage?: string }[];
+      message?: string;
+      code?: string;
+    };
+
     const detail = clerkErr.errors?.[0];
     if (detail) {
-      return Response.json({ error: detail.longMessage ?? detail.message }, { status: 422 });
+      return Response.json({ error: detail.longMessage ?? detail.message ?? 'Erreur de validation Clerk.' }, { status: 422 });
     }
+
+    const message = clerkErr.message ?? (err instanceof Error ? err.message : 'Erreur serveur interne.');
+
     console.error('[POST /api/inscription/compte]', err);
+
+    if (message && message !== 'Erreur serveur interne.') {
+      return Response.json({ error: message }, { status: 500 });
+    }
+
     return Response.json({ error: 'Erreur serveur interne.' }, { status: 500 });
   }
 }
