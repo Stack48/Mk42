@@ -138,12 +138,12 @@
 }
 
 .btnPrev {
-  padding: 10px 20px;
+  padding: 8px 18px;
   background: #ffffff;
   border: 1.5px solid #D1D5DB;
   border-radius: 8px;
   font-family: inherit;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--ink);
   cursor: pointer;
@@ -159,13 +159,13 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 44px;
+  height: 38px;
   background: var(--primary);
   color: #ffffff;
   border: none;
   border-radius: 999px;
   font-family: inherit;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 150ms ease;
