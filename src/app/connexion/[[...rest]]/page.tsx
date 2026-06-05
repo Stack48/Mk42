@@ -1,13 +1,9 @@
-/**
- * /inscription/compte  →  Création de compte Clerk
- * Accessible après la sélection du profil (/inscription).
- */
 import type { Metadata } from 'next'
-import { SignUp } from '@clerk/nextjs'
+import { SignIn } from '@clerk/nextjs'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Opus — Créer un compte',
+  title: 'Opus — Se connecter',
 }
 
 const FEATURES = [
@@ -41,27 +37,23 @@ const FEATURES = [
   },
 ]
 
-export default async function ComptePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ type?: string }>
-}) {
-  const { type } = await searchParams
+export default function ConnexionPage() {
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
 
       {/* ── GAUCHE — Formulaire Clerk ── */}
-      <div style={{
-        flex: '0 0 auto',
-        width: '100%',
-        maxWidth: '520px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        padding: '48px 40px',
-        backgroundColor: 'var(--opus-bg)',
-      }}
-        className="compte-left"
+      <div
+        style={{
+          flex: '0 0 auto',
+          width: '100%',
+          maxWidth: '520px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          padding: '48px 40px',
+          backgroundColor: 'var(--opus-bg)',
+        }}
+        className="connexion-left"
       >
         <div style={{ marginBottom: '40px' }}>
           <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
@@ -85,17 +77,17 @@ export default async function ComptePage({
 
         <div style={{ marginBottom: '28px' }}>
           <h1 style={{ fontSize: '26px', fontWeight: 700, color: 'var(--opus-ink)', letterSpacing: '-0.3px', marginBottom: '8px' }}>
-            Créer votre compte
+            Connexion
           </h1>
           <p style={{ fontSize: '15px', color: 'var(--opus-muted)', lineHeight: 1.5 }}>
-            Déjà inscrit ?{' '}
-            <Link href="/connexion" style={{ color: 'var(--opus-primary)', fontWeight: 500, textDecoration: 'none' }}>
-              Se connecter
+            Pas encore de compte ?{' '}
+            <Link href="/inscription" style={{ color: 'var(--opus-primary)', fontWeight: 500, textDecoration: 'none' }}>
+              S&apos;inscrire
             </Link>
           </p>
         </div>
 
-        <SignUp unsafeMetadata={{ typeApporteur: type ?? 'particulier' }} />
+        <SignIn />
       </div>
 
       {/* ── DROITE — Panneau marketing ── */}
@@ -174,7 +166,7 @@ export default async function ComptePage({
       </div>
 
       <style>{`
-        @media (max-width: 1023px) { .compte-left { max-width: 100% !important; } }
+        @media (max-width: 1023px) { .connexion-left { max-width: 100% !important; } }
       `}</style>
     </div>
   )
