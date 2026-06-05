@@ -6,20 +6,22 @@ import { useRouter } from 'next/navigation'
 import styles from './InformationsPersonnelles.module.css'
 
 /* ── Étapes selon le profil (sans "Choix du profil") ──────────── */
-const STEPS_PARTICULIER = [
+type Step = { num: number; label: string; status: 'active' | 'inactive' | 'done'; sub: string | null }
+
+const STEPS_PARTICULIER: Step[] = [
   { num: 1, label: 'Informations personnelles',       status: 'active',   sub: 'En cours' },
   { num: 2, label: 'Coordonnées bancaires (IBAN)',    status: 'inactive', sub: null },
   { num: 3, label: "Vérification d'identité (KYC)",  status: 'inactive', sub: null },
   { num: 4, label: 'Validation email & CGU',          status: 'inactive', sub: null },
-] as const
+]
 
-const STEPS_PRO = [
+const STEPS_PRO: Step[] = [
   { num: 1, label: 'Informations personnelles',       status: 'active',   sub: 'En cours' },
   { num: 2, label: 'Vérification SIRET',              status: 'inactive', sub: null },
   { num: 3, label: 'Coordonnées bancaires (IBAN)',    status: 'inactive', sub: null },
   { num: 4, label: "Vérification d'identité (KYC)",  status: 'inactive', sub: null },
   { num: 5, label: 'Validation email & CGU',          status: 'inactive', sub: null },
-] as const
+]
 
 const ROLES = [
   'Apporteur d\'affaires',

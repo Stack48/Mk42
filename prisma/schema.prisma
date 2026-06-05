@@ -13,4 +13,44 @@ model User {
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  clients   Client[]
+}
+
+model Client {
+  id          String          @id @default(cuid())
+  email       String          @unique
+  nom         String?
+  apporteurId String
+  apporteur   User            @relation(fields: [apporteurId], references: [id])
+  statut      String          @default("NOUVEAU")
+  createdAt   DateTime        @default(now())
+  history     ClientHistory[]
+}
+
+model ClientHistory {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id])
+  action    String
+  createdAt DateTime @default(now())
+}
+
+model TrackingLink {
+  id          String        @id @default(cuid())
+  token       String        @unique @default(uuid())
+  apporteurId String
+  missionId   String
+  statut      String        @default("ACTIF")
+  createdAt   DateTime      @default(now())
+  logs        TrackingLog[]
+}
+
+model TrackingLog {
+  id             String       @id @default(cuid())
+  trackingLinkId String
+  trackingLink   TrackingLink @relation(fields: [trackingLinkId], references: [id])
+  ipHash         String
+  userAgent      String
+  rfc3161Hash    String?
+  createdAt      DateTime     @default(now())
 }
