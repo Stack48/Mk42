@@ -1,5 +1,6 @@
 import { clerkClient } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 export async function POST(req: Request) {
   try {
@@ -19,9 +20,24 @@ export async function POST(req: Request) {
       unsafeMetadata: { profil, telephone, fonction },
     });
 
-    await prisma.utilisateur.create({
-      data: { clerkId: clerkUser.id, email },
-    });
+    try {
+      await prisma.utilisateur.create({
+        data: { clerkId: clerkUser.id, email },
+      });
+    } catch (prismaErr) {
+      await client.users.deleteUser(clerkUser.id).catch(() => {});
+
+      if (
+        prismaErr instanceof Prisma.PrismaClientKnownRequestError &&
+        prismaErr.code === 'P2002'
+      ) {
+        return Response.json(
+          { error: 'Un compte avec cet email existe déjà. Veuillez vous connecter.' },
+          { status: 409 },
+        );
+      }
+      throw prismaErr;
+    }
 
     const tokenRes = await client.signInTokens.createSignInToken({
       userId: clerkUser.id,
@@ -41,13 +57,7 @@ export async function POST(req: Request) {
       return Response.json({ error: detail.longMessage ?? detail.message ?? 'Erreur de validation Clerk.' }, { status: 422 });
     }
 
-    const message = clerkErr.message ?? (err instanceof Error ? err.message : 'Erreur serveur interne.');
-
     console.error('[POST /api/inscription/compte]', err);
-
-    if (message && message !== 'Erreur serveur interne.') {
-      return Response.json({ error: message }, { status: 500 });
-    }
 
     return Response.json({ error: 'Erreur serveur interne.' }, { status: 500 });
   }
