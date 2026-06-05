@@ -1,16 +1,97 @@
+// PRISMA SCHEMA — CommissionPro BTP
+//
+// Prisma est l'équivalent de Doctrine (Symfony) pour Node.js/TypeScript.
+// Ce fichier remplace tes migrations SQL manuelles :
+//   → tu décris le "quoi" (les entités et leurs relations)
+//   → Prisma génère le "comment" (les tables SQL + le client TypeScript typé)
+//
+// Commande pour appliquer ce schéma : npx prisma migrate dev
+
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
+  // Prisma lit DATABASE_URL depuis le fichier .env automatiquement
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(cuid())
+// ─── APPORTEUR ──────────────────────────────────────────────────────────────
+// Un apporteur d'affaires amène des clients/chantiers → il touche une commission
+model Apporteur {
+  id        String   @id @default(cuid()) // cuid() = identifiant unique lisible (alternative à UUID)
+  nom       String
   email     String   @unique
-  name      String?
+  createdAt DateTime @default(now())
+
+  // Relation 1→N : un apporteur peut avoir plusieurs commissions
+  // (Prisma crée le JOIN automatiquement via le champ apporteurId dans Commission)
+  commissions Commission[]
+
+  @@map("apporteurs") // nom de la table SQL (snake_case par convention)
+}
+
+// ─── DEAL ────────────────────────────────────────────────────────────────────
+// Un deal = un chantier/contrat en cours de négociation ou signé
+model Deal {
+  id      String     @id @default(cuid())
+  titre   String
+  montant Float      // montant HT du deal en euros
+  statut  DealStatut @default(DRAFT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt // mis à jour automatiquement à chaque save
+
+  // Relation 1→1 optionnelle : un deal peut générer une commission
+  commission Commission?
+
+  @@map("deals")
+}
+
+// ─── COMMISSION ──────────────────────────────────────────────────────────────
+// Générée automatiquement quand un Deal passe au statut SIGNED
+model Commission {
+  id          String           @id @default(cuid())
+  montant     Float            // montant calculé (deal.montant × taux / 100)
+  taux        Float            // taux appliqué (ex: 5.0 pour 5%)
+  statut      CommissionStatut @default(PENDING)
+  entrepriseId String          // ID de l'entreprise donneur d'ordre (simple String pour l'instant)
+  paidAt      DateTime?        // nullable : rempli seulement quand PAID
+
+  // auditTrail stocke l'historique des changements sous forme JSON
+  // Ex: [{ "from": "PENDING", "to": "TO_PAY", "at": "2024-01-15T10:30:00Z" }]
+  // @db.JsonB = type PostgreSQL natif (indexable, performant)
+  auditTrail  Json             @default("[]") @db.JsonB
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // ── Relations ──
+  // @relation lie cette commission à un Deal via dealId
+  // onDelete: Cascade = si le deal est supprimé, la commission l'est aussi
+  dealId      String   @unique // @unique car 1 deal → 1 seule commission
+  deal        Deal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  apporteurId String
+  apporteur   Apporteur @relation(fields: [apporteurId], references: [id])
+
+  @@map("commissions")
+}
+
+// ─── ENUMS ───────────────────────────────────────────────────────────────────
+// Les enums Prisma deviennent des types TypeScript ET des contraintes SQL CHECK
+
+enum DealStatut {
+  DRAFT   // brouillon
+  SIGNED  // signé → déclenche le calcul de commission
+  LOST    // perdu
+  CANCELLED
+}
+
+enum CommissionStatut {
+  PENDING  // calculée, en attente de validation
+  TO_PAY   // validée par l'entreprise, à payer
+  PAID     // payée à l'apporteur
 }
