@@ -86,11 +86,10 @@ export function useProfileSelection(): UseProfileSelectionReturn {
 
   const handleContinue = useCallback(() => {
     if (!selectedId) return
-    /* Persistance du profil pour le routage conditionnel des étapes suivantes */
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('opus_profile', selectedId)
     }
-    router.push('/inscription/etape-2')
+    router.push(`/inscription/compte?type=${selectedId}`)
   }, [selectedId, router])
 
   return {

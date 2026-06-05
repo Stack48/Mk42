@@ -10,7 +10,11 @@ import {
 } from '@/lib/validations/opportunite'
 import type { OpportuniteFormData } from '@/app/(apporteur)/opportunites/nouvelle/page'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+let _resend: Resend | null = null
+function getResend(): Resend | null {
+  if (!process.env.RESEND_API_KEY) return null
+  return (_resend ??= new Resend(process.env.RESEND_API_KEY))
+}
 
 export type CreateOpportuniteResult =
   | { success: true; id: string }
@@ -107,13 +111,12 @@ async function sendNotificationEntreprise({
   client,
   formData,
 }: NotifPayload) {
-  if (!process.env.RESEND_API_KEY) {
-    // RESEND_API_KEY non configurée — notification skippée en dev
+  const resend = getResend()
+  if (!resend) {
     console.log('[Resend] Clé absente — email non envoyé pour opportunite', opportunite.id)
     return
   }
 
-  // TODO: remplacer par entreprise.email quand la relation Entreprise↔Apporteur sera liée
   const to = process.env.ENTREPRISE_EMAIL_FALLBACK ?? 'contact@entreprise-btp.fr'
   const clientLabel = formData.clientType === 'PRO'
     ? formData.clientRaisonSociale
@@ -122,7 +125,6 @@ async function sendNotificationEntreprise({
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
   const lienOpportunite = `${appUrl}/opportunites/${opportunite.id}`
 
-  // EMAIL_FROM doit être onboarding@resend.dev en dev tant que le domaine n'est pas vérifié
   const from = process.env.EMAIL_FROM ?? 'onboarding@resend.dev'
 
   try {

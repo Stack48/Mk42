@@ -3,7 +3,7 @@
   --primary-dk:   #3533B0;
   --border:       #E2E8F0;
   --input-bg:     #F3F4F6;
-  --input-h:      46px;
+  --input-h:      42px;
   --radius:       8px;
   --ink:          #0F172A;
   --text:         #1E293B;
@@ -17,12 +17,12 @@
   background: #ffffff;
   border: 1.5px solid var(--border);
   border-radius: 14px;
-  padding: 32px;
+  padding: 26px;
 }
 
 /* Toggle type client */
 .toggleSection {
-  margin-bottom: 28px;
+  margin-bottom: 22px;
 }
 
 .toggleLabel {
@@ -77,7 +77,7 @@
 .fieldStack {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 15px;
 }
 
 .field {
@@ -215,20 +215,20 @@
 
 /* Footer */
 .footer {
-  margin-top: 32px;
-  padding-top: 24px;
+  margin-top: 24px;
+  padding-top: 18px;
   border-top: 1px solid var(--border);
   display: flex;
   gap: 12px;
 }
 
 .btnPrev {
-  padding: 12px 24px;
+  padding: 10px 20px;
   background: #ffffff;
   border: 1.5px solid #D1D5DB;
   border-radius: var(--radius);
   font-family: inherit;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--ink);
   cursor: pointer;
@@ -241,13 +241,13 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 28px;
+  padding: 10px 24px;
   background: var(--primary);
   color: #ffffff;
   border: none;
   border-radius: var(--radius);
   font-family: inherit;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 150ms ease;
