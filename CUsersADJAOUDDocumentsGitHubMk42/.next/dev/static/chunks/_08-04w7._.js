@@ -16,10 +16,8 @@ __turbopack_context__.s([
  *  - L'état de sélection unique
  *  - La navigation vers l'étape suivante
  */ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/navigation.js [app-client] (ecmascript)");
 var _s = __turbopack_context__.k.signature();
 'use client';
-;
 ;
 const PROFILES = [
     {
@@ -56,37 +54,18 @@ const PROFILES = [
 function useProfileSelection() {
     _s();
     const [selectedId, setSelectedId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"])();
     const selectProfile = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCallback"])({
         "useProfileSelection.useCallback[selectProfile]": (id)=>{
             setSelectedId(id);
         }
     }["useProfileSelection.useCallback[selectProfile]"], []);
-    const handleContinue = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCallback"])({
-        "useProfileSelection.useCallback[handleContinue]": ()=>{
-            if (!selectedId) return;
-            /* Persistance du profil pour le routage conditionnel des étapes suivantes */ if ("TURBOPACK compile-time truthy", 1) {
-                sessionStorage.setItem('opus_profile', selectedId);
-            }
-            router.push('/inscription/etape-2');
-        }
-    }["useProfileSelection.useCallback[handleContinue]"], [
-        selectedId,
-        router
-    ]);
     return {
         selectedId,
         isSelected: (id)=>selectedId === id,
-        canContinue: selectedId !== null,
-        selectProfile,
-        handleContinue
+        selectProfile
     };
 }
-_s(useProfileSelection, "nFm73iZOcd275ZBVVsgIJzSXSfI=", false, function() {
-    return [
-        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"]
-    ];
-});
+_s(useProfileSelection, "zMy+Jp9vHzeSPnsnS5tCYCXzZiU=");
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
@@ -142,8 +121,16 @@ var _s = __turbopack_context__.k.signature();
 ;
 /* ── Constantes de l'étape ──────────────────────────────────────── */ const STEP = 1;
 const TOTAL_STEPS = 6;
+/* ================================================================
+   Sous-composant : ProfileCard
+   Reçoit uniquement les props nécessaires à son rendu.
+   ================================================================ */ function saveProfileAndNavigate(id) {
+    if ("TURBOPACK compile-time truthy", 1) {
+        sessionStorage.setItem('opus_profile', id);
+    }
+}
 function ProfileCard({ profile, isSelected, onSelect }) {
-    /* Combine la classe de base avec la classe d'état sélectionné */ const cardClass = [
+    const cardClass = [
         __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$inscription$2f$ProfileSelection$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].card,
         isSelected ? __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$inscription$2f$ProfileSelection$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].selected : ''
     ].filter(Boolean).join(' ');
@@ -154,19 +141,13 @@ function ProfileCard({ profile, isSelected, onSelect }) {
         "aria-label": profile.title,
         className: cardClass,
         onClick: onSelect,
-        onKeyDown: (e)=>{
-            /* Accessibilité clavier : Entrée ou Espace activent la sélection */ if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                onSelect();
-            }
-        },
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$inscription$2f$ProfileSelection$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].cardAvatar,
                 "aria-hidden": "true"
             }, void 0, false, {
                 fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                lineNumber: 53,
+                lineNumber: 51,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -174,7 +155,7 @@ function ProfileCard({ profile, isSelected, onSelect }) {
                 children: profile.title
             }, void 0, false, {
                 fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                lineNumber: 56,
+                lineNumber: 54,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -182,7 +163,7 @@ function ProfileCard({ profile, isSelected, onSelect }) {
                 children: profile.description
             }, void 0, false, {
                 fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                lineNumber: 59,
+                lineNumber: 57,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
@@ -192,39 +173,39 @@ function ProfileCard({ profile, isSelected, onSelect }) {
                         children: feature
                     }, feature, false, {
                         fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                        lineNumber: 64,
+                        lineNumber: 62,
                         columnNumber: 11
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                lineNumber: 62,
+                lineNumber: 60,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                type: "button",
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                href: "/inscription/etape-2",
                 className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$inscription$2f$ProfileSelection$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].cardBtn,
                 "aria-label": `Choisir le profil ${profile.title}`,
                 onClick: (e)=>{
-                    /* Empêche la remontée vers l'article qui déclencherait onSelect deux fois */ e.stopPropagation();
-                    onSelect();
+                    e.stopPropagation();
+                    saveProfileAndNavigate(profile.id);
                 },
-                children: isSelected ? 'Profil sélectionné ✓' : 'Choisir ce profil'
+                children: "Choisir ce profil"
             }, void 0, false, {
                 fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                lineNumber: 69,
+                lineNumber: 67,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-        lineNumber: 37,
+        lineNumber: 42,
         columnNumber: 5
     }, this);
 }
 _c = ProfileCard;
 function ProfileSelection() {
     _s();
-    const { isSelected, canContinue, selectProfile, handleContinue } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$inscription$2f$useProfileSelection$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useProfileSelection"])();
+    const { isSelected, selectProfile } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$inscription$2f$useProfileSelection$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useProfileSelection"])();
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$inscription$2f$ProfileSelection$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].page,
         children: [
@@ -241,7 +222,7 @@ function ProfileSelection() {
                                 children: "OPUS"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                                lineNumber: 104,
+                                lineNumber: 96,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
@@ -263,25 +244,25 @@ function ProfileSelection() {
                                             strokeLinejoin: "round"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                                            lineNumber: 125,
+                                            lineNumber: 117,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                                        lineNumber: 118,
+                                        lineNumber: 110,
                                         columnNumber: 13
                                     }, this),
                                     "Retour"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                                lineNumber: 112,
+                                lineNumber: 104,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                        lineNumber: 103,
+                        lineNumber: 95,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -298,18 +279,18 @@ function ProfileSelection() {
                             }
                         }, void 0, false, {
                             fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                            lineNumber: 146,
+                            lineNumber: 138,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                        lineNumber: 138,
+                        lineNumber: 130,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                lineNumber: 100,
+                lineNumber: 92,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -325,7 +306,7 @@ function ProfileSelection() {
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                        lineNumber: 160,
+                        lineNumber: 152,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -333,7 +314,7 @@ function ProfileSelection() {
                         children: "Quel est votre profil ?"
                     }, void 0, false, {
                         fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                        lineNumber: 165,
+                        lineNumber: 157,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -341,7 +322,7 @@ function ProfileSelection() {
                         children: "Vous pourrez modifier ces informations plus tard."
                     }, void 0, false, {
                         fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                        lineNumber: 170,
+                        lineNumber: 162,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -354,71 +335,28 @@ function ProfileSelection() {
                                 onSelect: ()=>selectProfile(profile.id)
                             }, profile.id, false, {
                                 fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                                lineNumber: 181,
+                                lineNumber: 173,
                                 columnNumber: 13
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                        lineNumber: 175,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$inscription$2f$ProfileSelection$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].stepFooter,
-                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                            type: "button",
-                            className: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$inscription$2f$ProfileSelection$2e$module$2e$css__$5b$app$2d$client$5d$__$28$css__module$29$__["default"].continueBtn,
-                            disabled: !canContinue,
-                            "aria-disabled": !canContinue,
-                            onClick: handleContinue,
-                            children: [
-                                "Continuer",
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
-                                    width: "16",
-                                    height: "16",
-                                    viewBox: "0 0 16 16",
-                                    fill: "none",
-                                    "aria-hidden": "true",
-                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
-                                        d: "M6 4L10 8L6 12",
-                                        stroke: "currentColor",
-                                        strokeWidth: "1.5",
-                                        strokeLinecap: "round",
-                                        strokeLinejoin: "round"
-                                    }, void 0, false, {
-                                        fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                                        lineNumber: 208,
-                                        columnNumber: 15
-                                    }, this)
-                                }, void 0, false, {
-                                    fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                                    lineNumber: 201,
-                                    columnNumber: 13
-                                }, this)
-                            ]
-                        }, void 0, true, {
-                            fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                            lineNumber: 192,
-                            columnNumber: 11
-                        }, this)
-                    }, void 0, false, {
-                        fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                        lineNumber: 191,
+                        lineNumber: 167,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-                lineNumber: 157,
+                lineNumber: 149,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/inscription/ProfileSelection.tsx",
-        lineNumber: 97,
+        lineNumber: 89,
         columnNumber: 5
     }, this);
 }
-_s(ProfileSelection, "WlhVlkhf0D/xfXiSHSzYoetEHcY=", false, function() {
+_s(ProfileSelection, "lGZbwyOTts5LfhZbPmchRtlmI2M=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$app$2f$inscription$2f$useProfileSelection$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useProfileSelection"]
     ];

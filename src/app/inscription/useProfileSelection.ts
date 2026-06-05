@@ -10,7 +10,6 @@
  */
 
 import { useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
 
 /* ── Types ──────────────────────────────────────────────────────── */
 
@@ -64,39 +63,21 @@ export const PROFILES: ProfileOption[] = [
 /* ── Hook ───────────────────────────────────────────────────────── */
 
 export interface UseProfileSelectionReturn {
-  /** Identifiant du profil actuellement sélectionné (null si aucun) */
-  selectedId: ProfileId | null
-  /** Retourne true si le profil donné est sélectionné */
-  isSelected: (id: ProfileId) => boolean
-  /** true dès qu'au moins un profil est sélectionné */
-  canContinue: boolean
-  /** Sélectionne un profil (sélection unique, idempotente) */
+  selectedId:    ProfileId | null
+  isSelected:    (id: ProfileId) => boolean
   selectProfile: (id: ProfileId) => void
-  /** Navigue vers l'étape suivante si un profil est sélectionné */
-  handleContinue: () => void
 }
 
 export function useProfileSelection(): UseProfileSelectionReturn {
   const [selectedId, setSelectedId] = useState<ProfileId | null>(null)
-  const router = useRouter()
 
   const selectProfile = useCallback((id: ProfileId) => {
     setSelectedId(id)
   }, [])
 
-  const handleContinue = useCallback(() => {
-    if (!selectedId) return
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('opus_profile', selectedId)
-    }
-    router.push(`/inscription/compte?type=${selectedId}`)
-  }, [selectedId, router])
-
   return {
     selectedId,
     isSelected: (id: ProfileId) => selectedId === id,
-    canContinue: selectedId !== null,
     selectProfile,
-    handleContinue,
   }
 }

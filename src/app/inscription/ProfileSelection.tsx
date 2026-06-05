@@ -10,7 +10,7 @@
 
 import Link from 'next/link'
 import { useProfileSelection, PROFILES } from './useProfileSelection'
-import type { ProfileOption } from './useProfileSelection'
+import type { ProfileOption, ProfileId } from './useProfileSelection'
 import styles from './ProfileSelection.module.css'
 
 
@@ -18,6 +18,12 @@ import styles from './ProfileSelection.module.css'
    Sous-composant : ProfileCard
    Reçoit uniquement les props nécessaires à son rendu.
    ================================================================ */
+function saveProfileAndNavigate(id: ProfileId) {
+  if (typeof window !== 'undefined') {
+    sessionStorage.setItem('opus_profile', id)
+  }
+}
+
 interface ProfileCardProps {
   profile:    ProfileOption
   isSelected: boolean
@@ -25,7 +31,6 @@ interface ProfileCardProps {
 }
 
 function ProfileCard({ profile, isSelected, onSelect }: ProfileCardProps) {
-  /* Combine la classe de base avec la classe d'état sélectionné */
   const cardClass = [styles.card, isSelected ? styles.selected : '']
     .filter(Boolean)
     .join(' ')
@@ -38,13 +43,6 @@ function ProfileCard({ profile, isSelected, onSelect }: ProfileCardProps) {
       aria-label={profile.title}
       className={cardClass}
       onClick={onSelect}
-      onKeyDown={e => {
-        /* Accessibilité clavier : Entrée ou Espace activent la sélection */
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          onSelect()
-        }
-      }}
     >
       {/* Avatar placeholder */}
       <div className={styles.cardAvatar} aria-hidden="true" />
@@ -62,19 +60,18 @@ function ProfileCard({ profile, isSelected, onSelect }: ProfileCardProps) {
         ))}
       </ul>
 
-      {/* Bouton d'action de la carte */}
-      <button
-        type="button"
+      {/* Lien-bouton — navigue directement à l'étape suivante */}
+      <Link
+        href="/inscription/etape-2"
         className={styles.cardBtn}
         aria-label={`Choisir le profil ${profile.title}`}
         onClick={e => {
-          /* Empêche la remontée vers l'article qui déclencherait onSelect deux fois */
           e.stopPropagation()
-          onSelect()
+          saveProfileAndNavigate(profile.id)
         }}
       >
-        {isSelected ? 'Profil sélectionné ✓' : 'Choisir ce profil'}
-      </button>
+        Choisir ce profil
+      </Link>
     </article>
   )
 }
@@ -83,12 +80,7 @@ function ProfileCard({ profile, isSelected, onSelect }: ProfileCardProps) {
    Composant principal : ProfileSelection
    ================================================================ */
 export default function ProfileSelection() {
-  const {
-    isSelected,
-    canContinue,
-    selectProfile,
-    handleContinue,
-  } = useProfileSelection()
+  const { isSelected, selectProfile } = useProfileSelection()
 
   return (
     <div className={styles.page}>
@@ -169,34 +161,6 @@ export default function ProfileSelection() {
           ))}
         </div>
 
-        {/* Pied de page — bouton de validation */}
-        <div className={styles.stepFooter}>
-          <button
-            type="button"
-            className={styles.continueBtn}
-            disabled={!canContinue}
-            aria-disabled={!canContinue}
-            onClick={handleContinue}
-          >
-            Continuer
-            {/* Icône chevron droit */}
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M6 4L10 8L6 12"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        </div>
 
       </main>
       {/* /CONTENU PRINCIPAL */}

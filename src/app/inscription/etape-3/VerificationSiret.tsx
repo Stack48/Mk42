@@ -8,6 +8,49 @@ import styles from './VerificationSiret.module.css'
 const STEP        = 3
 const TOTAL_STEPS = 6
 
+const FORMES_JURIDIQUES = [
+  { group: 'Sociétés commerciales', options: [
+    'SARL – Société à Responsabilité Limitée',
+    'EURL – Entreprise Unipersonnelle à Responsabilité Limitée',
+    'SAS – Société par Actions Simplifiée',
+    'SASU – Société par Actions Simplifiée Unipersonnelle',
+    'SA – Société Anonyme',
+    'SNC – Société en Nom Collectif',
+    'SCS – Société en Commandite Simple',
+    'SCA – Société en Commandite par Actions',
+    'SE – Société Européenne',
+  ]},
+  { group: 'Entreprises individuelles', options: [
+    'EI – Entreprise Individuelle',
+    'Micro-entreprise / Auto-entrepreneur',
+  ]},
+  { group: 'Sociétés civiles', options: [
+    'SC – Société Civile',
+    'SCI – Société Civile Immobilière',
+    'SCM – Société Civile de Moyens',
+    'SCP – Société Civile Professionnelle',
+  ]},
+  { group: 'Professions libérales', options: [
+    'SELARL – Société d\'Exercice Libéral à Responsabilité Limitée',
+    'SELARLU – SELARL Unipersonnelle',
+    'SELAS – Société d\'Exercice Libéral par Actions Simplifiée',
+    'SELASU – SELAS Unipersonnelle',
+    'SELCA – Société d\'Exercice Libéral en Commandite par Actions',
+  ]},
+  { group: 'Coopératives', options: [
+    'SCOP – Société Coopérative de Production',
+    'SCIC – Société Coopérative d\'Intérêt Collectif',
+  ]},
+  { group: 'Autres', options: [
+    'GIE – Groupement d\'Intérêt Économique',
+    'GEIE – Groupement Européen d\'Intérêt Économique',
+    'Association loi 1901',
+    'Fondation',
+    'SEM – Société d\'Économie Mixte',
+    'SPL – Société Publique Locale',
+  ]},
+] as const
+
 const STEPS_LIST = [
   { num: 1, label: 'Choix du profil',              status: 'done',     sub: 'Validé'   },
   { num: 2, label: 'Informations personnelles',    status: 'done',     sub: 'Validé'   },
@@ -193,15 +236,21 @@ export default function VerificationSiret() {
                   <label htmlFor="raisonSociale" className={styles.label}>
                     Raison sociale <span className={styles.required}>*</span>
                   </label>
-                  <input
+                  <select
                     id="raisonSociale"
-                    type="text"
                     className={styles.input}
                     value={form.raisonSociale}
-                    onChange={set('raisonSociale')}
-                    placeholder="Ex : MAÇONNERIE DURAND SARL"
-                    autoComplete="organization"
-                  />
+                    onChange={e => setForm(prev => ({ ...prev, raisonSociale: e.target.value }))}
+                  >
+                    <option value="">-- Sélectionnez une forme juridique --</option>
+                    {FORMES_JURIDIQUES.map(group => (
+                      <optgroup key={group.group} label={group.group}>
+                        {group.options.map(opt => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
                 </div>
 
                 <div className={`${styles.field} ${styles.fieldFull}`}>
