@@ -10,11 +10,11 @@ function parseInput(body: unknown) {
 
 export const UsersController = {
   async findAll() {
-    return prisma.utilisateur.findMany({ orderBy: { createdAt: "desc" } });
+    return prisma.user.findMany({ orderBy: { createdAt: "desc" } });
   },
 
   async findById(id: string) {
-    const user = await prisma.utilisateur.findUnique({ where: { id } });
+    const user = await prisma.user.findUnique({ where: { id } });
     if (!user) throw new AppError(404, "Introuvable");
     return user;
   },
@@ -22,7 +22,7 @@ export const UsersController = {
   async create(body: unknown) {
     const { email } = parseInput(body);
     try {
-      return await prisma.utilisateur.create({ data: { clerkId: email, email } });
+      return await prisma.user.create({ data: { clerkId: email, email } });
     } catch {
       throw new AppError(409, "Email déjà utilisé");
     }
@@ -31,7 +31,7 @@ export const UsersController = {
   async update(id: string, body: unknown) {
     const { email } = parseInput(body);
     try {
-      return await prisma.utilisateur.update({ where: { id }, data: { email } });
+      return await prisma.user.update({ where: { id }, data: { email } });
     } catch {
       throw new AppError(409, "Mise à jour impossible (email déjà utilisé ?)");
     }
@@ -39,7 +39,7 @@ export const UsersController = {
 
   async remove(id: string) {
     try {
-      await prisma.utilisateur.delete({ where: { id } });
+      await prisma.user.delete({ where: { id } });
     } catch {
       throw new AppError(404, "Utilisateur introuvable");
     }

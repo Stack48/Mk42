@@ -1,4 +1,4 @@
-import styles from './ProgressBar.module.css'
+import styles from './css/ProgressBar.module.css'
 
 interface Props {
   step: number
