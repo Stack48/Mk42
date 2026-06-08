@@ -20,18 +20,18 @@ export const UsersController = {
   },
 
   async create(body: unknown) {
-    const { email, name } = parseInput(body);
+    const { email } = parseInput(body);
     try {
-      return await prisma.user.create({ data: { email, name } });
+      return await prisma.user.create({ data: { clerkId: email, email } });
     } catch {
       throw new AppError(409, "Email déjà utilisé");
     }
   },
 
   async update(id: string, body: unknown) {
-    const { email, name } = parseInput(body);
+    const { email } = parseInput(body);
     try {
-      return await prisma.user.update({ where: { id }, data: { email, name } });
+      return await prisma.user.update({ where: { id }, data: { email } });
     } catch {
       throw new AppError(409, "Mise à jour impossible (email déjà utilisé ?)");
     }
