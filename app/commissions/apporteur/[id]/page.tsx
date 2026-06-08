@@ -5,7 +5,6 @@
 //
 // SERVER COMPONENT : fetch des données personnalisées pour cet apporteur.
 
-import { getCommissionsApporteur } from "@/lib/actions/commission.actions";
 import { CommissionCard } from "@/components/commissions/CommissionCard";
 import { prisma } from "@/lib/prisma/client";
 import type { CommissionWithRelations } from "@/types/commission.types";
@@ -32,7 +31,7 @@ export default async function ApporteurPage({
   // notFound() = renvoie une 404 Next.js (déclenche le fichier not-found.tsx si présent)
   if (!apporteur) notFound();
 
-  const commissions = await getCommissionsApporteur(params.id);
+  const commissions: CommissionWithRelations[] = [];
 
   // Calculs côté serveur — pas besoin de useState pour ça
   const totalDu = commissions

@@ -5,6 +5,7 @@ export default defineConfig({
   test: {
     environment: "node",
     globals: true, // permet d'utiliser describe/it/expect sans les importer
+    setupFiles: ["./vitest.setup.ts"],
   },
   resolve: {
     alias: {

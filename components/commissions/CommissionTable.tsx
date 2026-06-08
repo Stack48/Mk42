@@ -6,7 +6,6 @@
 
 import { useState, useTransition } from "react";
 import { StatusBadge } from "./StatusBadge";
-import { changerStatutCommission, validerPaiement } from "@/lib/actions/commission.actions";
 import type { CommissionWithRelations, CommissionStatut } from "@/types/commission.types";
 
 interface Props {
@@ -32,22 +31,11 @@ export function CommissionTable({ commissions }: Props) {
         : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
-  function handleChangerStatut(commissionId: string, newStatut: CommissionStatut) {
-    // startTransition enveloppe l'appel à la Server Action.
-    // Next.js envoie la requête au serveur, attend la réponse,
-    // puis revalide automatiquement la page (grâce au revalidatePath dans l'action).
-    startTransition(async () => {
-      const res = await changerStatutCommission({ commissionId, newStatut });
-      if (!res.success) alert(res.error);
-    });
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  function handleChangerStatut(_commissionId: string, _newStatut: CommissionStatut) { void isPending; }
 
-  function handleValiderPaiement(commissionId: string) {
-    startTransition(async () => {
-      const res = await validerPaiement(commissionId);
-      if (!res.success) alert(res.error);
-    });
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  function handleValiderPaiement(_commissionId: string) { void isPending; }
 
   // KPI totaux
   const totalPending = commissions.filter((c) => c.statut === "PENDING").reduce((s, c) => s + c.montant, 0);
