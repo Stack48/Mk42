@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///app/src/components/providers.tsx"],"sourcesContent":["'use client';\r\n\r\nimport { ClerkProvider } from '@clerk/nextjs';\r\nimport { ReactNode } from 'react';\r\n\r\ninterface ProvidersProps {\r\n  children: ReactNode;\r\n}\r\n\r\nexport function Providers({ children }: ProvidersProps) {\r\n  return <ClerkProvider>{children}</ClerkProvider>;\r\n}\r\n"],"names":["Providers","children"],"mappings":";;;;;AAEA;AAFA;;;AASO,SAASA,UAAU,EAAEC,QAAQ,EAAkB;IACpD,qBAAO,6LAAC,6LAAa;kBAAEA;;;;;;AACzB;KAFgBD"}}]
-}
