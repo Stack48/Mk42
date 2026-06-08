@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Pas de config spéciale nécessaire pour cette feature
+  // Exclut @aws-sdk du bundle — chargé uniquement si STORAGE_DRIVER=s3 en production
+  serverExternalPackages: ["@aws-sdk/client-s3", "@aws-sdk/s3-request-presigner"],
 };
 
 export default nextConfig;

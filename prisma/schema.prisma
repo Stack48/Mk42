@@ -1,97 +1,218 @@
 // PRISMA SCHEMA — CommissionPro BTP
-//
-// Prisma est l'équivalent de Doctrine (Symfony) pour Node.js/TypeScript.
-// Ce fichier remplace tes migrations SQL manuelles :
-//   → tu décris le "quoi" (les entités et leurs relations)
-//   → Prisma génère le "comment" (les tables SQL + le client TypeScript typé)
-//
-// Commande pour appliquer ce schéma : npx prisma migrate dev
 
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  // Prisma lit DATABASE_URL depuis le fichier .env automatiquement
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 // ─── APPORTEUR ──────────────────────────────────────────────────────────────
-// Un apporteur d'affaires amène des clients/chantiers → il touche une commission
 model Apporteur {
-  id        String   @id @default(cuid()) // cuid() = identifiant unique lisible (alternative à UUID)
+  id        String   @id @default(cuid())
   nom       String
   email     String   @unique
   createdAt DateTime @default(now())
 
-  // Relation 1→N : un apporteur peut avoir plusieurs commissions
-  // (Prisma crée le JOIN automatiquement via le champ apporteurId dans Commission)
-  commissions Commission[]
+  commissions   Commission[]
+  contrats      Contrat[]
+  notifications Notification[]
+  kanbanDeals   KanbanDeal[]
 
-  @@map("apporteurs") // nom de la table SQL (snake_case par convention)
+  @@map("apporteurs")
 }
 
 // ─── DEAL ────────────────────────────────────────────────────────────────────
-// Un deal = un chantier/contrat en cours de négociation ou signé
+// statut : "DRAFT" | "SIGNED" | "LOST" | "CANCELLED"
 model Deal {
-  id      String     @id @default(cuid())
+  id      String @id @default(cuid())
   titre   String
-  montant Float      // montant HT du deal en euros
-  statut  DealStatut @default(DRAFT)
+  montant Float
+  statut  String @default("DRAFT")
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt // mis à jour automatiquement à chaque save
+  updatedAt DateTime @updatedAt
 
-  // Relation 1→1 optionnelle : un deal peut générer une commission
-  commission Commission?
+  commission  Commission?
+  contrats    Contrat[]
+  invitations ClientInvitation[]
 
   @@map("deals")
 }
 
 // ─── COMMISSION ──────────────────────────────────────────────────────────────
-// Générée automatiquement quand un Deal passe au statut SIGNED
+// statut : "PENDING" | "TO_PAY" | "PAID"
 model Commission {
-  id          String           @id @default(cuid())
-  montant     Float            // montant calculé (deal.montant × taux / 100)
-  taux        Float            // taux appliqué (ex: 5.0 pour 5%)
-  statut      CommissionStatut @default(PENDING)
-  entrepriseId String          // ID de l'entreprise donneur d'ordre (simple String pour l'instant)
-  paidAt      DateTime?        // nullable : rempli seulement quand PAID
-
-  // auditTrail stocke l'historique des changements sous forme JSON
-  // Ex: [{ "from": "PENDING", "to": "TO_PAY", "at": "2024-01-15T10:30:00Z" }]
-  // @db.JsonB = type PostgreSQL natif (indexable, performant)
-  auditTrail  Json             @default("[]") @db.JsonB
+  id           String    @id @default(cuid())
+  montant      Float
+  taux         Float
+  statut       String    @default("PENDING")
+  entrepriseId String
+  paidAt       DateTime?
+  auditTrail   Json
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // ── Relations ──
-  // @relation lie cette commission à un Deal via dealId
-  // onDelete: Cascade = si le deal est supprimé, la commission l'est aussi
-  dealId      String   @unique // @unique car 1 deal → 1 seule commission
-  deal        Deal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
-
+  dealId      String    @unique
+  deal        Deal      @relation(fields: [dealId], references: [id], onDelete: Cascade)
   apporteurId String
   apporteur   Apporteur @relation(fields: [apporteurId], references: [id])
 
   @@map("commissions")
 }
 
-// ─── ENUMS ───────────────────────────────────────────────────────────────────
-// Les enums Prisma deviennent des types TypeScript ET des contraintes SQL CHECK
+// ─── CONTRAT ─────────────────────────────────────────────────────────────────
+// statut : "DRAFT" | "SENT" | "UPLOADED" | "VALIDATED" | "REJECTED"
+model Contrat {
+  id               String    @id @default(cuid())
+  statut           String    @default("DRAFT")
+  token            String    @unique
+  tokenExpiresAt   DateTime
+  templateData     Json
+  fileOriginalPath String?
+  fileSignedPath   String?
+  validatedAt      DateTime?
+  validatedBy      String?
+  rejectedReason   String?
 
-enum DealStatut {
-  DRAFT   // brouillon
-  SIGNED  // signé → déclenche le calcul de commission
-  LOST    // perdu
-  CANCELLED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dealId      String
+  deal        Deal      @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  apporteurId String
+  apporteur   Apporteur @relation(fields: [apporteurId], references: [id])
+  accessLogs  ContratAccessLog[]
+
+  @@map("contrats")
 }
 
-enum CommissionStatut {
-  PENDING  // calculée, en attente de validation
-  TO_PAY   // validée par l'entreprise, à payer
-  PAID     // payée à l'apporteur
+// ─── CONTRAT ACCESS LOG ───────────────────────────────────────────────────────
+// action : "GENERATED" | "LINK_OPENED" | "SIGNED_UPLOADED" | "VALIDATED" | "REJECTED"
+model ContratAccessLog {
+  id        String   @id @default(cuid())
+  action    String
+  userId    String?
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  contratId String
+  contrat   Contrat @relation(fields: [contratId], references: [id], onDelete: Cascade)
+
+  @@map("contrat_access_logs")
+}
+
+// ─── [11-FE] PIPELINE KANBAN DES DEALS ──────────────────────────────────────
+
+// statut KanbanDeal : "PROSPECT" | "CONTACTE" | "SIGNE" | "PAYE" | "ANNULE"
+model KanbanDeal {
+  id               String   @id @default(cuid())
+  titre            String
+  montant          Float
+  mission          String?
+  clientNom        String
+  clientEmail      String?
+  clientTel        String?
+  statut           String   @default("PROSPECT")
+  commissionGelee  Boolean  @default(false)
+  position         Int      @default(0)
+  commissionDealId String?  @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  apporteurId String
+  apporteur   Apporteur     @relation(fields: [apporteurId], references: [id])
+  documents   DealDocument[]
+  messages    DealMessage[]
+
+  @@map("kanban_deals")
+}
+
+// type DealDocument : "DEVIS" | "FACTURE" | "AUTRE"
+model DealDocument {
+  id         String   @id @default(cuid())
+  nom        String
+  type       String   @default("AUTRE")
+  filePath   String
+  fileSize   Int
+  mimeType   String
+  uploadedBy String
+  createdAt  DateTime @default(now())
+
+  dealId String
+  deal   KanbanDeal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@map("deal_documents")
+}
+
+// auteurType : "ENTREPRISE" | "APPORTEUR"
+model DealMessage {
+  id         String   @id @default(cuid())
+  contenu    String
+  auteurId   String
+  auteurType String
+  lu         Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  dealId String
+  deal   KanbanDeal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@map("deal_messages")
+}
+
+// ─── [18-FE] NOTIFICATIONS ───────────────────────────────────────────────────
+// type : "NOUVEAU_DEAL" | "COMMISSION_CALCULEE" | "COMMISSION_PAYEE"
+model Notification {
+  id        String   @id @default(cuid())
+  type      String
+  titre     String
+  message   String
+  lu        Boolean  @default(false)
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  userId    String
+  apporteur Apporteur @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+// ─── [17-FE] ESPACE CLIENT ────────────────────────────────────────────────────
+
+// statut ClientInvitation : "PENDING" | "ACCESSED" | "VALIDATED" | "REFUSED"
+model ClientInvitation {
+  id             String   @id @default(cuid())
+  email          String
+  nom            String
+  token          String   @unique
+  tokenExpiresAt DateTime
+  statut         String   @default("PENDING")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  dealId     String
+  deal       Deal              @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  evenements ClientEvenement[]
+
+  @@map("client_invitations")
+}
+
+// type ClientEvenement : "INVITATION_ENVOYEE" | "DOSSIER_CONSULTE" | "ETAPE_VALIDEE" | "ETAPE_REFUSEE"
+model ClientEvenement {
+  id        String   @id @default(cuid())
+  type      String
+  metadata  Json?
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  invitationId String
+  invitation   ClientInvitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+  @@map("client_evenements")
 }

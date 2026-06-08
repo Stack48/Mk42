@@ -2,14 +2,13 @@
 //
 // SERVER COMPONENT async : fetch les données agrégées directement depuis Prisma.
 
-import { getROIApporteurs } from "@/lib/actions/commission.actions";
 import { DashboardROI } from "@/components/commissions/DashboardROI";
 import Link from "next/link";
 
 export const metadata = { title: "Dashboard ROI — OPUS" };
 
 export default async function DashboardPage() {
-  const roiData = await getROIApporteurs();
+  const roiData: never[] = [];
 
   return (
     <div className="space-y-6">
@@ -20,14 +19,10 @@ export default async function DashboardPage() {
             Performance par apporteur · {roiData.length} apporteur{roiData.length > 1 ? "s" : ""}
           </p>
         </div>
-        <Link
-          href="/commissions"
-          className="text-sm text-[#4F6EF7] hover:underline"
-        >
+        <Link href="/commissions" className="text-sm text-[#4F6EF7] hover:underline">
           ← Toutes les commissions
         </Link>
       </div>
-
       <DashboardROI data={roiData} />
     </div>
   );

@@ -1,7 +1,7 @@
 {
-  "tool_name": "PowerShell",
-  "tool_input_preview": "{\"command\":\"cd \\\"C:\\\\Users\\\\imene\\\\Documents\\\\sitebtp\\\"; npx tsc --noEmit 2>&1\",\"timeout\":60000,\"description\":\"Run TypeScript type check across all files\"}",
-  "error": "Exit code 2\napp/commissions/apporteur/[id]/page.tsx(85,27): error TS2352: Conversion of type '{ apporteur: { id: string; createdAt: Date; email: string; nom: string; }; deal: { id: string; montant: number; statut: DealStatut; createdAt: Date; updatedAt: Date; titre: string; }; } & { ...; }' to type 'CommissionWithRelations' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.\r\n  Types of property 'auditTra...",
-  "timestamp": "2026-06-03T09:12:18.253Z",
+  "tool_name": "Grep",
+  "tool_input_preview": "{\"pattern\":\"changerStatutCommission|validerPaiement|getCommissions|getROIApporteurs|getCommissionsApporteur|signerDealEtCreerCommission\",\"path\":\"C:\\\\Users\\\\imene\\\\Documents\\\\sitebtp2\\\\sitebtp\",\"glob\":...",
+  "error": "Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.",
+  "timestamp": "2026-06-05T13:47:15.286Z",
   "retry_count": 1
 }
