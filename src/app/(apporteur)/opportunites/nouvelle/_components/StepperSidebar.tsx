@@ -1,4 +1,4 @@
-import styles from './StepperSidebar.module.css'
+import styles from './css/StepperSidebar.module.css'
 
 function CheckIcon() {
   return (

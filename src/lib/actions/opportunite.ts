@@ -28,15 +28,15 @@ export async function createOpportunite(
   if (!userId) return { success: false, error: 'Non authentifié' }
 
   // 2. Retrouver l'apporteur via clerkId
-  const utilisateur = await prisma.utilisateur.findUnique({
+  const user = await prisma.user.findUnique({
     where: { clerkId: userId },
   })
-  if (!utilisateur) {
+  if (!user) {
     return { success: false, error: 'Compte introuvable — veuillez contacter le support' }
   }
 
   const apporteur = await prisma.apporteur.findUnique({
-    where: { utilisateurId: utilisateur.id },
+    where: { userId: user.id },
   })
   if (!apporteur) {
     return { success: false, error: 'Profil apporteur incomplet — veuillez finaliser votre inscription' }
@@ -62,11 +62,11 @@ export async function createOpportunite(
   const client = await prisma.client.create({
     data: {
       estProfessionnel: formData.clientType === 'PRO',
-      nom:           formData.clientType === 'PARTICULIER' ? formData.clientNom   || null : null,
-      prenom:        formData.clientType === 'PARTICULIER' ? formData.clientPrenom || null : null,
+      nom:           formData.clientType === 'PARTICULIER' ? formData.clientLastname   || null : null,
+      prenom:        formData.clientType === 'PARTICULIER' ? formData.clientFirstname || null : null,
       raisonSociale: formData.clientType === 'PRO'         ? formData.clientRaisonSociale || null : null,
       siret:         formData.clientType === 'PRO'         ? formData.clientSiret || null : null,
-      telephone:     formData.clientTelephone,
+      telephone:     formData.clientPhoneNumber,
       email:         formData.clientEmail,
       adresseChantier: formData.adresseChantier || null,
     },
@@ -120,7 +120,7 @@ async function sendNotificationEntreprise({
   const to = process.env.ENTREPRISE_EMAIL_FALLBACK ?? 'contact@entreprise-btp.fr'
   const clientLabel = formData.clientType === 'PRO'
     ? formData.clientRaisonSociale
-    : `${formData.clientPrenom} ${formData.clientNom}`.trim()
+    : `${formData.clientFirstname} ${formData.clientLastname}`.trim()
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
   const lienOpportunite = `${appUrl}/opportunites/${opportunite.id}`

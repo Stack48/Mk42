@@ -1,7 +1,7 @@
 'use client'
 
 import { useUser } from '@clerk/nextjs'
-import styles from './StepVosInfos.module.css'
+import styles from './css/StepVosInfos.module.css'
 
 function EmailIcon() {
   return (

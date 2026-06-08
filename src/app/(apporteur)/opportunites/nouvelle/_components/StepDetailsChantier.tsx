@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import type { OpportuniteFormData } from '../page'
 import { stepDetailsChantierSchema } from '@/lib/validations/opportunite'
-import styles from './StepDetailsChantier.module.css'
+import styles from './css/StepDetailsChantier.module.css'
 
 const TYPES_TRAVAUX = [
   'Maçonnerie & Gros œuvre',

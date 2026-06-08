@@ -62,7 +62,7 @@ enum TypeDocument {
 
 // ── Modèles ────────────────────────────────────────────────────────────────────
 
-model Utilisateur {
+model User {
   id        String   @id @default(cuid())
   clerkId   String   @unique
   email     String   @unique
@@ -71,12 +71,14 @@ model Utilisateur {
 
   entreprise Entreprise?
   apporteur  Apporteur?
+
+  @@map("Utilisateur")
 }
 
 model Entreprise {
   id                   String    @id @default(cuid())
-  utilisateurId        String    @unique
-  utilisateur          Utilisateur @relation(fields: [utilisateurId], references: [id])
+  userId               String    @unique @map("utilisateurId")
+  user                 User      @relation(fields: [userId], references: [id])
   raisonSociale        String
   siret                String    @unique
   adresseSiege         String
@@ -102,8 +104,8 @@ model Entreprise {
 
 model Apporteur {
   id            String        @id @default(cuid())
-  utilisateurId String        @unique
-  utilisateur   Utilisateur   @relation(fields: [utilisateurId], references: [id])
+  userId        String        @unique @map("utilisateurId")
+  user          User          @relation(fields: [userId], references: [id])
   type          TypeApporteur
   nom           String
   prenom        String

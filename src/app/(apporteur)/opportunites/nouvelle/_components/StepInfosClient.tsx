@@ -7,7 +7,7 @@ import {
   stepInfosClientProSchema,
   stepInfosClientParticulierSchema,
 } from '@/lib/validations/opportunite'
-import styles from './StepInfosClient.module.css'
+import styles from './css/StepInfosClient.module.css'
 
 interface InseeResult {
   raisonSociale: string
@@ -40,12 +40,12 @@ export default function StepInfosClient({ formData, setFormData, onNext, onPrev 
         : stepInfosClientParticulierSchema
 
     const fieldSchemas: Record<string, z.ZodTypeAny> = {
-      clientSiret:       z.string().min(14, 'SIRET invalide (14 chiffres requis)'),
+      clientSiret:        z.string().min(14, 'SIRET invalide (14 chiffres requis)'),
       clientRaisonSociale: z.string().min(1, 'Raison sociale requise'),
-      clientNom:         z.string().min(1, 'Nom requis'),
-      clientPrenom:      z.string().min(1, 'Prénom requis'),
-      clientTelephone:   z.string().min(10, 'Numéro de téléphone invalide'),
-      clientEmail:       z.string().email('Adresse email invalide'),
+      clientLastname:     z.string().min(1, 'Nom requis'),
+      clientFirstname:    z.string().min(1, 'Prénom requis'),
+      clientPhoneNumber:  z.string().min(10, 'Numéro de téléphone invalide'),
+      clientEmail:        z.string().email('Adresse email invalide'),
       adresseChantier:   formData.clientType === 'PARTICULIER'
         ? z.string().min(1, 'Adresse du chantier requise')
         : z.string().optional(),
@@ -67,9 +67,9 @@ export default function StepInfosClient({ formData, setFormData, onNext, onPrev 
       clientType: type,
       clientSiret: '',
       clientRaisonSociale: '',
-      clientNom: '',
-      clientPrenom: '',
-      clientTelephone: '',
+      clientLastname: '',
+      clientFirstname: '',
+      clientPhoneNumber: '',
       clientEmail: '',
       adresseChantier: '',
     }))
@@ -233,21 +233,21 @@ export default function StepInfosClient({ formData, setFormData, onNext, onPrev 
 
             {/* Téléphone */}
             <div className={styles.field}>
-              <label htmlFor="clientTelephone" className={styles.label}>
+              <label htmlFor="clientPhoneNumber" className={styles.label}>
                 Téléphone<span className={styles.required}>*</span>
               </label>
               <input
-                id="clientTelephone"
+                id="clientPhoneNumber"
                 type="tel"
-                className={`${styles.input} ${errors.clientTelephone ? styles.hasError : ''}`}
-                value={formData.clientTelephone}
-                onChange={set('clientTelephone')}
-                onBlur={e => validateField('clientTelephone', e.target.value)}
+                className={`${styles.input} ${errors.clientPhoneNumber ? styles.hasError : ''}`}
+                value={formData.clientPhoneNumber}
+                onChange={set('clientPhoneNumber')}
+                onBlur={e => validateField('clientPhoneNumber', e.target.value)}
                 placeholder="06 00 00 00 00"
-                aria-describedby={errors.clientTelephone ? 'err-tel' : undefined}
+                aria-describedby={errors.clientPhoneNumber ? 'err-tel' : undefined}
               />
-              {errors.clientTelephone && (
-                <span id="err-tel" className={styles.error}>{errors.clientTelephone}</span>
+              {errors.clientPhoneNumber && (
+                <span id="err-tel" className={styles.error}>{errors.clientPhoneNumber}</span>
               )}
             </div>
 
@@ -290,61 +290,61 @@ export default function StepInfosClient({ formData, setFormData, onNext, onPrev 
           <>
             {/* Nom */}
             <div className={styles.field}>
-              <label htmlFor="clientNom" className={styles.label}>
+              <label htmlFor="clientLastname" className={styles.label}>
                 Nom<span className={styles.required}>*</span>
               </label>
               <input
-                id="clientNom"
+                id="clientLastname"
                 type="text"
-                className={`${styles.input} ${errors.clientNom ? styles.hasError : ''}`}
-                value={formData.clientNom}
-                onChange={set('clientNom')}
-                onBlur={e => validateField('clientNom', e.target.value)}
+                className={`${styles.input} ${errors.clientLastname ? styles.hasError : ''}`}
+                value={formData.clientLastname}
+                onChange={set('clientLastname')}
+                onBlur={e => validateField('clientLastname', e.target.value)}
                 autoComplete="family-name"
-                aria-describedby={errors.clientNom ? 'err-nom' : undefined}
+                aria-describedby={errors.clientLastname ? 'err-nom' : undefined}
               />
-              {errors.clientNom && (
-                <span id="err-nom" className={styles.error}>{errors.clientNom}</span>
+              {errors.clientLastname && (
+                <span id="err-nom" className={styles.error}>{errors.clientLastname}</span>
               )}
             </div>
 
             {/* Prénom */}
             <div className={styles.field}>
-              <label htmlFor="clientPrenom" className={styles.label}>
+              <label htmlFor="clientFirstname" className={styles.label}>
                 Prénom<span className={styles.required}>*</span>
               </label>
               <input
-                id="clientPrenom"
+                id="clientFirstname"
                 type="text"
-                className={`${styles.input} ${errors.clientPrenom ? styles.hasError : ''}`}
-                value={formData.clientPrenom}
-                onChange={set('clientPrenom')}
-                onBlur={e => validateField('clientPrenom', e.target.value)}
+                className={`${styles.input} ${errors.clientFirstname ? styles.hasError : ''}`}
+                value={formData.clientFirstname}
+                onChange={set('clientFirstname')}
+                onBlur={e => validateField('clientFirstname', e.target.value)}
                 autoComplete="given-name"
-                aria-describedby={errors.clientPrenom ? 'err-prenom' : undefined}
+                aria-describedby={errors.clientFirstname ? 'err-prenom' : undefined}
               />
-              {errors.clientPrenom && (
-                <span id="err-prenom" className={styles.error}>{errors.clientPrenom}</span>
+              {errors.clientFirstname && (
+                <span id="err-prenom" className={styles.error}>{errors.clientFirstname}</span>
               )}
             </div>
 
             {/* Téléphone */}
             <div className={styles.field}>
-              <label htmlFor="clientTelephone" className={styles.label}>
+              <label htmlFor="clientPhoneNumber" className={styles.label}>
                 Téléphone<span className={styles.required}>*</span>
               </label>
               <input
-                id="clientTelephone"
+                id="clientPhoneNumber"
                 type="tel"
-                className={`${styles.input} ${errors.clientTelephone ? styles.hasError : ''}`}
-                value={formData.clientTelephone}
-                onChange={set('clientTelephone')}
-                onBlur={e => validateField('clientTelephone', e.target.value)}
+                className={`${styles.input} ${errors.clientPhoneNumber ? styles.hasError : ''}`}
+                value={formData.clientPhoneNumber}
+                onChange={set('clientPhoneNumber')}
+                onBlur={e => validateField('clientPhoneNumber', e.target.value)}
                 placeholder="06 00 00 00 00"
-                aria-describedby={errors.clientTelephone ? 'err-tel' : undefined}
+                aria-describedby={errors.clientPhoneNumber ? 'err-tel' : undefined}
               />
-              {errors.clientTelephone && (
-                <span id="err-tel" className={styles.error}>{errors.clientTelephone}</span>
+              {errors.clientPhoneNumber && (
+                <span id="err-tel" className={styles.error}>{errors.clientPhoneNumber}</span>
               )}
             </div>
 

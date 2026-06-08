@@ -14,9 +14,9 @@ export type OpportuniteFormData = {
   clientType: 'PRO' | 'PARTICULIER'
   clientSiret: string
   clientRaisonSociale: string
-  clientNom: string
-  clientPrenom: string
-  clientTelephone: string
+  clientLastname: string
+  clientFirstname: string
+  clientPhoneNumber: string
   clientEmail: string
   adresseChantier: string
   typesTravaux: string
@@ -54,9 +54,9 @@ export default function NouvelleopportunitePage() {
     clientType: 'PARTICULIER',
     clientSiret: '',
     clientRaisonSociale: '',
-    clientNom: '',
-    clientPrenom: '',
-    clientTelephone: '',
+    clientLastname: '',
+    clientFirstname: '',
+    clientPhoneNumber: '',
     clientEmail: '',
     adresseChantier: '',
     typesTravaux: '',

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { OpportuniteFormData } from '../page'
 import { createOpportunite } from '@/lib/actions/opportunite'
-import styles from './StepSoumettre.module.css'
+import styles from './css/StepSoumettre.module.css'
 
 const DELAI_LABELS: Record<string, string> = {
   urgent:    'Urgent (< 1 mois)',
@@ -28,7 +28,7 @@ export default function StepSoumettre({ formData, onPrev }: Props) {
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const isPro = formData.clientType === 'PRO'
-  const clientLabel = isPro ? formData.clientRaisonSociale : `${formData.clientPrenom} ${formData.clientNom}`.trim()
+  const clientLabel = isPro ? formData.clientRaisonSociale : `${formData.clientFirstname} ${formData.clientLastname}`.trim()
   const delaiLabel = DELAI_LABELS[formData.delai] ?? 'Non défini'
 
   const handleSubmit = async () => {
@@ -72,7 +72,7 @@ export default function StepSoumettre({ formData, onPrev }: Props) {
 
             <div className={styles.recapRow}>
               <span className={styles.recapLabel}>Téléphone</span>
-              <span className={styles.recapValue}>{formData.clientTelephone || '—'}</span>
+              <span className={styles.recapValue}>{formData.clientPhoneNumber || '—'}</span>
             </div>
 
             <div className={styles.recapRow}>

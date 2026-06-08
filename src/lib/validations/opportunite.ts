@@ -3,15 +3,15 @@ import { z } from 'zod'
 export const stepInfosClientProSchema = z.object({
   clientSiret: z.string().min(14, 'SIRET invalide (14 chiffres requis)'),
   clientRaisonSociale: z.string().min(1, 'Raison sociale requise'),
-  clientTelephone: z.string().min(10, 'Numéro de téléphone invalide'),
+  clientPhoneNumber: z.string().min(10, 'Numéro de téléphone invalide'),
   clientEmail: z.string().email('Adresse email invalide'),
   adresseChantier: z.string().optional(),
 })
 
 export const stepInfosClientParticulierSchema = z.object({
-  clientNom: z.string().min(1, 'Nom requis'),
-  clientPrenom: z.string().min(1, 'Prénom requis'),
-  clientTelephone: z.string().min(10, 'Numéro de téléphone invalide'),
+  clientLastname: z.string().min(1, 'Nom requis'),
+  clientFirstname: z.string().min(1, 'Prénom requis'),
+  clientPhoneNumber: z.string().min(10, 'Numéro de téléphone invalide'),
   clientEmail: z.string().email('Adresse email invalide'),
   adresseChantier: z.string().min(1, 'Adresse du chantier requise'),
 })
