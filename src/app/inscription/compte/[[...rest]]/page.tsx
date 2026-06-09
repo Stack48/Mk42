@@ -140,7 +140,7 @@ export default async function ComptePage({
           </h2>
 
           <p style={{ fontSize: '16px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.65, marginBottom: '48px' }}>
-            Opus automatise la conformité de vos apporteurs d'affaires BTP — contrats, factures, DAS2 — en toute légalité.
+            Opus automatise la conformité de vos apporteurs d&apos;affaires BTP — contrats, factures, DAS2 — en toute légalité.
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '48px' }}>

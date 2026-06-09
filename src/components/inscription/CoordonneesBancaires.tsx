@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import styles from './CoordonneesBancaires.module.css'
+import styles from '@/styles/inscription/CoordonneesBancaires.module.css'
 
 /* ── Icône check ────────────────────────────────────────────────── */
 function CheckIcon() {
@@ -47,13 +47,9 @@ const STEPS_PRO = [
 export default function CoordonneesBancaires() {
   const router = useRouter()
 
-  const [profile, setProfile] = useState<string | null>(null)
-  const [ready,   setReady]   = useState(false)
-
-  useEffect(() => {
-    setProfile(sessionStorage.getItem('opus_profile'))
-    setReady(true)
-  }, [])
+  const [profile] = useState<string | null>(() =>
+    typeof window !== 'undefined' ? sessionStorage.getItem('opus_profile') : null
+  )
 
   const isParticulier = profile === 'particulier'
   const step      = isParticulier ? 2 : 3
@@ -109,7 +105,7 @@ export default function CoordonneesBancaires() {
           role="progressbar" aria-valuenow={step}
           aria-valuemin={1} aria-valuemax={total}>
           <div className={styles.progressFill}
-            style={{ width: ready ? `${(step / total) * 100}%` : '0%' }}/>
+            style={{ width: `${(step / total) * 100}%` }}/>
         </div>
       </header>
 
@@ -161,7 +157,7 @@ export default function CoordonneesBancaires() {
               {/* Confirmer IBAN */}
               <div className={styles.field}>
                 <label htmlFor="ibanConfirm" className={styles.label}>
-                  Confirmer l'IBAN <span className={styles.required}>*</span>
+                  Confirmer l&apos;IBAN <span className={styles.required}>*</span>
                 </label>
                 <input
                   id="ibanConfirm"
@@ -192,7 +188,7 @@ export default function CoordonneesBancaires() {
 
               {/* Upload RIB */}
               <div className={`${styles.field} ${styles.fieldFull}`}>
-                <span className={styles.label}>Relevé d'Identité Bancaire (RIB)</span>
+                <span className={styles.label}>Relevé d&apos;Identité Bancaire (RIB)</span>
                 <div
                   className={`${styles.uploadZone} ${dragging ? styles.dragging : ''}`}
                   onClick={() => fileInputRef.current?.click()}
@@ -240,7 +236,7 @@ export default function CoordonneesBancaires() {
 
           {/* ── SIDEBAR STEPPER ──────────────────────────────── */}
           <aside className={styles.sidebar} aria-label="Progression">
-            <p className={styles.sidebarTitle}>Étapes de l'inscription</p>
+            <p className={styles.sidebarTitle}>Étapes de l&apos;inscription</p>
 
             <ol className={styles.stepsList}>
               {stepsList.map(s => (

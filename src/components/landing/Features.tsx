@@ -11,12 +11,6 @@ import {
   VIEWPORT,
 } from '@/lib/motion'
 
-const C = {
-  primary: '#4648D4', primaryDk: '#3533B0',
-  primaryXL: '#EEEEFF', ink: '#111111',
-  muted: '#6B7280', border: '#E5E7EB',
-}
-
 const FEATURES = [
   {
     icon: (
@@ -67,7 +61,6 @@ const FEATURES = [
   },
 ]
 
-// ── Carte avec tilt 3D au hover (nécessite des hooks → composant séparé) ─────
 function FeatureCard({ feature }: { feature: typeof FEATURES[0] }) {
   const ref = useRef<HTMLDivElement>(null)
   const rotX = useMotionValue(0)
@@ -89,159 +82,100 @@ function FeatureCard({ feature }: { feature: typeof FEATURES[0] }) {
   }, [rotX, rotY])
 
   return (
-    // perspective sur le wrapper
-    <div ref={ref} style={{ perspective: 700 }} onMouseMove={onMove} onMouseLeave={onLeave}>
+    <div ref={ref} className="[perspective:700px]" onMouseMove={onMove} onMouseLeave={onLeave}>
       <motion.div
         variants={staggerItemVariants}
-        style={{
-          rotateX: sRotX, rotateY: sRotY,
-          transformStyle: 'preserve-3d',
-          background: '#fff', borderRadius: 10, padding: '20px 18px',
-          border: `1px solid ${C.border}`,
-          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-          cursor: 'default', willChange: 'transform',
-        }}
+        style={{ rotateX: sRotX, rotateY: sRotY, transformStyle: 'preserve-3d' }}
+        className="bg-white rounded-[10px] p-[18px] border border-gray-200 shadow-sm cursor-default will-change-transform"
         whileHover={{
-          borderColor: C.primary,
+          borderColor: '#4648D4',
           boxShadow: '0 20px 50px rgba(70,72,212,0.16)',
           transition: { duration: 0.25, ease: EASE_POWER3 },
         }}
       >
-        {/* Icône — micro pop + rotation au hover de la carte */}
         <motion.div
           whileHover={{ scale: 1.15, rotate: -6 }}
           transition={{ duration: 0.28, ease: EASE_POWER3 }}
-          style={{
-            width: 38, height: 38, borderRadius: 8,
-            background: C.primaryXL, color: C.primary,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            marginBottom: 12,
-          }}
+          className="w-[38px] h-[38px] rounded-lg bg-opus-primary-xl text-opus-primary flex items-center justify-center mb-3"
         >
           {feature.icon}
         </motion.div>
-
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, marginBottom: 6, lineHeight: 1.3 }}>
-          {feature.title}
-        </h3>
-        <p style={{ fontSize: 13, color: C.muted, lineHeight: 1.6 }}>
-          {feature.desc}
-        </p>
+        <h3 className="text-sm font-bold text-opus-ink mb-1.5 leading-snug">{feature.title}</h3>
+        <p className="text-[13px] text-gray-500 leading-relaxed">{feature.desc}</p>
       </motion.div>
     </div>
   )
 }
 
-// ── Section Fonctionnalités ───────────────────────────────────────────────────
 export default function Features() {
   return (
-    <section id="fonctionnalites" style={{ background: '#fff', padding: 'clamp(60px,7vw,90px) 24px' }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+    <section id="fonctionnalites" className="bg-white py-[clamp(60px,7vw,90px)] px-6">
+      <div className="max-w-[1100px] mx-auto">
 
-        {/* Header — clip reveal */}
-        <div style={{ marginBottom: 48 }}>
-          <div style={{ overflow: 'hidden', marginBottom: 10 }}>
+        <div className="mb-12">
+          <div className="overflow-hidden mb-2.5">
             <motion.p
               variants={clipRevealVariants}
               initial="hidden"
               whileInView="visible"
               viewport={VIEWPORT}
-              style={{
-                fontSize: 12, fontWeight: 600, letterSpacing: '0.1em',
-                textTransform: 'uppercase', color: C.primary,
-                fontFamily: "'DM Mono', monospace", margin: 0,
-              }}
+              className="text-xs font-semibold tracking-[0.1em] uppercase text-opus-primary font-mono m-0"
             >
               Fonctionnalités
             </motion.p>
           </div>
-
-          <div style={{ overflow: 'hidden' }}>
+          <div className="overflow-hidden">
             <motion.h2
               variants={clipRevealVariants}
               initial="hidden"
               whileInView="visible"
               viewport={VIEWPORT}
               transition={{ delay: 0.1 }}
-              style={{
-                fontSize: 'clamp(24px,3.5vw,38px)', fontWeight: 800,
-                color: C.ink, letterSpacing: '-0.02em', lineHeight: 1.2,
-                maxWidth: 480, margin: 0,
-              }}
+              className="text-[clamp(24px,3.5vw,38px)] font-extrabold text-opus-ink tracking-[-0.02em] leading-tight max-w-[480px] m-0"
             >
               Toutes les fonctionnalités, sans les maux de tête
             </motion.h2>
           </div>
         </div>
 
-        {/* 2 colonnes */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, alignItems: 'start' }}>
+        <div className="grid grid-cols-2 gap-8 items-start max-[860px]:grid-cols-1">
 
-          {/* Grille 2×2 — stagger + tilt 3D */}
           <motion.div
             variants={staggerContainerVariants}
             initial="hidden"
             whileInView="visible"
             viewport={VIEWPORT}
-            style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}
+            className="grid grid-cols-2 gap-3.5"
           >
             {FEATURES.map(f => (
               <FeatureCard key={f.title} feature={f} />
             ))}
           </motion.div>
 
-          {/* Panneau droit — fade-up décalé */}
           <motion.div
             variants={fadeUpVariants}
             initial="hidden"
             whileInView="visible"
             viewport={VIEWPORT}
             transition={{ delay: 0.3 }}
-            style={{
-              borderRadius: 14, overflow: 'hidden', background: '#F3F4F6',
-              minHeight: 360, display: 'flex', alignItems: 'center',
-              justifyContent: 'center',
-            }}
+            className="rounded-[14px] overflow-hidden bg-gray-100 min-h-[360px] flex items-center justify-center max-[860px]:hidden"
           >
-            <div style={{ textAlign: 'center', padding: 32 }}>
-              <div style={{
-                width: 100, height: 100, borderRadius: '50%',
-                background: `linear-gradient(135deg, ${C.primary}, #6669e0)`,
-                margin: '0 auto 20px',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
+            <div className="text-center p-8">
+              <div className="w-[100px] h-[100px] rounded-full bg-gradient-to-br from-opus-primary to-[#6669e0] mx-auto mb-5 flex items-center justify-center">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
                   <path d="M16 3h-8l-2 4h12z"/>
                   <circle cx="12" cy="13" r="2"/>
                 </svg>
               </div>
-              <p style={{ fontSize: 15, fontWeight: 600, color: C.primary, marginBottom: 8 }}>Secteur BTP</p>
-              <p style={{ fontSize: 13, color: C.muted, lineHeight: 1.6, maxWidth: 240, margin: '0 auto' }}>
+              <p className="text-[15px] font-semibold text-opus-primary mb-2">Secteur BTP</p>
+              <p className="text-[13px] text-gray-500 leading-relaxed max-w-[240px] mx-auto">
                 Parce que gérer son entreprise ne devrait pas ressembler à un contrôle fiscal.
               </p>
             </div>
           </motion.div>
         </div>
-
-        <motion.p
-          variants={fadeUpVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={VIEWPORT}
-          transition={{ delay: 0.18 }}
-          style={{ marginTop: 32, fontSize: 13, color: '#9CA3AF', textAlign: 'center' }}
-        >
-          Parce que gérer son entreprise ne devrait pas ressembler à un contrôle fiscal.
-        </motion.p>
       </div>
-
-      <style>{`
-        @media(max-width:860px){
-          #fonctionnalites > div > div:last-child > div:first-child { grid-template-columns: 1fr !important; }
-          #fonctionnalites > div > div:last-child { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
     </section>
   )
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import styles from './InformationsPersonnelles.module.css'
+import styles from '@/styles/inscription/InformationsPersonnelles.module.css'
 
 /* ── Étapes selon le profil (sans "Choix du profil") ──────────── */
 type Step = { num: number; label: string; status: 'active' | 'inactive' | 'done'; sub: string | null }
@@ -301,7 +301,7 @@ export default function InformationsPersonnelles() {
 
           {/* ── SIDEBAR ÉTAPES ────────────────────────────────── */}
           <aside className={styles.sidebar} aria-label="Progression de l'inscription">
-            <p className={styles.sidebarTitle}>Étapes de l'inscription</p>
+            <p className={styles.sidebarTitle}>Étapes de l&apos;inscription</p>
 
             <ol className={styles.stepsList}>
               {stepsList.map(s => (

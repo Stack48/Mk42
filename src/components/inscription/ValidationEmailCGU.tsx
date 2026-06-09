@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import styles from './ValidationEmailCGU.module.css'
+import styles from '@/styles/inscription/ValidationEmailCGU.module.css'
 
 /* ── Icône check (sidebar) ──────────────────────────────────────── */
 function CheckIcon() {
@@ -87,13 +87,9 @@ const OTP_LENGTH = 6
 /* ── Composant principal ────────────────────────────────────────── */
 export default function ValidationEmailCGU() {
   const router = useRouter()
-  const [profile, setProfile] = useState<string | null>(null)
-  const [ready,   setReady]   = useState(false)
-
-  useEffect(() => {
-    setProfile(sessionStorage.getItem('opus_profile'))
-    setReady(true)
-  }, [])
+  const [profile] = useState<string | null>(() =>
+    typeof window !== 'undefined' ? sessionStorage.getItem('opus_profile') : null
+  )
 
   const isParticulier = profile === 'particulier'
   const step      = isParticulier ? 4 : 5
@@ -169,7 +165,7 @@ export default function ValidationEmailCGU() {
         <div className={styles.progressTrack}
           role="progressbar" aria-valuenow={step}
           aria-valuemin={1} aria-valuemax={total}>
-          <div className={styles.progressFill} style={{ width: ready ? `${(step / total) * 100}%` : '0%' }} />
+          <div className={styles.progressFill} style={{ width: `${(step / total) * 100}%` }} />
         </div>
       </header>
 
@@ -178,7 +174,7 @@ export default function ValidationEmailCGU() {
         <p className={styles.stepLabel}>Étape {step} sur {total}</p>
         <h1 className={styles.pageTitle}>Validation Email &amp; CGU</h1>
         <p className={styles.pageSubtitle}>
-          Confirmez votre adresse email et acceptez nos conditions d'utilisation
+          Confirmez votre adresse email et acceptez nos conditions d&apos;utilisation
         </p>
 
         <div className={styles.layout}>
@@ -271,14 +267,14 @@ export default function ValidationEmailCGU() {
                 disabled={!canSubmit}
                 aria-disabled={!canSubmit}
               >
-                Terminer l'inscription
+                Terminer l&apos;inscription
               </button>
             </div>
           </div>
 
           {/* ── SIDEBAR STEPPER ── */}
           <aside className={styles.sidebar} aria-label="Progression">
-            <p className={styles.sidebarTitle}>Étapes de l'inscription</p>
+            <p className={styles.sidebarTitle}>Étapes de l&apos;inscription</p>
             <ol className={styles.stepsList}>
               {stepsList.map(s => (
                 <li key={s.num}
