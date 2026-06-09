@@ -2,24 +2,56 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+}
+
+// ─── ENTREPRISE ──────────────────────────────────────────────────────────────
+model Entreprise {
+  id            String  @id @default(cuid())
+  raisonSociale String
+  siret         String  @unique
+  adresse       String
+  email         String
+  telephone     String?
+  numeroTVA     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  factures  Facture[]
+  recus     Recu[]
+  das2      DAS2[]
+  documents Document[]
+
+  @@map("entreprises")
 }
 
 // ─── APPORTEUR ──────────────────────────────────────────────────────────────
+// type : "pro" | "particulier"
 model Apporteur {
-  id        String   @id @default(cuid())
-  nom       String
-  email     String   @unique
-  createdAt DateTime @default(now())
+  id            String   @id @default(cuid())
+  nom           String
+  email         String   @unique
+  type          String   @default("particulier")
+  siret         String?
+  dateNaissance String?
+  lieuNaissance String?
+  adresse       String?
+  iban          String?
+  telephone     String?
+  createdAt     DateTime @default(now())
 
   commissions   Commission[]
   contrats      Contrat[]
   notifications Notification[]
   kanbanDeals   KanbanDeal[]
+  factures      Facture[]
+  recus         Recu[]
+  documents     Document[]
 
   @@map("apporteurs")
 }
@@ -180,6 +212,86 @@ model Notification {
   apporteur Apporteur @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
+}
+
+// ─── [14-FE] DOCUMENTS FISCAUX ───────────────────────────────────────────────
+
+// statut Facture : "EN_ATTENTE" | "PAYEE" | "ANNULEE"
+model Facture {
+  id          String    @id @default(cuid())
+  numFacture  String    @unique
+  montantHT   Float
+  tauxTVA     Float     @default(20)
+  montantTVA  Float
+  montantTTC  Float
+  dateEmission DateTime
+  statut      String    @default("EN_ATTENTE")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  commissionId  String?
+  apporteurId   String
+  entrepriseId  String
+  apporteur     Apporteur  @relation(fields: [apporteurId], references: [id])
+  entreprise    Entreprise @relation(fields: [entrepriseId], references: [id])
+
+  @@map("factures")
+}
+
+// statut Recu : "EN_ATTENTE" | "PAYE" | "ANNULE"
+model Recu {
+  id          String   @id @default(cuid())
+  numRecu     String   @unique
+  montantBrut Float
+  dateEmission DateTime
+  statut      String   @default("EN_ATTENTE")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  commissionId String?
+  apporteurId  String
+  entrepriseId String
+  apporteur    Apporteur  @relation(fields: [apporteurId], references: [id])
+  entreprise   Entreprise @relation(fields: [entrepriseId], references: [id])
+
+  @@map("recus")
+}
+
+// statut DAS2 : "NON_GENERE" | "GENERE" | "DEPOSE"
+model DAS2 {
+  id                  String    @id @default(cuid())
+  annee               Int
+  statut              String    @default("NON_GENERE")
+  s3Key               String?
+  dateExport          DateTime?
+  montantTotal        Float?
+  nombreBeneficiaires Int       @default(0)
+
+  createdAt DateTime @default(now())
+
+  entrepriseId String
+  entreprise   Entreprise @relation(fields: [entrepriseId], references: [id])
+
+  @@unique([entrepriseId, annee])
+  @@map("das2")
+}
+
+// type Document : "FACTURE" | "RECU" | "DAS2" | "CSV"
+model Document {
+  id          String   @id @default(cuid())
+  type        String
+  s3Key       String
+  dateCreation DateTime @default(now())
+  metadata    Json?
+
+  entrepriseId String
+  apporteurId  String?
+  entreprise   Entreprise @relation(fields: [entrepriseId], references: [id])
+  apporteur    Apporteur? @relation(fields: [apporteurId], references: [id])
+
+  @@map("documents")
 }
 
 // ─── [17-FE] ESPACE CLIENT ────────────────────────────────────────────────────
