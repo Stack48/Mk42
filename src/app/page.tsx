@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import Header from '@/components/landing/Header'
 import Hero from '@/components/landing/Hero'
-import ProofStrip from '@/components/landing/ProofStrip'
 import Features from '@/components/landing/Features'
 import WhyOpus from '@/components/landing/WhyOpus'
 import Testimonials from '@/components/landing/Testimonials'
@@ -27,21 +26,11 @@ export default function LandingPage() {
     <>
       <Header />
       <main>
-        {/* Hero gère ses propres animations (above-the-fold) */}
         <Hero />
-
-        {/* ProofStrip — fade-up simple */}
-        <ScrollReveal>
-          <ProofStrip />
-        </ScrollReveal>
-
-        {/* Sections avec leurs propres animations Framer Motion intégrées */}
         <Features />
         <WhyOpus />
         <Testimonials />
         <Pricing />
-
-        {/* FAQ — fade-up simple */}
         <ScrollReveal delay={0.05}>
           <Faq />
         </ScrollReveal>

@@ -11,7 +11,7 @@
 import Link from 'next/link'
 import { useProfileSelection, PROFILES } from './useProfileSelection'
 import type { ProfileOption } from './useProfileSelection'
-import styles from './ProfileSelection.module.css'
+import styles from '@/styles/inscription/ProfileSelection.module.css'
 
 /* ── Constantes de l'étape ──────────────────────────────────────── */
 const STEP        = 1

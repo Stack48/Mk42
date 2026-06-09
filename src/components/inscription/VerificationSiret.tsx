@@ -15,7 +15,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import styles from './VerificationSiret.module.css'
+import styles from '@/styles/inscription/VerificationSiret.module.css'
 
 /* ── Constantes ─────────────────────────────────────────────────── */
 const STEP        = 3
@@ -234,7 +234,7 @@ export default function VerificationSiret() {
 
           {/* ── SIDEBAR STEPPER ──────────────────────────────── */}
           <aside className={styles.sidebar} aria-label="Progression">
-            <p className={styles.sidebarTitle}>Étapes de l'inscription</p>
+            <p className={styles.sidebarTitle}>Étapes de l&apos;inscription</p>
 
             <ol className={styles.stepsList}>
               {STEPS_LIST.map(step => (

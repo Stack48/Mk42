@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import styles from './VerificationIdentite.module.css'
+import styles from '@/styles/inscription/VerificationIdentite.module.css'
 
 /* ── Icône check ────────────────────────────────────────────────── */
 function CheckIcon() {
@@ -55,11 +55,9 @@ const DOC_TYPES = [
 /* ── Composant principal ────────────────────────────────────────── */
 export default function VerificationIdentite() {
   const router = useRouter()
-  const [profile, setProfile] = useState<string | null>(null)
-
-  useEffect(() => {
-    setProfile(sessionStorage.getItem('opus_profile'))
-  }, [])
+  const [profile] = useState<string | null>(() =>
+    typeof window !== 'undefined' ? sessionStorage.getItem('opus_profile') : null
+  )
 
   const isParticulier = profile === 'particulier'
   const step      = isParticulier ? 4 : 5
@@ -113,7 +111,7 @@ export default function VerificationIdentite() {
       {/* CONTENU */}
       <main className={styles.main}>
         <p className={styles.stepLabel}>Étape {step} sur {total}</p>
-        <h1 className={styles.pageTitle}>Vérification d'identité</h1>
+        <h1 className={styles.pageTitle}>Vérification d&apos;identité</h1>
         <p className={styles.pageSubtitle}>Veuillez télécharger vos documents justificatifs</p>
 
         <div className={styles.layout}>
@@ -157,7 +155,7 @@ export default function VerificationIdentite() {
 
               {/* Upload pièce d'identité */}
               <div className={styles.field}>
-                <span className={styles.label}>Pièce d'identité (Recto / Verso)</span>
+                <span className={styles.label}>Pièce d&apos;identité (Recto / Verso)</span>
                 <div
                   className={`${styles.uploadZone} ${dragging ? styles.dragging : ''}`}
                   onClick={() => fileRef.current?.click()}
@@ -177,7 +175,7 @@ export default function VerificationIdentite() {
                   />
                   <UploadIcon />
                   <p className={styles.uploadTitle}>
-                    Cliquez ou glissez votre pièce d'identité ici
+                    Cliquez ou glissez votre pièce d&apos;identité ici
                   </p>
                   <p className={styles.uploadSub}>
                     (Recto / Verso) — PDF, PNG ou JPEG (max 5 Mo)
@@ -209,7 +207,7 @@ export default function VerificationIdentite() {
 
           {/* SIDEBAR STEPPER */}
           <aside className={styles.sidebar} aria-label="Progression">
-            <p className={styles.sidebarTitle}>Étapes de l'inscription</p>
+            <p className={styles.sidebarTitle}>Étapes de l&apos;inscription</p>
             <ol className={styles.stepsList}>
               {stepsList.map(s => (
                 <li key={s.num}

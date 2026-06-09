@@ -9,11 +9,6 @@ import {
   VIEWPORT,
 } from '@/lib/motion'
 
-const C = {
-  primary: '#4648D4', primaryXL: '#EEEEFF',
-  ink: '#111111', text: '#374151', muted: '#6B7280', border: '#E5E7EB',
-}
-
 function MiniDash({ title, stats }: { title: string, stats: { label: string, value: string }[] }) {
   return (
     <motion.div
@@ -21,30 +16,25 @@ function MiniDash({ title, stats }: { title: string, stats: { label: string, val
       whileHover={{
         y: -5,
         boxShadow: '0 16px 40px rgba(70,72,212,0.12)',
-        borderColor: C.primary,
+        borderColor: '#4648D4',
         transition: { duration: 0.28, ease: EASE_POWER3 },
       }}
-      style={{
-        background: '#fff', borderRadius: 10,
-        border: `1px solid ${C.border}`, padding: 14,
-        boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-        willChange: 'transform',
-      }}
+      className="bg-white rounded-[10px] border border-gray-200 p-3.5 shadow-[0_2px_8px_rgba(0,0,0,0.05)] will-change-transform"
     >
-      <p style={{ fontSize: 11, fontWeight: 600, color: C.ink, marginBottom: 10 }}>{title}</p>
-      <div style={{ display: 'flex', gap: 8 }}>
+      <p className="text-[11px] font-semibold text-opus-ink mb-2.5">{title}</p>
+      <div className="flex gap-2">
         {stats.map(s => (
-          <div key={s.label} style={{ flex: 1, background: '#F9FAFB', borderRadius: 6, padding: '8px 10px', border: `1px solid ${C.border}` }}>
-            <p style={{ fontSize: 15, fontWeight: 800, color: C.primary }}>{s.value}</p>
-            <p style={{ fontSize: 9, color: C.muted, marginTop: 2, lineHeight: 1.3 }}>{s.label}</p>
+          <div key={s.label} className="flex-1 bg-gray-50 rounded-md px-2.5 py-2 border border-gray-200">
+            <p className="text-[15px] font-extrabold text-opus-primary">{s.value}</p>
+            <p className="text-[9px] text-gray-500 mt-0.5 leading-snug">{s.label}</p>
           </div>
         ))}
       </div>
-      <div style={{ marginTop: 10 }}>
+      <div className="mt-2.5">
         {['Dashboard', 'Mes Opportunités', 'Factures'].map((item, i) => (
-          <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 0', borderBottom: i < 2 ? `1px solid #F3F4F6` : 'none' }}>
-            <span style={{ width: 5, height: 5, borderRadius: '50%', background: i === 0 ? C.primary : '#D1D5DB', flexShrink: 0 }} />
-            <span style={{ fontSize: 10, color: i === 0 ? C.ink : C.muted }}>{item}</span>
+          <div key={item} className={`flex items-center gap-1.5 py-[5px] ${i < 2 ? 'border-b border-gray-100' : ''}`}>
+            <span className={`w-[5px] h-[5px] rounded-full shrink-0 ${i === 0 ? 'bg-opus-primary' : 'bg-gray-300'}`} />
+            <span className={`text-[10px] ${i === 0 ? 'text-opus-ink' : 'text-gray-500'}`}>{item}</span>
           </div>
         ))}
       </div>
@@ -62,18 +52,17 @@ const DASHBOARDS = [
 
 export default function WhyOpus() {
   return (
-    <section id="temoignages" style={{ background: '#ffffff', padding: 'clamp(60px,7vw,90px) 24px' }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+    <section id="temoignages" className="bg-white py-[clamp(60px,7vw,90px)] px-6">
+      <div className="max-w-[1100px] mx-auto">
 
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <div style={{ overflow: 'hidden', marginBottom: 12 }}>
+        <div className="text-center mb-12">
+          <div className="overflow-hidden mb-3">
             <motion.h2
               variants={clipRevealVariants}
               initial="hidden"
               whileInView="visible"
               viewport={VIEWPORT}
-              style={{ fontSize: 'clamp(24px,3.5vw,38px)', fontWeight: 800, color: C.ink, letterSpacing: '-0.02em', margin: 0 }}
+              className="text-[clamp(24px,3.5vw,38px)] font-extrabold text-opus-ink tracking-[-0.02em] m-0"
             >
               Pourquoi vous allez adorer utiliser OPUS
             </motion.h2>
@@ -84,46 +73,37 @@ export default function WhyOpus() {
             whileInView="visible"
             viewport={VIEWPORT}
             transition={{ delay: 0.15 }}
-            style={{ fontSize: 15, color: C.muted, maxWidth: 520, margin: '0 auto', lineHeight: 1.6 }}
+            className="text-[15px] text-gray-500 max-w-[520px] mx-auto leading-relaxed"
           >
             Parce que gérer son entreprise ne devrait pas ressembler à un contrôle fiscal.
             Parce que votre entreprise ne devrait pas se limiter à un contrôle fiscal.
           </motion.p>
         </div>
 
-        {/* Row 1 — 3 dashboards */}
         <motion.div
           variants={staggerContainerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={VIEWPORT}
-          style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 16 }}
+          className="grid grid-cols-3 gap-4 mb-4 max-md:grid-cols-1"
         >
           {DASHBOARDS.slice(0, 3).map((d, i) => (
             <MiniDash key={i} title={d.title} stats={d.stats} />
           ))}
         </motion.div>
 
-        {/* Row 2 — 2 dashboards (délai pour que le stagger soit séquentiel) */}
         <motion.div
           variants={staggerContainerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={VIEWPORT}
-          style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 16 }}
+          className="grid grid-cols-2 gap-4 max-md:grid-cols-1"
         >
           {DASHBOARDS.slice(3).map((d, i) => (
             <MiniDash key={i} title={d.title} stats={d.stats} />
           ))}
         </motion.div>
       </div>
-
-      <style>{`
-        @media(max-width:768px){
-          #temoignages [style*="repeat(3,1fr)"]{grid-template-columns:1fr!important}
-          #temoignages [style*="repeat(2,1fr)"]{grid-template-columns:1fr!important}
-        }
-      `}</style>
     </section>
   )
 }

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import styles from './InformationsPersonnelles.module.css'
+import styles from '@/styles/inscription/InformationsPersonnelles.module.css'
 
 /* ── Constantes ─────────────────────────────────────────────────── */
 const STEP        = 2
@@ -283,7 +283,7 @@ export default function InformationsPersonnelles() {
 
           {/* ── SIDEBAR ÉTAPES ────────────────────────────────── */}
           <aside className={styles.sidebar} aria-label="Progression de l'inscription">
-            <p className={styles.sidebarTitle}>Étapes de l'inscription</p>
+            <p className={styles.sidebarTitle}>Étapes de l&apos;inscription</p>
 
             <ol className={styles.stepsList}>
               {STEPS_LIST.map(step => (
