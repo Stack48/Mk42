@@ -17,8 +17,8 @@ export async function POST(req: Request) {
     const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24h
 
     await client.users.updateUserMetadata(userId, {
-      unsafeMetadata: {
-        ...user.unsafeMetadata,
+      privateMetadata: {
+        ...user.privateMetadata,
         emailVerifToken: token,
         emailVerifExpiresAt: expiresAt,
       },

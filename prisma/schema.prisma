@@ -72,11 +72,13 @@ enum RoleOrganisation {
 // ─── Utilisateurs & Auth ──────────────────────────────────────────────────────
 
 model Utilisateur {
-  id        String   @id @default(cuid())
-  clerkId   String   @unique
-  email     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(cuid())
+  clerkId       String   @unique
+  email         String   @unique
+  profil        String?
+  emailVerified Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   entreprise  Entreprise?
   apporteur   Apporteur?

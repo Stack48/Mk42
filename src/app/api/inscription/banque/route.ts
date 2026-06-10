@@ -23,12 +23,10 @@ export async function POST(req: Request) {
       return Response.json({ error: parsed.error.flatten().fieldErrors }, { status: 422 });
     }
 
-    const client = await clerkClient();
-    const clerkUser = await client.users.getUser(userId);
-    const profil = (clerkUser.unsafeMetadata?.profil as string) ?? 'entreprise';
-
     const utilisateur = await prisma.utilisateur.findUnique({ where: { clerkId: userId } });
     if (!utilisateur) return Response.json({ error: 'Utilisateur introuvable' }, { status: 404 });
+
+    const profil = utilisateur.profil ?? 'entreprise';
 
     if (profil === 'entreprise') {
       const entreprise = await prisma.entreprise.findUnique({ where: { utilisateurId: utilisateur.id } });
@@ -56,6 +54,9 @@ export async function POST(req: Request) {
       if (profil !== 'particulier') {
         return Response.json({ error: 'Apporteur introuvable. Veuillez compléter l\'étape précédente.' }, { status: 404 });
       }
+
+      const client = await clerkClient();
+      const clerkUser = await client.users.getUser(userId);
 
       apporteur = await prisma.apporteur.create({
         data: {

@@ -1,14 +1,16 @@
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { SignOutButton } from '@clerk/nextjs';
+import { prisma } from '@/lib/prisma';
 
 export default async function DashboardPage() {
   const { userId } = await auth();
   if (!userId) redirect('/connexion');
 
+  const utilisateur = await prisma.utilisateur.findUnique({ where: { clerkId: userId! } });
+  if (!utilisateur?.emailVerified) redirect('/inscription/etape-6');
+
   const user = await currentUser();
-  const meta = user?.unsafeMetadata as Record<string, unknown> | undefined;
-  if (!meta?.emailVerified) redirect('/inscription/etape-6');
 
   return (
     <main className="p-8 space-y-4">

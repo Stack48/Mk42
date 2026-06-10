@@ -17,12 +17,12 @@ export async function POST(req: Request) {
       lastName: nom,
       emailAddress: [email],
       password: motDePasse,
-      unsafeMetadata: { profil, telephone, fonction },
+      unsafeMetadata: { telephone, fonction },
     });
 
     try {
       await prisma.utilisateur.create({
-        data: { clerkId: clerkUser.id, email },
+        data: { clerkId: clerkUser.id, email, profil },
       });
     } catch (prismaErr) {
       await client.users.deleteUser(clerkUser.id).catch(() => {});

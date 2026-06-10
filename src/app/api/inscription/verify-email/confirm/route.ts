@@ -1,5 +1,6 @@
 import { clerkClient } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -11,7 +12,7 @@ export async function GET(req: Request) {
   try {
     const client = await clerkClient();
     const user = await client.users.getUser(userId);
-    const meta = user.unsafeMetadata as Record<string, unknown>;
+    const meta = user.privateMetadata as Record<string, unknown>;
 
     if (
       meta.emailVerifToken !== token ||
@@ -21,14 +22,19 @@ export async function GET(req: Request) {
       return redirect('/inscription/etape-6?error=lien-expire');
     }
 
-    await client.users.updateUserMetadata(userId, {
-      unsafeMetadata: {
-        ...meta,
-        emailVerifToken: null,
-        emailVerifExpiresAt: null,
-        emailVerified: true,
-      },
-    });
+    await Promise.all([
+      client.users.updateUserMetadata(userId, {
+        privateMetadata: {
+          ...meta,
+          emailVerifToken: null,
+          emailVerifExpiresAt: null,
+        },
+      }),
+      prisma.utilisateur.update({
+        where: { clerkId: userId },
+        data: { emailVerified: true },
+      }),
+    ]);
 
     return redirect('/dashboard');
   } catch (err) {
