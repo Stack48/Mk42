@@ -74,6 +74,11 @@
   color: var(--opus-muted);
   text-decoration: none;
   transition: color 150ms ease;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
 }
 
 .backLink:hover { color: var(--opus-ink); }

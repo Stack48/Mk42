@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import styles from './CoordonneesBancaires.module.css'
+import type { Step4Data } from '../types'
 
 function CheckIcon() {
   return (
@@ -43,33 +43,32 @@ const STEPS_SANS_SIRET = [
   { num: 6, label: 'Validation email & CGU',       status: 'inactive', sub: null       },
 ] as const
 
-export default function CoordonneesBancaires() {
-  const router = useRouter()
-  const [profil, setProfil] = useState<string>('entreprise')
-  const [ready,  setReady]  = useState(false)
+const STEP        = 4
+const TOTAL_STEPS = 6
 
-  useEffect(() => {
-    setProfil(sessionStorage.getItem('opus_profile') ?? 'entreprise')
-    setReady(true)
-  }, [])
+interface Props {
+  initialValues?: Partial<Step4Data>
+  profil: string
+  onNext: (data: Step4Data) => void
+  onPrev: () => void
+}
 
-  const step      = 4
-  const total     = 6
-  const stepsList = useMemo(
-    () => profil === 'particulier' ? STEPS_SANS_SIRET : STEPS_AVEC_SIRET,
-    [profil]
-  )
-  const prevHref  = profil === 'particulier' ? '/inscription/etape-2' : '/inscription/etape-3'
+export default function CoordonneesBancaires({ initialValues = {}, profil, onNext, onPrev }: Props) {
+  const stepsList = profil === 'particulier' ? STEPS_SANS_SIRET : STEPS_AVEC_SIRET
 
-  const [form, setForm] = useState({ titulaire: '', iban: '', ibanConfirm: '', bic: '' })
+  const [form, setForm] = useState({
+    titulaire:   initialValues.titulaire   ?? '',
+    iban:        initialValues.iban        ?? '',
+    ibanConfirm: initialValues.ibanConfirm ?? '',
+    bic:         initialValues.bic         ?? '',
+  })
   const set = (key: keyof typeof form) =>
     (e: React.ChangeEvent<HTMLInputElement>) =>
       setForm(prev => ({ ...prev, [key]: e.target.value }))
 
-  const [ribFile,    setRibFile]    = useState<File | null>(null)
+  const [ribFile,    setRibFile]    = useState<File | null>(initialValues.ribFile ?? null)
   const [dragging,   setDragging]   = useState(false)
   const [erreur,     setErreur]     = useState('')
-  const [chargement, setChargement] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFile = (file: File | null) => { if (file) setRibFile(file) }
@@ -80,59 +79,12 @@ export default function CoordonneesBancaires() {
     handleFile(e.dataTransfer.files[0] ?? null)
   }
 
-  const handleContinue = async () => {
+  const handleContinue = () => {
     if (form.iban && form.iban !== form.ibanConfirm) {
       setErreur("Les deux IBAN ne correspondent pas.")
       return
     }
-
-    setChargement(true)
-    setErreur('')
-
-    try {
-      if (ribFile) {
-        const resUrl = await fetch('/api/documents/presigned-url', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nomFichier: ribFile.name, contentType: ribFile.type }),
-        })
-        const { url, key } = await resUrl.json()
-        if (!resUrl.ok) throw new Error('Erreur génération URL')
-
-        await fetch(url, { method: 'PUT', body: ribFile, headers: { 'Content-Type': ribFile.type } })
-
-        await fetch('/api/documents', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'RIB', urlS3: key, nomFichier: ribFile.name }),
-        })
-      }
-
-      const res = await fetch('/api/inscription/banque', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nomTitulaireIban: form.titulaire,
-          iban:             form.iban,
-          bic:              form.bic,
-        }),
-      })
-
-      const data = await res.json()
-      if (!res.ok) {
-        const msg = data.error && typeof data.error === 'object'
-          ? Object.values(data.error).flat().join(', ')
-          : (data.error ?? 'Erreur serveur')
-        setErreur(msg)
-        return
-      }
-
-      router.push('/inscription/etape-5')
-    } catch {
-      setErreur('Une erreur inattendue est survenue.')
-    } finally {
-      setChargement(false)
-    }
+    onNext({ ...form, ribFile })
   }
 
   return (
@@ -141,24 +93,22 @@ export default function CoordonneesBancaires() {
       <header className={styles.header}>
         <div className={styles.headerBar}>
           <Link href="/" className={styles.logo}>OPUS</Link>
-          <Link href={prevHref} className={styles.backLink}>
+          <button type="button" className={styles.backLink} onClick={onPrev} aria-label="Retour">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5"
                 strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             Retour
-          </Link>
+          </button>
         </div>
-        <div className={styles.progressTrack}
-          role="progressbar" aria-valuenow={step}
-          aria-valuemin={1} aria-valuemax={total}>
-          <div className={styles.progressFill}
-            style={{ width: ready ? `${(step / total) * 100}%` : '0%' }} />
+        <div className={styles.progressTrack} role="progressbar" aria-valuenow={STEP}
+          aria-valuemin={1} aria-valuemax={TOTAL_STEPS}>
+          <div className={styles.progressFill} style={{ width: `${(STEP / TOTAL_STEPS) * 100}%` }} />
         </div>
       </header>
 
       <main className={styles.main}>
-        <p className={styles.stepLabel}>Étape {step} sur {total}</p>
+        <p className={styles.stepLabel}>Étape {STEP} sur {TOTAL_STEPS}</p>
         <h1 className={styles.pageTitle}>Coordonnées bancaires</h1>
         <p className={styles.pageSubtitle}>Renseignez vos informations bancaires</p>
 
@@ -215,12 +165,8 @@ export default function CoordonneesBancaires() {
                   onKeyDown={e => e.key === 'Enter' && fileInputRef.current?.click()}
                   aria-label="Zone de dépôt du RIB"
                 >
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".pdf,.png,.jpg,.jpeg"
-                    onChange={e => handleFile(e.target.files?.[0] ?? null)}
-                  />
+                  <input ref={fileInputRef} type="file" accept=".pdf,.png,.jpg,.jpeg"
+                    onChange={e => handleFile(e.target.files?.[0] ?? null)} />
                   <UploadIcon />
                   <p className={styles.uploadTitle}>Cliquez ou glissez votre fichier ici</p>
                   <p className={styles.uploadSub}>PDF, PNG ou JPEG (max 5 Mo)</p>
@@ -235,27 +181,21 @@ export default function CoordonneesBancaires() {
             )}
 
             <div className={styles.formFooter}>
-              <button type="button" className={styles.btnPrev}
-                onClick={() => router.push(prevHref)}>
+              <button type="button" className={styles.btnPrev} onClick={onPrev}>
                 Précédent
               </button>
-              <button type="button" className={styles.btnNext}
-                onClick={handleContinue} disabled={chargement}>
-                {chargement ? 'Enregistrement…' : (
-                  <>
-                    Continuer
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor"
-                        strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </>
-                )}
+              <button type="button" className={styles.btnNext} onClick={handleContinue}>
+                Continuer
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor"
+                    strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </button>
             </div>
 
             <button type="button"
               style={{ display: 'block', margin: '8px auto 0', fontSize: 13, color: '#6B7280', background: 'none', border: 'none', cursor: 'pointer' }}
-              onClick={() => router.push('/inscription/etape-5')}>
+              onClick={() => onNext({ ...form, ribFile: null })}>
               Passer cette étape
             </button>
           </div>

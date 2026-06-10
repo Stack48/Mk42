@@ -1,13 +1,11 @@
 /**
- * VerificationSiret.module.css — Étape 3/6
- * Pixel-perfect sur 8.png — CSS pur, variables locales
+ * CoordonneesBancaires.module.css — Étape 4/6 (pro/BTP) ou 3/5 (particulier)
  */
 
 /* ── Tokens ────────────────────────────────────────────────────── */
 .page {
   --primary:       #4648D4;
   --primary-dk:    #3533B0;
-  --primary-xl:    #EEEEFF;
   --ink:           #0F172A;
   --text:          #1E293B;
   --muted:         #64748B;
@@ -16,25 +14,13 @@
   --input-h:       46px;
   --radius:        8px;
   --card-radius:   14px;
-
-  /* Progression */
   --progress-fill:  #1C3064;
   --progress-track: #E5EBF0;
-
-  /* Validation verte */
-  --green:          #15803D;
-  --green-bg:       #F0FDF4;
-  --green-border:   #86EFAC;
-
-  /* Steps */
   --step-done:     #1C3064;
   --step-active:   #4648D4;
   --step-inactive: #E5E7EB;
   --step-fg-off:   #9CA3AF;
-}
 
-/* ── Wrapper ────────────────────────────────────────────────────── */
-.page {
   min-height: 100vh;
   background: #ffffff;
 }
@@ -47,7 +33,6 @@
   z-index: 100;
   box-shadow: 0 1px 0 var(--border);
 }
-
 .headerBar {
   max-width: 1200px;
   margin: 0 auto;
@@ -57,7 +42,6 @@
   align-items: center;
   justify-content: space-between;
 }
-
 .logo {
   font-size: 24px;
   font-weight: 800;
@@ -65,7 +49,6 @@
   color: var(--ink);
   text-decoration: none;
 }
-
 .backLink {
   display: inline-flex;
   align-items: center;
@@ -74,6 +57,11 @@
   color: var(--muted);
   text-decoration: none;
   transition: color 150ms ease;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
 }
 .backLink:hover { color: var(--ink); }
 
@@ -108,7 +96,6 @@
   margin: 0 auto;
   padding: 64px 64px 80px;
 }
-
 .stepLabel {
   font-size: 13px;
   font-weight: 600;
@@ -145,21 +132,19 @@
   padding: 32px;
 }
 
-/* ── SIRET ROW ───────────────────────────────────────────────────── */
-.siretRow {
-  display: flex;
-  gap: 12px;
-  align-items: flex-end;
-  margin-bottom: 14px;
+/* ── CHAMPS ──────────────────────────────────────────────────────── */
+.fieldGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 20px;
 }
+.fieldFull { grid-column: 1 / -1; }
 
-.siretField {
-  flex: 1;
+.field {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
-
 .label {
   font-size: 13px;
   font-weight: 500;
@@ -169,7 +154,6 @@
   color: var(--primary);
   margin-left: 2px;
 }
-
 .input {
   height: var(--input-h);
   padding: 0 14px;
@@ -188,101 +172,48 @@
   box-shadow: 0 0 0 3px rgba(70, 72, 212, 0.12);
   background: #ffffff;
 }
-select.input {
-  appearance: auto;
-  cursor: pointer;
-}
 
-/* Input read-only (pré-rempli) */
-.inputReadonly {
-  height: var(--input-h);
-  padding: 0 14px;
-  background: var(--input-bg);
-  border: 1px solid var(--border);
+/* ── ZONE UPLOAD RIB ─────────────────────────────────────────────── */
+.uploadZone {
+  margin-top: 4px;
+  border: 2px dashed #CBD5E1;
   border-radius: var(--radius);
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--text);
-  width: 100%;
-  cursor: default;
-  display: flex;
-  align-items: center;
-}
-
-/* ── BOUTON VÉRIFIER ─────────────────────────────────────────────── */
-.btnVerify {
-  height: var(--input-h);
-  padding: 0 24px;
-  background: var(--primary);
-  color: #ffffff;
-  border: none;
-  border-radius: var(--radius);
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: background 150ms ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.btnVerify:hover:not(:disabled) { background: var(--primary-dk); }
-.btnVerify:disabled { background: var(--step-inactive); color: var(--step-fg-off); cursor: not-allowed; }
-
-/* Spinner */
-.spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255,255,255,0.4);
-  border-top-color: #ffffff;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── BANNIÈRE SUCCÈS ─────────────────────────────────────────────── */
-.successBanner {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  background: var(--green-bg);
-  border: 1px solid var(--green-border);
-  border-radius: 10px;
-  padding: 14px 16px;
-  margin-bottom: 24px;
-}
-.successIcon {
-  color: var(--green);
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-.successTitle {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--green);
-  letter-spacing: 0.02em;
-  margin-bottom: 2px;
-}
-.successSub {
-  font-size: 13px;
-  color: var(--green);
-  opacity: 0.85;
-}
-
-/* ── CHAMPS FORMULAIRE ───────────────────────────────────────────── */
-.fieldGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px 20px;
-}
-.fieldFull { grid-column: 1 / -1; }
-
-.field {
+  padding: 36px 24px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease;
+  background: #FAFBFF;
+  text-align: center;
+}
+.uploadZone:hover,
+.uploadZone.dragging {
+  border-color: var(--primary);
+  background: #EEEEFF;
+}
+.uploadZone input[type='file'] {
+  display: none;
+}
+.uploadIcon {
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+.uploadTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.uploadSub {
+  font-size: 13px;
+  color: var(--muted);
+}
+.uploadFileName {
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 500;
+  margin-top: 4px;
 }
 
 /* ── FOOTER BOUTONS ──────────────────────────────────────────────── */
@@ -322,12 +253,7 @@ select.input {
   cursor: pointer;
   transition: background 150ms ease;
 }
-.btnNext:hover:not(:disabled) { background: var(--primary-dk); }
-.btnNext:disabled {
-  background: var(--step-inactive);
-  color: var(--step-fg-off);
-  cursor: not-allowed;
-}
+.btnNext:hover { background: var(--primary-dk); }
 
 /* ── SIDEBAR STEPPER ─────────────────────────────────────────────── */
 .sidebar {
@@ -381,8 +307,8 @@ select.input {
   font-size: 13px;
   font-weight: 700;
 }
-.stepItem.done   .stepBadge { background: var(--step-done);   color: #ffffff; }
-.stepItem.active .stepBadge { background: var(--step-active); color: #ffffff; }
+.stepItem.done     .stepBadge { background: var(--step-done);     color: #ffffff; }
+.stepItem.active   .stepBadge { background: var(--step-active);   color: #ffffff; }
 .stepItem.inactive .stepBadge { background: var(--step-inactive); color: var(--step-fg-off); }
 
 .stepContent { display: flex; flex-direction: column; gap: 2px; padding-top: 5px; }
@@ -411,24 +337,13 @@ select.input {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0);    }
-}
 
-.stepLabel    { animation: fadeInUp  0.35s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both; }
-.pageTitle    { animation: fadeInUp  0.4s  cubic-bezier(0.22, 1, 0.36, 1) 0.1s  both; }
-.pageSubtitle { animation: fadeInUp  0.4s  cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
-.card         { animation: fadeInUp  0.4s  cubic-bezier(0.22, 1, 0.36, 1) 0.2s  both; }
-.sidebar      { animation: fadeIn    0.5s  ease                            0.25s both; }
+.stepLabel    { animation: fadeInUp 0.35s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both; }
+.pageTitle    { animation: fadeInUp 0.4s  cubic-bezier(0.22, 1, 0.36, 1) 0.1s  both; }
+.pageSubtitle { animation: fadeInUp 0.4s  cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
+.card         { animation: fadeInUp 0.4s  cubic-bezier(0.22, 1, 0.36, 1) 0.2s  both; }
+.sidebar      { animation: fadeIn   0.5s  ease                            0.25s both; }
 
-/* Bannière succès — glisse depuis le haut */
-.successBanner { animation: slideDown 0.3s cubic-bezier(0.22, 1, 0.36, 1) both; }
-
-/* Grille de champs — apparaît après la bannière */
-.fieldGrid { animation: fadeInUp 0.35s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both; }
-
-/* Boutons */
 .btnNext  { transition: background 150ms ease, transform 120ms ease; }
 .btnNext:hover:not(:disabled)  { transform: translateY(-1px); }
 .btnNext:active:not(:disabled) { transform: scale(0.98); }
@@ -444,5 +359,4 @@ select.input {
   .pageTitle { font-size: 26px; }
   .fieldGrid { grid-template-columns: 1fr; }
   .fieldFull { grid-column: 1; }
-  .siretRow  { flex-direction: column; align-items: stretch; }
 }

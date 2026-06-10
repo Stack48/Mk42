@@ -1,11 +1,16 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
-import ProfileSelection from './ProfileSelection'
+import InscriptionWizard from './InscriptionWizard'
 
 export const metadata: Metadata = {
-  title: 'Opus — Quel est votre profil ?',
-  description: 'Choisissez votre profil pour personnaliser votre expérience Opus.',
+  title: 'Opus — Inscription',
+  description: 'Créez votre compte Opus.',
 }
 
 export default function InscriptionPage() {
-  return <ProfileSelection />
+  return (
+    <Suspense>
+      <InscriptionWizard />
+    </Suspense>
+  )
 }

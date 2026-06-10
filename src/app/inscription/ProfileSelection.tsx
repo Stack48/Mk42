@@ -1,36 +1,21 @@
 'use client'
 
-/**
- * ProfileSelection.tsx — FICHIER 2 : Template
- *
- * Composant racine de l'étape 1/6.
- * Consomme le hook useProfileSelection pour toute la logique d'état.
- * Rendu : Header (progression) + Grille de profils + Bouton Continuer.
- */
-
 import Link from 'next/link'
 import { useProfileSelection, PROFILES } from './useProfileSelection'
 import type { ProfileOption, ProfileId } from './useProfileSelection'
 import styles from './ProfileSelection.module.css'
 
-
-/* ================================================================
-   Sous-composant : ProfileCard
-   Reçoit uniquement les props nécessaires à son rendu.
-   ================================================================ */
-function saveProfileAndNavigate(id: ProfileId) {
-  if (typeof window !== 'undefined') {
-    sessionStorage.setItem('opus_profile', id)
-  }
-}
+const STEP        = 1
+const TOTAL_STEPS = 6
 
 interface ProfileCardProps {
   profile:    ProfileOption
   isSelected: boolean
   onSelect:   () => void
+  onChoose:   () => void
 }
 
-function ProfileCard({ profile, isSelected, onSelect }: ProfileCardProps) {
+function ProfileCard({ profile, isSelected, onSelect, onChoose }: ProfileCardProps) {
   const cardClass = [styles.card, isSelected ? styles.selected : '']
     .filter(Boolean)
     .join(' ')
@@ -43,127 +28,83 @@ function ProfileCard({ profile, isSelected, onSelect }: ProfileCardProps) {
       aria-label={profile.title}
       className={cardClass}
       onClick={onSelect}
+      onKeyDown={e => e.key === 'Enter' && onSelect()}
     >
-      {/* Avatar placeholder */}
       <div className={styles.cardAvatar} aria-hidden="true" />
-
-      {/* Titre */}
       <h2 className={styles.cardTitle}>{profile.title}</h2>
-
-      {/* Description */}
       <p className={styles.cardDesc}>{profile.description}</p>
-
-      {/* Liste des caractéristiques */}
       <ul className={styles.cardFeatures} aria-label="Caractéristiques">
         {profile.features.map(feature => (
           <li key={feature}>{feature}</li>
         ))}
       </ul>
-
-      {/* Lien-bouton — navigue directement à l'étape suivante */}
-      <Link
-        href="/inscription/etape-2"
+      <button
+        type="button"
         className={styles.cardBtn}
         aria-label={`Choisir le profil ${profile.title}`}
         onClick={e => {
           e.stopPropagation()
-          saveProfileAndNavigate(profile.id)
+          onChoose()
         }}
       >
         Choisir ce profil
-      </Link>
+      </button>
     </article>
   )
 }
 
-/* ================================================================
-   Composant principal : ProfileSelection
-   ================================================================ */
-export default function ProfileSelection() {
+interface ProfileSelectionProps {
+  onSelectProfil: (profil: ProfileId) => void
+}
+
+export default function ProfileSelection({ onSelectProfil }: ProfileSelectionProps) {
   const { isSelected, selectProfile } = useProfileSelection()
 
   return (
     <div className={styles.page}>
 
-      {/* ── HEADER ───────────────────────────────────────────────── */}
       <header className={styles.header}>
-
-        {/* Barre logo + navigation retour */}
         <div className={styles.headerBar}>
-          <Link
-            href="/"
-            className={styles.logo}
-            aria-label="Retour à l'accueil Opus"
-          >
+          <Link href="/" className={styles.logo} aria-label="Retour à l'accueil Opus">
             OPUS
           </Link>
-
-          <Link
-            href="/"
-            className={styles.backLink}
-            aria-label="Retour à l'accueil"
-          >
-            {/* Icône chevron gauche */}
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M10 12L6 8L10 4"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+          <Link href="/" className={styles.backLink} aria-label="Retour à l'accueil">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5"
+                strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             Retour
           </Link>
         </div>
-
-        {/* Barre vide — le choix du profil n'est pas une étape */}
-        <div className={styles.progressTrack} role="progressbar" aria-valuenow={0} aria-valuemin={0} aria-valuemax={100}>
-          <div className={styles.progressFill} style={{ width: '0%' }} />
-        </div>
-
-      </header>
-      {/* /HEADER */}
-
-
-      {/* ── CONTENU PRINCIPAL ────────────────────────────────────── */}
-      <main className={styles.main}>
-
-        {/* Titre de la page */}
-        <h1 className={styles.pageTitle}>
-          Quel est votre profil&nbsp;?
-        </h1>
-
-        {/* Sous-titre */}
-        <p className={styles.pageSubtitle}>
-          Vous pourrez modifier ces informations plus tard.
-        </p>
-
-        {/* Grille des cartes de profil */}
         <div
-          className={styles.cardsGrid}
-          role="group"
-          aria-label="Choisissez votre profil"
+          className={styles.progressTrack}
+          role="progressbar"
+          aria-valuenow={STEP}
+          aria-valuemin={1}
+          aria-valuemax={TOTAL_STEPS}
+          aria-label={`Étape ${STEP} sur ${TOTAL_STEPS}`}
         >
+          <div className={styles.progressFill} style={{ width: `${(STEP / TOTAL_STEPS) * 100}%` }} />
+        </div>
+      </header>
+
+      <main className={styles.main}>
+        <p className={styles.stepLabel}>Étape {STEP} sur {TOTAL_STEPS}</p>
+        <h1 className={styles.pageTitle}>Quel est votre profil&nbsp;?</h1>
+        <p className={styles.pageSubtitle}>Vous pourrez modifier ces informations plus tard.</p>
+
+        <div className={styles.cardsGrid} role="group" aria-label="Choisissez votre profil">
           {PROFILES.map(profile => (
             <ProfileCard
               key={profile.id}
               profile={profile}
               isSelected={isSelected(profile.id)}
               onSelect={() => selectProfile(profile.id)}
+              onChoose={() => onSelectProfil(profile.id)}
             />
           ))}
         </div>
-
-
       </main>
-      {/* /CONTENU PRINCIPAL */}
 
     </div>
   )

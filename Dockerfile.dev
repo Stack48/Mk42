@@ -10,4 +10,4 @@ EXPOSE 3000
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV WATCHPACK_POLLING=true
 
-CMD ["sh", "-c", "npx prisma generate && npm run dev -- --hostname 0.0.0.0"]
+CMD sh -c "npx prisma generate && npm run dev -- --hostname 0.0.0.0"

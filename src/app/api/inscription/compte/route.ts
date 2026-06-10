@@ -1,6 +1,6 @@
 import { clerkClient } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/generated/prisma/client/client';
 
 export async function POST(req: Request) {
   try {
@@ -41,10 +41,10 @@ export async function POST(req: Request) {
 
     const tokenRes = await client.signInTokens.createSignInToken({
       userId: clerkUser.id,
-      expiresInSeconds: 300,
+      expiresInSeconds: 120,
     });
 
-    return Response.json({ ticket: tokenRes.token }, { status: 201 });
+    return Response.json({ success: true, ticket: tokenRes.token }, { status: 201 });
   } catch (err: unknown) {
     const clerkErr = err as {
       errors?: { code?: string; message?: string; longMessage?: string }[];

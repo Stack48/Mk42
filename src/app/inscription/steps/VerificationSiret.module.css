@@ -1,31 +1,45 @@
 /**
- * VerificationIdentite.module.css — Étape 5/6 (pro) ou 4/5 (particulier)
+ * VerificationSiret.module.css — Étape 3/6
+ * Pixel-perfect sur 8.png — CSS pur, variables locales
  */
 
-/* ── Tokens ─────────────────────────────────────────────────────── */
+/* ── Tokens ────────────────────────────────────────────────────── */
 .page {
-  --primary:        #4648D4;
-  --primary-dk:     #3533B0;
-  --ink:            #0F172A;
-  --text:           #1E293B;
-  --muted:          #64748B;
-  --border:         #E2E8F0;
-  --input-bg:       #F3F4F6;
-  --input-h:        46px;
-  --radius:         8px;
-  --card-radius:    14px;
+  --primary:       #4648D4;
+  --primary-dk:    #3533B0;
+  --primary-xl:    #EEEEFF;
+  --ink:           #0F172A;
+  --text:          #1E293B;
+  --muted:         #64748B;
+  --border:        #E2E8F0;
+  --input-bg:      #F3F4F6;
+  --input-h:       46px;
+  --radius:        8px;
+  --card-radius:   14px;
+
+  /* Progression */
   --progress-fill:  #1C3064;
   --progress-track: #E5EBF0;
-  --step-done:      #1C3064;
-  --step-active:    #4648D4;
-  --step-inactive:  #E5E7EB;
-  --step-fg-off:    #9CA3AF;
 
+  /* Validation verte */
+  --green:          #15803D;
+  --green-bg:       #F0FDF4;
+  --green-border:   #86EFAC;
+
+  /* Steps */
+  --step-done:     #1C3064;
+  --step-active:   #4648D4;
+  --step-inactive: #E5E7EB;
+  --step-fg-off:   #9CA3AF;
+}
+
+/* ── Wrapper ────────────────────────────────────────────────────── */
+.page {
   min-height: 100vh;
   background: #ffffff;
 }
 
-/* ── HEADER ──────────────────────────────────────────────────────── */
+/* ── HEADER ─────────────────────────────────────────────────────── */
 .header {
   background: #ffffff;
   position: sticky;
@@ -33,6 +47,7 @@
   z-index: 100;
   box-shadow: 0 1px 0 var(--border);
 }
+
 .headerBar {
   max-width: 1200px;
   margin: 0 auto;
@@ -42,6 +57,7 @@
   align-items: center;
   justify-content: space-between;
 }
+
 .logo {
   font-size: 24px;
   font-weight: 800;
@@ -49,6 +65,7 @@
   color: var(--ink);
   text-decoration: none;
 }
+
 .backLink {
   display: inline-flex;
   align-items: center;
@@ -57,10 +74,15 @@
   color: var(--muted);
   text-decoration: none;
   transition: color 150ms ease;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
 }
 .backLink:hover { color: var(--ink); }
 
-/* ── BARRE DE PROGRESSION ────────────────────────────────────────── */
+/* ── PROGRESS BAR ────────────────────────────────────────────────── */
 .progressTrack {
   width: 100%;
   height: 3px;
@@ -91,6 +113,7 @@
   margin: 0 auto;
   padding: 64px 64px 80px;
 }
+
 .stepLabel {
   font-size: 13px;
   font-weight: 600;
@@ -111,7 +134,7 @@
   margin-bottom: 36px;
 }
 
-/* ── LAYOUT 2 COLONNES ───────────────────────────────────────────── */
+/* ── 2-COL LAYOUT ────────────────────────────────────────────────── */
 .layout {
   display: grid;
   grid-template-columns: 1fr 360px;
@@ -127,17 +150,21 @@
   padding: 32px;
 }
 
-/* ── CHAMPS ──────────────────────────────────────────────────────── */
-.fieldStack {
+/* ── SIRET ROW ───────────────────────────────────────────────────── */
+.siretRow {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 14px;
 }
-.field {
+
+.siretField {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
+
 .label {
   font-size: 13px;
   font-weight: 500;
@@ -148,7 +175,6 @@
   margin-left: 2px;
 }
 
-/* Input texte */
 .input {
   height: var(--input-h);
   padding: 0 14px;
@@ -160,7 +186,6 @@
   color: var(--ink);
   outline: none;
   width: 100%;
-  box-sizing: border-box;
   transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 .input:focus {
@@ -168,77 +193,104 @@
   box-shadow: 0 0 0 3px rgba(70, 72, 212, 0.12);
   background: #ffffff;
 }
+select.input {
+  appearance: auto;
+  cursor: pointer;
+}
 
-/* Select document */
-.select {
+/* Input read-only (pré-rempli) */
+.inputReadonly {
   height: var(--input-h);
-  padding: 0 40px 0 14px;
+  padding: 0 14px;
   background: var(--input-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   font-family: inherit;
   font-size: 14px;
-  color: var(--ink);
-  outline: none;
+  color: var(--text);
   width: 100%;
-  box-sizing: border-box;
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%2364748B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  cursor: pointer;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
-}
-.select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(70, 72, 212, 0.12);
-  background-color: #ffffff;
-}
-
-/* ── ZONE UPLOAD PIÈCE D'IDENTITÉ ────────────────────────────────── */
-.uploadZone {
-  margin-top: 4px;
-  border: 2px dashed #CBD5E1;
-  border-radius: var(--radius);
-  padding: 40px 24px;
+  cursor: default;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  transition: border-color 150ms ease, background 150ms ease;
-  background: #FAFBFF;
-  text-align: center;
 }
-.uploadZone:hover,
-.dragging {
-  border-color: var(--primary);
-  background: #EEEEFF;
-}
-.uploadZone input[type='file'] { display: none; }
 
-.uploadIcon {
-  color: var(--primary);
-  margin-bottom: 4px;
-}
-.uploadTitle {
+/* ── BOUTON VÉRIFIER ─────────────────────────────────────────────── */
+.btnVerify {
+  height: var(--input-h);
+  padding: 0 24px;
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius);
+  font-family: inherit;
   font-size: 14px;
   font-weight: 600;
-  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 150ms ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.uploadSub {
-  font-size: 13px;
-  color: var(--muted);
+.btnVerify:hover:not(:disabled) { background: var(--primary-dk); }
+.btnVerify:disabled { background: var(--step-inactive); color: var(--step-fg-off); cursor: not-allowed; }
+
+/* Spinner */
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
 }
-.uploadFileName {
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── BANNIÈRE SUCCÈS ─────────────────────────────────────────────── */
+.successBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--green-bg);
+  border: 1px solid var(--green-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 24px;
+}
+.successIcon {
+  color: var(--green);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.successTitle {
   font-size: 13px;
-  color: var(--primary);
-  font-weight: 500;
-  margin-top: 4px;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 0.02em;
+  margin-bottom: 2px;
+}
+.successSub {
+  font-size: 13px;
+  color: var(--green);
+  opacity: 0.85;
 }
 
-/* ── BOUTONS ─────────────────────────────────────────────────────── */
+/* ── CHAMPS FORMULAIRE ───────────────────────────────────────────── */
+.fieldGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 20px;
+}
+.fieldFull { grid-column: 1 / -1; }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ── FOOTER BOUTONS ──────────────────────────────────────────────── */
 .formFooter {
   margin-top: 32px;
   padding-top: 24px;
@@ -275,7 +327,12 @@
   cursor: pointer;
   transition: background 150ms ease;
 }
-.btnNext:hover { background: var(--primary-dk); }
+.btnNext:hover:not(:disabled) { background: var(--primary-dk); }
+.btnNext:disabled {
+  background: var(--step-inactive);
+  color: var(--step-fg-off);
+  cursor: not-allowed;
+}
 
 /* ── SIDEBAR STEPPER ─────────────────────────────────────────────── */
 .sidebar {
@@ -329,8 +386,8 @@
   font-size: 13px;
   font-weight: 700;
 }
-.stepItem.done     .stepBadge { background: var(--step-done);     color: #ffffff; }
-.stepItem.active   .stepBadge { background: var(--step-active);   color: #ffffff; }
+.stepItem.done   .stepBadge { background: var(--step-done);   color: #ffffff; }
+.stepItem.active .stepBadge { background: var(--step-active); color: #ffffff; }
 .stepItem.inactive .stepBadge { background: var(--step-inactive); color: var(--step-fg-off); }
 
 .stepContent { display: flex; flex-direction: column; gap: 2px; padding-top: 5px; }
@@ -359,24 +416,38 @@
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
 
-.stepLabel    { animation: fadeInUp 0.35s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both; }
-.pageTitle    { animation: fadeInUp 0.4s  cubic-bezier(0.22, 1, 0.36, 1) 0.1s  both; }
-.pageSubtitle { animation: fadeInUp 0.4s  cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
-.card         { animation: fadeInUp 0.4s  cubic-bezier(0.22, 1, 0.36, 1) 0.2s  both; }
-.sidebar      { animation: fadeIn   0.5s  ease                            0.25s both; }
+.stepLabel    { animation: fadeInUp  0.35s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both; }
+.pageTitle    { animation: fadeInUp  0.4s  cubic-bezier(0.22, 1, 0.36, 1) 0.1s  both; }
+.pageSubtitle { animation: fadeInUp  0.4s  cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
+.card         { animation: fadeInUp  0.4s  cubic-bezier(0.22, 1, 0.36, 1) 0.2s  both; }
+.sidebar      { animation: fadeIn    0.5s  ease                            0.25s both; }
 
+/* Bannière succès — glisse depuis le haut */
+.successBanner { animation: slideDown 0.3s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Grille de champs — apparaît après la bannière */
+.fieldGrid { animation: fadeInUp 0.35s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both; }
+
+/* Boutons */
 .btnNext  { transition: background 150ms ease, transform 120ms ease; }
 .btnNext:hover:not(:disabled)  { transform: translateY(-1px); }
 .btnNext:active:not(:disabled) { transform: scale(0.98); }
 
 /* ── RESPONSIVE ──────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
-  .layout  { grid-template-columns: 1fr; }
+  .layout { grid-template-columns: 1fr; }
   .sidebar { position: static; order: -1; }
 }
 @media (max-width: 768px) {
   .headerBar { padding: 0 24px; }
   .main      { padding: 40px 24px; }
   .pageTitle { font-size: 26px; }
+  .fieldGrid { grid-template-columns: 1fr; }
+  .fieldFull { grid-column: 1; }
+  .siretRow  { flex-direction: column; align-items: stretch; }
 }
