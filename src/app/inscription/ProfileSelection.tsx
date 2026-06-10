@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { useProfileSelection, PROFILES } from './useProfileSelection'
 import type { ProfileOption, ProfileId } from './useProfileSelection'
-import styles from './ProfileSelection.module.css'
 
 const STEP        = 1
 const TOTAL_STEPS = 6
@@ -13,39 +12,43 @@ interface ProfileCardProps {
   isSelected: boolean
   onSelect:   () => void
   onChoose:   () => void
+  delay:      string
 }
 
-function ProfileCard({ profile, isSelected, onSelect, onChoose }: ProfileCardProps) {
-  const cardClass = [styles.card, isSelected ? styles.selected : '']
-    .filter(Boolean)
-    .join(' ')
-
+function ProfileCard({ profile, isSelected, onSelect, onChoose, delay }: ProfileCardProps) {
   return (
     <article
       role="button"
       tabIndex={0}
       aria-pressed={isSelected}
       aria-label={profile.title}
-      className={cardClass}
+      className={`bg-white border-[1.5px] rounded-[14px] p-8 flex flex-col cursor-pointer outline-none transition-all duration-200 anim-fade-up ${delay} ${
+        isSelected
+          ? 'border-opus-primary shadow-[0_0_0_3px_rgba(34,116,165,0.18),0_4px_24px_rgba(34,116,165,0.13)] -translate-y-0.5'
+          : 'border-[#E2EDF5] shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] hover:border-opus-border hover:shadow-[0_4px_24px_rgba(34,116,165,0.13)] hover:-translate-y-[3px]'
+      }`}
       onClick={onSelect}
       onKeyDown={e => e.key === 'Enter' && onSelect()}
     >
-      <div className={styles.cardAvatar} aria-hidden="true" />
-      <h2 className={styles.cardTitle}>{profile.title}</h2>
-      <p className={styles.cardDesc}>{profile.description}</p>
-      <ul className={styles.cardFeatures} aria-label="Caractéristiques">
+      <div className="w-[60px] h-[60px] rounded-full bg-[#BDD5EA] flex-shrink-0 mb-6" aria-hidden="true" />
+      <h2 className="text-[19px] font-bold text-opus-ink leading-[1.25] mb-2">{profile.title}</h2>
+      <p className="text-sm text-opus-muted leading-relaxed mb-6">{profile.description}</p>
+      <ul className="list-none p-0 m-0 flex-1 flex flex-col gap-1.5 mb-6" aria-label="Caractéristiques">
         {profile.features.map(feature => (
-          <li key={feature}>{feature}</li>
+          <li key={feature} className="text-sm text-opus-text pl-3.5 relative before:content-['•'] before:absolute before:left-0 before:text-opus-text leading-relaxed">
+            {feature}
+          </li>
         ))}
       </ul>
       <button
         type="button"
-        className={styles.cardBtn}
         aria-label={`Choisir le profil ${profile.title}`}
-        onClick={e => {
-          e.stopPropagation()
-          onChoose()
-        }}
+        className={`w-full py-3 px-4 border-[1.5px] border-opus-primary rounded-lg text-sm font-semibold text-center cursor-pointer transition-all active:scale-[0.97] ${
+          isSelected
+            ? 'bg-opus-primary text-white hover:bg-opus-primary-dk hover:border-opus-primary-dk'
+            : 'bg-transparent text-opus-primary hover:bg-opus-primary-xl'
+        }`}
+        onClick={e => { e.stopPropagation(); onChoose() }}
       >
         Choisir ce profil
       </button>
@@ -57,50 +60,62 @@ interface ProfileSelectionProps {
   onSelectProfil: (profil: ProfileId) => void
 }
 
+const CARD_DELAYS = ['anim-d200', 'anim-d280', 'anim-d360']
+
 export default function ProfileSelection({ onSelectProfil }: ProfileSelectionProps) {
   const { isSelected, selectProfile } = useProfileSelection()
 
   return (
-    <div className={styles.page}>
+    <div className="min-h-screen bg-opus-bg">
 
-      <header className={styles.header}>
-        <div className={styles.headerBar}>
-          <Link href="/" className={styles.logo} aria-label="Retour à l'accueil Opus">
+      <header className="bg-white sticky top-0 z-[100] shadow-[0_1px_0_#E2EDF5]">
+        <div className="max-w-[1200px] mx-auto px-16 h-16 flex items-center justify-between max-[960px]:px-6 max-[600px]:px-4">
+          <Link href="/" className="text-2xl font-extrabold tracking-[-0.5px] text-opus-ink no-underline" aria-label="Retour à l'accueil Opus">
             OPUS
           </Link>
-          <Link href="/" className={styles.backLink} aria-label="Retour à l'accueil">
+          <Link href="/" className="inline-flex items-center gap-1 text-sm text-opus-muted no-underline hover:text-opus-ink transition-colors" aria-label="Retour à l'accueil">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5"
-                strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             Retour
           </Link>
         </div>
         <div
-          className={styles.progressTrack}
+          className="w-full h-[3px] bg-[#E5EBF0] overflow-hidden"
           role="progressbar"
           aria-valuenow={STEP}
           aria-valuemin={1}
           aria-valuemax={TOTAL_STEPS}
           aria-label={`Étape ${STEP} sur ${TOTAL_STEPS}`}
         >
-          <div className={styles.progressFill} style={{ width: `${(STEP / TOTAL_STEPS) * 100}%` }} />
+          <div className="h-full bg-[#1C3064] rounded-[0_2px_2px_0] transition-[width] duration-[450ms]" style={{ width: `${(STEP / TOTAL_STEPS) * 100}%` }} />
         </div>
       </header>
 
-      <main className={styles.main}>
-        <p className={styles.stepLabel}>Étape {STEP} sur {TOTAL_STEPS}</p>
-        <h1 className={styles.pageTitle}>Quel est votre profil&nbsp;?</h1>
-        <p className={styles.pageSubtitle}>Vous pourrez modifier ces informations plus tard.</p>
+      <main className="max-w-[1200px] mx-auto px-16 py-20 max-[960px]:px-6 max-[960px]:py-[60px] max-[600px]:px-4 max-[600px]:py-10">
+        <p className="text-[13px] font-semibold text-opus-primary tracking-[0.01em] mb-3 anim-fade-up anim-d050">
+          Étape {STEP} sur {TOTAL_STEPS}
+        </p>
+        <h1 className="text-[36px] font-bold text-opus-ink leading-[1.15] tracking-[-0.5px] mb-2 anim-fade-up anim-d100 max-[960px]:text-[28px] max-[600px]:text-2xl">
+          Quel est votre profil&nbsp;?
+        </h1>
+        <p className="text-[15px] text-opus-muted mb-12 anim-fade-up anim-d150">
+          Vous pourrez modifier ces informations plus tard.
+        </p>
 
-        <div className={styles.cardsGrid} role="group" aria-label="Choisissez votre profil">
-          {PROFILES.map(profile => (
+        <div
+          className="grid grid-cols-3 gap-6 mb-8 max-[960px]:grid-cols-2 max-[600px]:grid-cols-1 max-[600px]:gap-4"
+          role="group"
+          aria-label="Choisissez votre profil"
+        >
+          {PROFILES.map((profile, idx) => (
             <ProfileCard
               key={profile.id}
               profile={profile}
               isSelected={isSelected(profile.id)}
               onSelect={() => selectProfile(profile.id)}
               onChoose={() => onSelectProfil(profile.id)}
+              delay={CARD_DELAYS[idx] ?? 'anim-d200'}
             />
           ))}
         </div>
