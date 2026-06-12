@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
     // Nom de fichier pour le téléchargement (sans .enc)
     const downloadName = baseName;
 
-    return new Response(buffer, {
+    return new Response(new Uint8Array(buffer), {
       headers: {
         "Content-Type": contentType,
         // inline = afficher dans le navigateur (PDF viewer, image)

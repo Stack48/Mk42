@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma/client";
+import type { Prisma } from "@prisma/client";
 import { sendNotificationEmail } from "@/lib/email/notification.email";
 import type { Notification, NotificationType } from "@/types/notification.types";
 
@@ -29,7 +30,7 @@ export async function createNotification(
         titre,
         message,
         lu: false,
-        metadata: metadata ?? null,
+        metadata: metadata as Prisma.InputJsonObject | undefined,
         apporteur: { connect: { id: userId } },
       },
     });

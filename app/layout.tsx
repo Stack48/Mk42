@@ -10,6 +10,8 @@ import { Navbar } from "@/components/Navbar";
 
 // Metadata = balises <title> et <meta> générées côté serveur (bon pour le SEO).
 // En Symfony, tu ferais ça dans le Controller ou le template Twig.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "OPUS — CommissionPro BTP",
   description: "Suivi des commissions apporteurs BTP",

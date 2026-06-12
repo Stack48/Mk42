@@ -40,6 +40,7 @@ export function DealDetail({ deal }: Props) {
   const STATUT_BTN_STYLE: Record<KanbanDealStatut, string> = {
     PROSPECT: "bg-[#F3F4F6] text-[#374151] hover:bg-gray-200",
     CONTACTE: "bg-[#DBEAFE] text-[#1D4ED8] hover:bg-blue-200",
+    NEGOCIE:  "bg-[#FEF3C7] text-[#92400E] hover:bg-amber-200",
     SIGNE:    "bg-[#D1FAE5] text-[#059669] hover:bg-green-200",
     PAYE:     "bg-[#A7F3D0] text-[#065F46] hover:bg-emerald-200",
     ANNULE:   "bg-[#FEE2E2] text-[#DC2626] hover:bg-red-200",
@@ -92,7 +93,7 @@ export function DealDetail({ deal }: Props) {
                   disabled={isPending}
                   className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 ${STATUT_BTN_STYLE[s]}`}
                 >
-                  → {s === "CONTACTE" ? "Contacté" : s === "SIGNE" ? "Signé" : s === "PAYE" ? "Payé" : s === "ANNULE" ? "Annulé" : s}
+                  → {s === "CONTACTE" ? "Contacté" : s === "NEGOCIE" ? "Négocié" : s === "SIGNE" ? "Signé" : s === "PAYE" ? "Payé" : s === "ANNULE" ? "Annulé" : s}
                 </button>
               ))}
             </div>

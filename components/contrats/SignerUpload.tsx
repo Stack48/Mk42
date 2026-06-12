@@ -111,6 +111,7 @@ export function SignerUpload({ contrat, tokenExpired, alreadyUploaded }: Props) 
   // ── Submit ────────────────────────────────────────────────────────────────
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!contrat) return;
     if (!selectedFile) { setErrorMsg("Veuillez sélectionner un fichier."); return; }
 
     setUploadState("uploading");

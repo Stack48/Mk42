@@ -16,6 +16,7 @@
 
 import React from "react";
 import { renderToBuffer } from "@react-pdf/renderer";
+import type { DocumentProps } from "@react-pdf/renderer";
 import { ContratTemplate } from "./contrat.template";
 import type { ContratTemplateData } from "@/types/contrat.types";
 
@@ -35,7 +36,7 @@ export async function generateContratPDF(data: ContratTemplateData): Promise<Buf
   // C'est un appel asynchrone car la génération PDF peut être longue
   // pour des documents complexes (images, polices custom, etc.).
   const buffer = await renderToBuffer(
-    React.createElement(ContratTemplate, { data })
+    React.createElement(ContratTemplate, { data }) as React.ReactElement<DocumentProps>
   );
 
   // renderToBuffer retourne un Buffer Node.js natif

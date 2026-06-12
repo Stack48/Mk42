@@ -211,7 +211,7 @@ export async function getDealsByStatut(): Promise<Record<KanbanDealStatut, Kanba
   });
 
   const grouped: Record<KanbanDealStatut, KanbanDeal[]> = {
-    PROSPECT: [], CONTACTE: [], SIGNE: [], PAYE: [], ANNULE: [],
+    PROSPECT: [], CONTACTE: [], NEGOCIE: [], SIGNE: [], PAYE: [], ANNULE: [],
   };
   for (const deal of deals) {
     grouped[deal.statut as KanbanDealStatut].push(deal as unknown as KanbanDeal);

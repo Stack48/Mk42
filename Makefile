@@ -1,8 +1,9 @@
 .DEFAULT_GOAL := help
 
 # ─── Variables ────────────────────────────────────────────────────────────────
-CONTAINER_POSTGRES := commissionpro_postgres
-CONTAINER_APP      := commissionpro_app
+PROJECT_NAME       := $(shell basename $(CURDIR) | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
+CONTAINER_POSTGRES := $(PROJECT_NAME)-postgres-1
+CONTAINER_APP      := $(PROJECT_NAME)-app-1
 DB_USER            := commissionpro
 DB_NAME            := commissionpro
 

@@ -1,6 +1,6 @@
 // TYPES — Feature [11-FE] Pipeline Kanban des Deals
 
-export type KanbanDealStatut = "PROSPECT" | "CONTACTE" | "SIGNE" | "PAYE" | "ANNULE";
+export type KanbanDealStatut = "PROSPECT" | "CONTACTE" | "NEGOCIE" | "SIGNE" | "PAYE" | "ANNULE";
 export type DealDocumentType  = "DEVIS" | "FACTURE" | "AUTRE";
 export type MessageAuteurType = "ENTREPRISE" | "APPORTEUR";
 
@@ -63,11 +63,12 @@ export const KANBAN_COLUMN_STYLES: Record<
 > = {
   PROSPECT: { headerBg: "#F3F4F6", label: "Prospect" },
   CONTACTE: { headerBg: "#DBEAFE", label: "Contacté" },
+  NEGOCIE:  { headerBg: "#FEF3C7", label: "Négocié" },
   SIGNE:    { headerBg: "#D1FAE5", label: "Signé" },
   PAYE:     { headerBg: "#A7F3D0", label: "Payé" },
   ANNULE:   { headerBg: "#FEE2E2", label: "Annulé" },
 };
 
 export const KANBAN_STATUTS: KanbanDealStatut[] = [
-  "PROSPECT", "CONTACTE", "SIGNE", "PAYE", "ANNULE",
+  "PROSPECT", "CONTACTE", "NEGOCIE", "SIGNE", "PAYE", "ANNULE",
 ];

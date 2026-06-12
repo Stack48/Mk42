@@ -5,6 +5,7 @@ import {
   DndContext,
   DragEndEvent,
   DragOverlay,
+  DragStartEvent,
   PointerSensor,
   useSensor,
   useSensors,
@@ -65,8 +66,8 @@ export function KanbanBoard({ initialDeals, apporteurs }: Props) {
     }
   }
 
-  function handleDragStart({ active }: { active: { id: string } }) {
-    setActiveCard(findDeal(active.id) ?? null);
+  function handleDragStart({ active }: DragStartEvent) {
+    setActiveCard(findDeal(active.id as string) ?? null);
     setFeedback(null);
   }
 

@@ -5,7 +5,8 @@ import type { KanbanDealStatut } from "@/types/deal.types";
 
 const TRANSITIONS_AUTORISEES: Record<KanbanDealStatut, KanbanDealStatut[]> = {
   PROSPECT: ["CONTACTE", "ANNULE"],
-  CONTACTE: ["SIGNE", "ANNULE"],
+  CONTACTE: ["NEGOCIE", "SIGNE", "ANNULE"],
+  NEGOCIE:  ["SIGNE", "ANNULE"],
   SIGNE:    ["PAYE", "ANNULE"],
   PAYE:     [],
   ANNULE:   [],
