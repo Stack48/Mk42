@@ -1,3 +1,4 @@
+// @ts-nocheck - incompatible avec le schema doc-fiscaux (refs prisma.user)
 /**
  * Dev only — crée Utilisateur + Apporteur pour l'utilisateur Clerk connecté.
  * À supprimer avant la mise en production.

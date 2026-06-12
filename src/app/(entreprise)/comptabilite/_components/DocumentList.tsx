@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { exportFacturePDFAction, exportRecuPDFAction } from "../_actions";
+import { exportDocumentAction } from "../_actions";
 import styles from "./DocumentList.module.css";
 
 interface DocumentItem {
@@ -43,8 +43,11 @@ export function DocumentList({ type, items }: Props) {
     setDownloading(id);
     setErrors((e) => ({ ...e, [id]: "" }));
     try {
-      const action = type === "facture" ? exportFacturePDFAction : exportRecuPDFAction;
-      const result = await action(id);
+      const result = await exportDocumentAction(
+        type === "facture"
+          ? { type: "FACTURE_PDF", factureId: id }
+          : { type: "RECU_PDF", recuId: id }
+      );
       setLinks((l) => ({ ...l, [id]: result.lienSigne }));
       window.open(result.lienSigne, "_blank");
     } catch (err) {

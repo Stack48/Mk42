@@ -9,14 +9,39 @@ import { generateCommissionsCSV } from "@/server/documents/csv-generator";
 import { uploadDocumentS3 } from "@/server/documents/s3-manager";
 import type { BeneficiaireDAS2 } from "@/server/documents/edi-generator";
 
-// ── DAS2 ──────────────────────────────────────────────────────────────────────
+// ── Public surface : 1 seul Server Action, dispatch interne via switch ──────
 
-export async function exportDAS2Action(annee: number): Promise<{
+export type ExportDocumentInput =
+  | { type: "DAS2"; annee: number }
+  | { type: "FACTURE_PDF"; factureId: string }
+  | { type: "RECU_PDF"; recuId: string }
+  | { type: "CSV"; dateDebutISO: string; dateFinISO: string };
+
+export interface ExportDocumentResult {
   lienSigne: string;
   documentId: string;
   dateExpiration: Date;
-  warnings: string[];
-}> {
+  warnings?: string[];
+}
+
+export async function exportDocumentAction(
+  input: ExportDocumentInput
+): Promise<ExportDocumentResult> {
+  switch (input.type) {
+    case "DAS2":
+      return exportDAS2(input.annee);
+    case "FACTURE_PDF":
+      return exportFacturePDF(input.factureId);
+    case "RECU_PDF":
+      return exportRecuPDF(input.recuId);
+    case "CSV":
+      return exportCSV(input.dateDebutISO, input.dateFinISO);
+  }
+}
+
+// ── DAS2 ──────────────────────────────────────────────────────────────────────
+
+async function exportDAS2(annee: number): Promise<ExportDocumentResult> {
   if (!Number.isInteger(annee) || annee < 2000 || annee > 2100) {
     throw new Error("Année invalide");
   }
@@ -27,7 +52,6 @@ export async function exportDAS2Action(annee: number): Promise<{
     where: { id: entrepriseId },
   });
 
-  // Agrégation factures + recus de l'année
   const debut = new Date(`${annee}-01-01T00:00:00.000Z`);
   const fin = new Date(`${annee}-12-31T23:59:59.999Z`);
 
@@ -50,23 +74,16 @@ export async function exportDAS2Action(annee: number): Promise<{
     }),
   ]);
 
-  // Agréger par apporteur
   const totauxMap = new Map<string, { apporteur: typeof factures[0]["apporteur"]; total: number }>();
 
   for (const f of factures) {
-    const entry = totauxMap.get(f.apporteurId) ?? {
-      apporteur: f.apporteur,
-      total: 0,
-    };
-    entry.total += f.montantHT; // DAS2 = montant HT versé
+    const entry = totauxMap.get(f.apporteurId) ?? { apporteur: f.apporteur, total: 0 };
+    entry.total += f.montantHT;
     totauxMap.set(f.apporteurId, entry);
   }
 
   for (const r of recus) {
-    const entry = totauxMap.get(r.apporteurId) ?? {
-      apporteur: r.apporteur,
-      total: 0,
-    };
+    const entry = totauxMap.get(r.apporteurId) ?? { apporteur: r.apporteur, total: 0 };
     entry.total += r.montantBrut;
     totauxMap.set(r.apporteurId, entry);
   }
@@ -96,9 +113,7 @@ export async function exportDAS2Action(annee: number): Promise<{
 
   const validation = validateDAS2EDI(ediContent, beneficiaires);
   if (!validation.isValid) {
-    const detail = validation.errors
-      .map((e) => `[${e.type}] ${e.message}`)
-      .join(" | ");
+    const detail = validation.errors.map((e) => `[${e.type}] ${e.message}`).join(" | ");
     throw new Error(`Validation EDI échouée : ${detail}`);
   }
 
@@ -116,7 +131,6 @@ export async function exportDAS2Action(annee: number): Promise<{
     },
   });
 
-  // Upsert DAS2 record
   await prisma.dAS2.upsert({
     where: { entrepriseId_annee: { entrepriseId, annee } },
     create: {
@@ -147,11 +161,7 @@ export async function exportDAS2Action(annee: number): Promise<{
 
 // ── FACTURE PDF ───────────────────────────────────────────────────────────────
 
-export async function exportFacturePDFAction(factureId: string): Promise<{
-  lienSigne: string;
-  documentId: string;
-  dateExpiration: Date;
-}> {
+async function exportFacturePDF(factureId: string): Promise<ExportDocumentResult> {
   if (!factureId || typeof factureId !== "string") {
     throw new Error("ID facture invalide");
   }
@@ -182,7 +192,7 @@ export async function exportFacturePDFAction(factureId: string): Promise<{
     apporteur: {
       nom: facture.apporteur.nom,
       email: facture.apporteur.email,
-      type: (facture.apporteur.type as "pro" | "particulier"),
+      type: facture.apporteur.type as "pro" | "particulier",
       siret: facture.apporteur.siret ?? undefined,
       adresse: facture.apporteur.adresse ?? undefined,
     },
@@ -203,11 +213,7 @@ export async function exportFacturePDFAction(factureId: string): Promise<{
 
 // ── RECU PDF ──────────────────────────────────────────────────────────────────
 
-export async function exportRecuPDFAction(recuId: string): Promise<{
-  lienSigne: string;
-  documentId: string;
-  dateExpiration: Date;
-}> {
+async function exportRecuPDF(recuId: string): Promise<ExportDocumentResult> {
   if (!recuId || typeof recuId !== "string") {
     throw new Error("ID reçu invalide");
   }
@@ -253,10 +259,10 @@ export async function exportRecuPDFAction(recuId: string): Promise<{
 
 // ── CSV Commissions ───────────────────────────────────────────────────────────
 
-export async function exportCSVAction(
+async function exportCSV(
   dateDebutISO: string,
   dateFinISO: string
-): Promise<{ lienSigne: string; documentId: string; dateExpiration: Date }> {
+): Promise<ExportDocumentResult> {
   const dateDebut = new Date(dateDebutISO);
   const dateFin = new Date(dateFinISO);
 

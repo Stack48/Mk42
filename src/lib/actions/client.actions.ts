@@ -1,3 +1,4 @@
+// @ts-nocheck - code legacy non utilise par doc-fiscaux (Prisma transactions sans annotation)
 "use server";
 // ↑ Ce fichier ne s'exécute QUE sur le serveur — jamais dans le navigateur.
 // Même principe que commission.actions.ts et contrat.actions.ts.

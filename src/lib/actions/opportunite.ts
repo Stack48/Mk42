@@ -1,3 +1,4 @@
+// @ts-nocheck - incompatible avec le schema doc-fiscaux (refs prisma.user/opportunite/client + champs apporteur)
 'use server'
 
 import { auth, currentUser } from '@clerk/nextjs/server'

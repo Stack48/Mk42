@@ -560,3 +560,4 @@ model Document {
 
   @@map("documents")
 }
+
