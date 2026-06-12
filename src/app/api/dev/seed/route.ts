@@ -29,7 +29,11 @@ export async function POST() {
     return Response.json({ error: 'Aucun email sur ce compte Clerk' }, { status: 400 })
   }
 
+<<<<<<< HEAD
   const user = await prisma.utilisateur.upsert({
+=======
+  const user = await prisma.user.upsert({
+>>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
     where: { clerkId: userId },
     update: { email },
     create: {
@@ -37,10 +41,16 @@ export async function POST() {
       email,
       apporteur: {
         create: {
+<<<<<<< HEAD
           nom:       clerkUser.lastName  ?? 'Test',
           prenom:    clerkUser.firstName ?? 'Dev',
           type:      'PARTICULIER',
           telephone: '',
+=======
+          nom:    clerkUser.lastName  ?? 'Test',
+          prenom: clerkUser.firstName ?? 'Dev',
+          type:   'PARTICULIER',
+>>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
         },
       },
     },

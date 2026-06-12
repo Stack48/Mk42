@@ -123,7 +123,11 @@ export default function StepSoumettre({ formData, onPrev }: Props) {
       {/* Confirmation + submit */}
       <div className={styles.confirmCard}>
         {submitError && (
+<<<<<<< HEAD
           <div role="alert" className="mb-4 px-[14px] py-3 bg-[#FEE2E2] border border-[#FECACA] rounded-lg text-sm text-[#B91C1C]">
+=======
+          <div role="alert" style={{ marginBottom: 16, padding: '12px 14px', background: '#FEE2E2', border: '1px solid #FECACA', borderRadius: 8, fontSize: 14, color: '#B91C1C' }}>
+>>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
             {submitError}
           </div>
         )}

@@ -1,5 +1,16 @@
 import styles from './css/StepperSidebar.module.css'
+<<<<<<< HEAD
 import IconCheck from '@/components/icons/IconCheck'
+=======
+
+function CheckIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M2.5 7l3 3 6-6" />
+    </svg>
+  )
+}
+>>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
 
 const STEPS = [
   { num: 1, label: 'Vos informations',          hint: '(pré-rempli)' },
@@ -29,13 +40,21 @@ export default function StepperSidebar({ currentStep }: Props) {
               aria-current={status === 'active' ? 'step' : undefined}
             >
               <div className={styles.badge} aria-hidden="true">
+<<<<<<< HEAD
                 {status === 'done' ? <IconCheck /> : step.num}
+=======
+                {status === 'done' ? <CheckIcon /> : step.num}
+>>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
               </div>
               <div className={styles.content}>
                 <span className={styles.name}>
                   {step.label}
                   {status === 'done' && step.hint && (
+<<<<<<< HEAD
                     <span className="text-[#64748B] font-normal ml-1">
+=======
+                    <span style={{ color: '#64748B', fontWeight: 400, marginLeft: 4 }}>
+>>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
                       {step.hint}
                     </span>
                   )}

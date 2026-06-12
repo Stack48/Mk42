@@ -5,9 +5,12 @@ import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import type { Metadata } from 'next'
 import styles from './page.module.css'
+<<<<<<< HEAD
 import IconPlus from '@/components/icons/IconPlus'
 import IconFile from '@/components/icons/IconFile'
 import IconChevronRight from '@/components/icons/IconChevronRight'
+=======
+>>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
 
 export const metadata: Metadata = {
   title: 'Opus — Mes opportunités',
@@ -35,17 +38,52 @@ function formatDate(date: Date): string {
   }).format(date)
 }
 
+<<<<<<< HEAD
+=======
+function PlusIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden="true">
+      <path d="M8 3v10M3 8h10" />
+    </svg>
+  )
+}
+
+function FileIcon() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M16 4H8a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10L16 4z" />
+      <path d="M16 4v6h6M11 14h6M11 18h4" />
+    </svg>
+  )
+}
+
+function ChevronRightIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M6 4l4 4-4 4" />
+    </svg>
+  )
+}
+>>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
 
 export default async function OpportunitesPage() {
   const { userId } = await auth()
   if (!userId) redirect('/connexion')
 
+<<<<<<< HEAD
   const user = await prisma.utilisateur.findUnique({
+=======
+  const user = await prisma.user.findUnique({
+>>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
     where: { clerkId: userId },
   })
 
   const apporteur = user
+<<<<<<< HEAD
     ? await prisma.apporteur.findUnique({ where: { utilisateurId: user.id } })
+=======
+    ? await prisma.apporteur.findUnique({ where: { userId: user.id } })
+>>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
     : null
 
   const opportunites = apporteur
@@ -64,7 +102,11 @@ export default async function OpportunitesPage() {
         <h1 className={styles.title}>Mes opportunités</h1>
         {!isEmpty && (
           <Link href="/opportunites/nouvelle" className={styles.btnNew}>
+<<<<<<< HEAD
             <IconPlus />
+=======
+            <PlusIcon />
+>>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
             Nouvelle opportunité
           </Link>
         )}
@@ -73,7 +115,11 @@ export default async function OpportunitesPage() {
       {isEmpty ? (
         <div className={styles.empty}>
           <div className={styles.emptyIcon}>
+<<<<<<< HEAD
             <IconFile />
+=======
+            <FileIcon />
+>>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
           </div>
           <p className={styles.emptyTitle}>Aucune opportunité pour l'instant</p>
           <p className={styles.emptyText}>
@@ -81,7 +127,11 @@ export default async function OpportunitesPage() {
             L'entreprise vous répondra sous 48h.
           </p>
           <Link href="/opportunites/nouvelle" className={styles.btnCta}>
+<<<<<<< HEAD
             <IconPlus />
+=======
+            <PlusIcon />
+>>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
             Proposer une opportunité
           </Link>
         </div>
@@ -111,11 +161,19 @@ export default async function OpportunitesPage() {
                     </div>
                   </div>
 
+<<<<<<< HEAD
                   <div className="flex items-center gap-3">
                     <span className={`${styles.badge} ${statutClass}`}>
                       {STATUT_LABELS[opp.statut]}
                     </span>
                     <IconChevronRight />
+=======
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span className={`${styles.badge} ${statutClass}`}>
+                      {STATUT_LABELS[opp.statut]}
+                    </span>
+                    <ChevronRightIcon />
+>>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
                   </div>
                 </Link>
               </li>
