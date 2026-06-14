@@ -41,7 +41,12 @@ const FEATURES = [
   },
 ]
 
-export default function ComptePage() {
+export default async function ComptePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ type?: string }>
+}) {
+  const { type } = await searchParams
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
 
@@ -90,7 +95,7 @@ export default function ComptePage() {
           </p>
         </div>
 
-        <SignUp />
+        <SignUp unsafeMetadata={{ typeApporteur: type ?? 'particulier' }} />
       </div>
 
       {/* ── DROITE — Panneau marketing ── */}

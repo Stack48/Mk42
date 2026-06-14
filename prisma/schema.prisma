@@ -1,16 +1,549 @@
+// PRISMA SCHEMA — CommissionPro BTP
+
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma/client"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-model User {
+// ─── ENTREPRISE ──────────────────────────────────────────────────────────────
+model Entreprise {
+  id            String  @id @default(cuid())
+  raisonSociale String
+  siret         String  @unique
+  adresse       String
+  email         String
+  telephone     String?
+  numeroTVA     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  factures  Facture[]
+  recus     Recu[]
+  das2      DAS2[]
+  documents Document[]
+
+  @@map("entreprises")
+}
+
+// ─── APPORTEUR ──────────────────────────────────────────────────────────────
+// type : "pro" | "particulier"
+model Apporteur {
+  id            String   @id @default(cuid())
+  nom           String
+  email         String   @unique
+  type          String   @default("particulier")
+  siret         String?
+  dateNaissance String?
+  lieuNaissance String?
+  adresse       String?
+  iban          String?
+  telephone     String?
+  createdAt     DateTime @default(now())
+
+  commissions   Commission[]
+  contrats      Contrat[]
+  notifications Notification[]
+  kanbanDeals   KanbanDeal[]
+  factures      Facture[]
+  recus         Recu[]
+  documents     Document[]
+
+  @@map("apporteurs")
+}
+
+// ─── DEAL ────────────────────────────────────────────────────────────────────
+// statut : "DRAFT" | "SIGNED" | "LOST" | "CANCELLED"
+model Deal {
+  id      String @id @default(cuid())
+  titre   String
+  montant Float
+  statut  String @default("DRAFT")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  commission  Commission?
+  contrats    Contrat[]
+  invitations ClientInvitation[]
+
+  @@map("deals")
+}
+
+// ─── COMMISSION ──────────────────────────────────────────────────────────────
+// statut : "PENDING" | "TO_PAY" | "PAID"
+model Commission {
+  id           String    @id @default(cuid())
+  montant      Float
+  taux         Float
+  statut       String    @default("PENDING")
+  entrepriseId String
+  paidAt       DateTime?
+  auditTrail   Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dealId      String    @unique
+  deal        Deal      @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  apporteurId String
+  apporteur   Apporteur @relation(fields: [apporteurId], references: [id])
+
+  @@map("commissions")
+}
+
+// ─── CONTRAT ─────────────────────────────────────────────────────────────────
+// statut : "DRAFT" | "SENT" | "UPLOADED" | "VALIDATED" | "REJECTED"
+model Contrat {
+  id               String    @id @default(cuid())
+  statut           String    @default("DRAFT")
+  token            String    @unique
+  tokenExpiresAt   DateTime
+  templateData     Json
+  fileOriginalPath String?
+  fileSignedPath   String?
+  validatedAt      DateTime?
+  validatedBy      String?
+  rejectedReason   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dealId      String
+  deal        Deal      @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  apporteurId String
+  apporteur   Apporteur @relation(fields: [apporteurId], references: [id])
+  accessLogs  ContratAccessLog[]
+
+  @@map("contrats")
+}
+
+// ─── CONTRAT ACCESS LOG ───────────────────────────────────────────────────────
+// action : "GENERATED" | "LINK_OPENED" | "SIGNED_UPLOADED" | "VALIDATED" | "REJECTED"
+model ContratAccessLog {
   id        String   @id @default(cuid())
+  action    String
+  userId    String?
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  contratId String
+  contrat   Contrat @relation(fields: [contratId], references: [id], onDelete: Cascade)
+
+  @@map("contrat_access_logs")
+}
+
+// ───  PIPELINE KANBAN DES DEALS ──────────────────────────────────────
+
+// statut KanbanDeal : "PROSPECT" | "CONTACTE" | "SIGNE" | "PAYE" | "ANNULE"
+model KanbanDeal {
+  id               String   @id @default(cuid())
+  titre            String
+  montant          Float
+  mission          String?
+  clientNom        String
+  clientEmail      String?
+  clientTel        String?
+  statut           String   @default("PROSPECT")
+  commissionGelee  Boolean  @default(false)
+  position         Int      @default(0)
+  commissionDealId String?  @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  apporteurId String
+  apporteur   Apporteur     @relation(fields: [apporteurId], references: [id])
+  documents   DealDocument[]
+  messages    DealMessage[]
+
+  @@map("kanban_deals")
+}
+
+// type DealDocument : "DEVIS" | "FACTURE" | "AUTRE"
+model DealDocument {
+  id         String   @id @default(cuid())
+  nom        String
+  type       String   @default("AUTRE")
+  filePath   String
+  fileSize   Int
+  mimeType   String
+  uploadedBy String
+  createdAt  DateTime @default(now())
+
+  dealId String
+  deal   KanbanDeal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@map("deal_documents")
+}
+
+// auteurType : "ENTREPRISE" | "APPORTEUR"
+model DealMessage {
+  id         String   @id @default(cuid())
+  contenu    String
+  auteurId   String
+  auteurType String
+  lu         Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  dealId String
+  deal   KanbanDeal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@map("deal_messages")
+}
+
+// ─── NOTIFICATIONS ───────────────────────────────────────────────────
+// type : "NOUVEAU_DEAL" | "COMMISSION_CALCULEE" | "COMMISSION_PAYEE"
+model Notification {
+  id        String   @id @default(cuid())
+  type      String
+  titre     String
+  message   String
+  lu        Boolean  @default(false)
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  userId    String
+  apporteur Apporteur @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+// ─── DOCUMENTS FISCAUX ───────────────────────────────────────────────
+
+// statut Facture : "EN_ATTENTE" | "PAYEE" | "ANNULEE"
+model Facture {
+  id          String    @id @default(cuid())
+  numFacture  String    @unique
+  montantHT   Float
+  tauxTVA     Float     @default(20)
+  montantTVA  Float
+  montantTTC  Float
+  dateEmission DateTime
+  statut      String    @default("EN_ATTENTE")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  commissionId  String?
+  apporteurId   String
+  entrepriseId  String
+  apporteur     Apporteur  @relation(fields: [apporteurId], references: [id])
+  entreprise    Entreprise @relation(fields: [entrepriseId], references: [id])
+
+  @@map("factures")
+}
+
+// statut Recu : "EN_ATTENTE" | "PAYE" | "ANNULE"
+model Recu {
+  id          String   @id @default(cuid())
+  numRecu     String   @unique
+  montantBrut Float
+  dateEmission DateTime
+  statut      String   @default("EN_ATTENTE")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  commissionId String?
+  apporteurId  String
+  entrepriseId String
+  apporteur    Apporteur  @relation(fields: [apporteurId], references: [id])
+  entreprise   Entreprise @relation(fields: [entrepriseId], references: [id])
+
+  @@map("recus")
+}
+
+// statut DAS2 : "NON_GENERE" | "GENERE" | "DEPOSE"
+model DAS2 {
+  id                  String    @id @default(cuid())
+  annee               Int
+  statut              String    @default("NON_GENERE")
+  s3Key               String?
+  dateExport          DateTime?
+  montantTotal        Float?
+  nombreBeneficiaires Int       @default(0)
+
+  createdAt DateTime @default(now())
+
+  entrepriseId String
+  entreprise   Entreprise @relation(fields: [entrepriseId], references: [id])
+
+  @@unique([entrepriseId, annee])
+  @@map("das2")
+}
+
+// type Document : "FACTURE" | "RECU" | "DAS2" | "CSV"
+model Document {
+  id          String   @id @default(cuid())
+  type        String
+  s3Key       String
+  dateCreation DateTime @default(now())
+  metadata    Json?
+
+  entrepriseId String
+  apporteurId  String?
+  entreprise   Entreprise @relation(fields: [entrepriseId], references: [id])
+  apporteur    Apporteur? @relation(fields: [apporteurId], references: [id])
+
+  @@map("documents")
+}
+
+// ─── ESPACE CLIENT ────────────────────────────────────────────────────
+
+// statut ClientInvitation : "PENDING" | "ACCESSED" | "VALIDATED" | "REFUSED"
+model ClientInvitation {
+  id             String   @id @default(cuid())
+  email          String
+  nom            String
+  token          String   @unique
+  tokenExpiresAt DateTime
+  statut         String   @default("PENDING")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  dealId     String
+  deal       Deal              @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  evenements ClientEvenement[]
+
+  @@map("client_invitations")
+}
+
+// type ClientEvenement : "INVITATION_ENVOYEE" | "DOSSIER_CONSULTE" | "ETAPE_VALIDEE" | "ETAPE_REFUSEE"
+model ClientEvenement {
+  id        String   @id @default(cuid())
+  type      String
+  metadata  Json?
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  invitationId String
+  invitation   ClientInvitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+  @@map("client_evenements")
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum TypeApporteur {
+  PARTICULIER
+  PROFESSIONNEL
+}
+
+enum StatutKYC {
+  EN_ATTENTE
+  VALIDE
+  REFUSE
+}
+
+enum StatutOpportunite {
+  SOUMISE
+  ACCEPTEE
+  REFUSEE
+  EN_NEGOCIATION
+}
+
+enum StatutChantier {
+  PROSPECTION
+  CHIFFRAGE
+  SIGNE
+  EN_COURS
+  TERMINE
+}
+
+enum StatutContrat {
+  GENERE
+  EN_ATTENTE_SIGNATURE
+  SIGNE
+  EXPIRE
+}
+
+enum StatutFacture {
+  GENEREE
+  ENVOYEE
+  PAYEE
+  ANNULEE
+}
+
+enum TypeDocument {
+  CONTRAT
+  FACTURE
+  RECU
+  KYC_IDENTITE
+  KYC_KBIS
+  KYC_DOMICILE
+  RIB
+  DAS2_EXPORT
+}
+
+// ─── Utilisateurs & Auth ──────────────────────────────────────────────────────
+
+model Utilisateur {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
   email     String   @unique
-  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  entreprise Entreprise?
+  apporteur  Apporteur?
+}
+
+model Entreprise {
+  id            String      @id @default(cuid())
+  utilisateurId String      @unique
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id])
+
+  raisonSociale        String
+  siret                String    @unique
+  adresseSiege         String
+  codeApe              String?
+  representantLegal    String
+  telephone            String
+  iban                 String?
+  bic                  String?
+  nomTitulaireIban     String?
+  tauxCommissionDefaut Float?
+  montantFixeDefaut    Float?
+  statutKyc            StatutKYC @default(EN_ATTENTE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  opportunites Opportunite[]
+  chantiers    Chantier[]
+  contrats     Contrat[]
+  factures     Facture[]
+  das2         DAS2[]
+  documents    Document[]
+}
+
+model Apporteur {
+  id            String        @id @default(cuid())
+  utilisateurId String        @unique
+  utilisateur   Utilisateur   @relation(fields: [utilisateurId], references: [id])
+
+  type      TypeApporteur
+  nom       String
+  prenom    String
+  telephone String
+  adresse   String?
+  iban      String?
+  bic       String?
+
+  // Pro uniquement
+  raisonSociale String?
+  siret         String?  @unique
+  numeroTva     String?
+
+  // Particulier uniquement (requis DAS2)
+  dateNaissance DateTime?
+  lieuNaissance String?
+
+  statutKyc StatutKYC @default(EN_ATTENTE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  opportunites Opportunite[]
+  contrats     Contrat[]
+  factures     Facture[]
+  recus        Recu[]
+  documents    Document[]
+}
+
+// ─── Clients & Opportunités ───────────────────────────────────────────────────
+
+model Client {
+  id               String  @id @default(cuid())
+  estProfessionnel Boolean @default(false)
+
+  // Particulier
+  nom    String?
+  prenom String?
+
+  // Professionnel
+  raisonSociale String?
+  siret         String?
+
+  // Commun
+  telephone       String
+  email           String
+  adresseSiege    String?
+  adresseChantier String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  opportunites Opportunite[]
+}
+
+model Opportunite {
+  id           String            @id @default(cuid())
+  apporteurId  String
+  apporteur    Apporteur         @relation(fields: [apporteurId], references: [id])
+  entrepriseId String
+  entreprise   Entreprise        @relation(fields: [entrepriseId], references: [id])
+  clientId     String
+  client       Client            @relation(fields: [clientId], references: [id])
+
+  statut        StatutOpportunite @default(SOUMISE)
+  typeTravaux   String
+  description   String?
+  delaiSouhaite String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chantier Chantier?
+}
+
+// ─── Chantiers & Contrats ─────────────────────────────────────────────────────
+
+model Chantier {
+  id            String         @id @default(cuid())
+  opportuniteId String         @unique
+  opportunite   Opportunite    @relation(fields: [opportuniteId], references: [id])
+  entrepriseId  String
+  entreprise    Entreprise     @relation(fields: [entrepriseId], references: [id])
+
+  reference         String         @unique
+  statut            StatutChantier @default(PROSPECTION)
+  montantHT         Float?
+  tauxCommission    Float?
+  montantCommission Float?
+  dateDebut         DateTime?
+  dateFin           DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contrat Contrat?
+  facture Facture?
+  recu    Recu?
+}
+
+model Contrat {
+  id           String        @id @default(cuid())
+  chantierId   String        @unique
+  chantier     Chantier      @relation(fields: [chantierId], references: [id])
+  entrepriseId String
+  entreprise   Entreprise    @relation(fields: [entrepriseId], references: [id])
+  apporteurId  String
+  apporteur    Apporteur     @relation(fields: [apporteurId], references: [id])
+
+  numero                String        @unique
+  statut                StatutContrat @default(GENERE)
+  urlDocument           String?
+  signatureEntrepriseAt DateTime?
+  signatureApporteurAt  DateTime?
+  horodatage            String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   clients   Client[]
@@ -53,4 +586,84 @@ model TrackingLog {
   userAgent      String
   rfc3161Hash    String?
   createdAt      DateTime     @default(now())
+}
+
+// ─── Factures, Reçus & DAS2 ───────────────────────────────────────────────────
+
+model Facture {
+  id           String        @id @default(cuid())
+  chantierId   String        @unique
+  chantier     Chantier      @relation(fields: [chantierId], references: [id])
+  entrepriseId String
+  entreprise   Entreprise    @relation(fields: [entrepriseId], references: [id])
+  apporteurId  String
+  apporteur    Apporteur     @relation(fields: [apporteurId], references: [id])
+
+  numero         String        @unique
+  statut         StatutFacture @default(GENEREE)
+  montantHT      Float
+  tauxTva        Float         @default(20.0)
+  montantTva     Float
+  montantTTC     Float
+  dateEmission   DateTime      @default(now())
+  datePrestation DateTime?
+  dateEcheance   DateTime?
+  datePaiement   DateTime?
+  urlDocument    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Recu {
+  id          String    @id @default(cuid())
+  chantierId  String    @unique
+  chantier    Chantier  @relation(fields: [chantierId], references: [id])
+  apporteurId String
+  apporteur   Apporteur @relation(fields: [apporteurId], references: [id])
+
+  numero        String    @unique
+  montant       Float
+  dateVersement DateTime?
+  urlDocument   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DAS2 {
+  id           String     @id @default(cuid())
+  entrepriseId String
+  entreprise   Entreprise @relation(fields: [entrepriseId], references: [id])
+
+  annee                     Int
+  nomBeneficiaire           String
+  adresseBeneficiaire       String
+  siretBeneficiaire         String?
+  dateNaissanceBeneficiaire DateTime?
+  lieuNaissanceBeneficiaire String?
+  montantTotal              Float
+  urlExport                 String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([entrepriseId, annee, nomBeneficiaire])
+}
+
+// ─── Documents (Coffre-fort) ──────────────────────────────────────────────────
+
+model Document {
+  id         String       @id @default(cuid())
+  type       TypeDocument
+  s3Key     String?
+  nomFichier String
+  horodatage String?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  entrepriseId String?
+  entreprise   Entreprise? @relation(fields: [entrepriseId], references: [id])
+  apporteurId  String?
+  apporteur    Apporteur?  @relation(fields: [apporteurId], references: [id])
 }

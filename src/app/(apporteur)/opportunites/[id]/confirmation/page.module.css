@@ -1,0 +1,122 @@
+.page {
+  --primary:    #4648D4;
+  --primary-dk: #3533B0;
+  --ink:        #0F172A;
+  --muted:      #64748B;
+  --border:     #E2E8F0;
+
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 48px 24px;
+}
+
+.card {
+  background: #ffffff;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  padding: 48px 40px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 4px 24px rgba(70, 72, 212, 0.06);
+}
+
+/* Animated check circle */
+.checkCircle {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 28px;
+}
+
+.circleTrack {
+  fill: none;
+  stroke: #D8F0E6;
+  stroke-width: 4;
+}
+
+.circleFill {
+  fill: none;
+  stroke: #15724A;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 188;
+  stroke-dashoffset: 188;
+}
+
+.checkMark {
+  fill: none;
+  stroke: #15724A;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .circleFill {
+    animation: drawCircle 600ms ease-out 100ms forwards;
+  }
+  .checkMark {
+    animation: drawCheck 300ms ease-out 600ms forwards;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .circleFill { stroke-dashoffset: 0; }
+  .checkMark  { stroke-dashoffset: 0; }
+}
+
+@keyframes drawCircle {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes drawCheck {
+  to { stroke-dashoffset: 0; }
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 36px;
+}
+
+.btnPrimary {
+  display: block;
+  width: 100%;
+  padding: 14px 24px;
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  margin-bottom: 12px;
+  transition: background-color 150ms ease;
+  text-align: center;
+}
+
+.btnPrimary:hover { background: var(--primary-dk); }
+
+.linkSecondary {
+  font-size: 14px;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+  display: block;
+}
+
+.linkSecondary:hover { text-decoration: underline; }
