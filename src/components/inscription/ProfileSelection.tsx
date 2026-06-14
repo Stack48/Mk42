@@ -13,9 +13,6 @@ import { useProfileSelection, PROFILES } from './useProfileSelection'
 import type { ProfileOption } from './useProfileSelection'
 import styles from './ProfileSelection.module.css'
 
-/* ── Constantes de l'étape ──────────────────────────────────────── */
-const STEP        = 1
-const TOTAL_STEPS = 6
 
 /* ================================================================
    Sous-composant : ProfileCard
@@ -134,19 +131,9 @@ export default function ProfileSelection() {
           </Link>
         </div>
 
-        {/* Barre de progression ARIA-friendly */}
-        <div
-          className={styles.progressTrack}
-          role="progressbar"
-          aria-valuenow={STEP}
-          aria-valuemin={1}
-          aria-valuemax={TOTAL_STEPS}
-          aria-label={`Étape ${STEP} sur ${TOTAL_STEPS}`}
-        >
-          <div
-            className={styles.progressFill}
-            style={{ width: `${(STEP / TOTAL_STEPS) * 100}%` }}
-          />
+        {/* Barre vide — le choix du profil n'est pas une étape */}
+        <div className={styles.progressTrack} role="progressbar" aria-valuenow={0} aria-valuemin={0} aria-valuemax={100}>
+          <div className={styles.progressFill} style={{ width: '0%' }} />
         </div>
 
       </header>
@@ -155,11 +142,6 @@ export default function ProfileSelection() {
 
       {/* ── CONTENU PRINCIPAL ────────────────────────────────────── */}
       <main className={styles.main}>
-
-        {/* Indicateur d'étape */}
-        <p className={styles.stepLabel}>
-          Étape {STEP} sur {TOTAL_STEPS}
-        </p>
 
         {/* Titre de la page */}
         <h1 className={styles.pageTitle}>
