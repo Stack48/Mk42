@@ -2,20 +2,13 @@
 
 generator client {
   provider = "prisma-client-js"
-<<<<<<< HEAD
-  output   = "../src/generated/prisma"
-=======
   output   = "../src/generated/prisma/client"
->>>>>>> 8cd413e (Fix prisma)
 }
 
 datasource db {
   provider = "postgresql"
 }
-<<<<<<< HEAD
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 // ─── ENTREPRISE ──────────────────────────────────────────────────────────────
 model Entreprise {
   id            String  @id @default(cuid())
@@ -145,7 +138,7 @@ model ContratAccessLog {
   @@map("contrat_access_logs")
 }
 
-// ─── [11-FE] PIPELINE KANBAN DES DEALS ──────────────────────────────────────
+// ───  PIPELINE KANBAN DES DEALS ──────────────────────────────────────
 
 // statut KanbanDeal : "PROSPECT" | "CONTACTE" | "SIGNE" | "PAYE" | "ANNULE"
 model KanbanDeal {
@@ -204,7 +197,7 @@ model DealMessage {
   @@map("deal_messages")
 }
 
-// ─── [18-FE] NOTIFICATIONS ───────────────────────────────────────────────────
+// ─── NOTIFICATIONS ───────────────────────────────────────────────────
 // type : "NOUVEAU_DEAL" | "COMMISSION_CALCULEE" | "COMMISSION_PAYEE"
 model Notification {
   id        String   @id @default(cuid())
@@ -221,7 +214,7 @@ model Notification {
   @@map("notifications")
 }
 
-// ─── [14-FE] DOCUMENTS FISCAUX ───────────────────────────────────────────────
+// ─── DOCUMENTS FISCAUX ───────────────────────────────────────────────
 
 // statut Facture : "EN_ATTENTE" | "PAYEE" | "ANNULEE"
 model Facture {
@@ -301,7 +294,7 @@ model Document {
   @@map("documents")
 }
 
-// ─── [17-FE] ESPACE CLIENT ────────────────────────────────────────────────────
+// ─── ESPACE CLIENT ────────────────────────────────────────────────────
 
 // statut ClientInvitation : "PENDING" | "ACCESSED" | "VALIDATED" | "REFUSED"
 model ClientInvitation {
@@ -334,13 +327,8 @@ model ClientEvenement {
   invitation   ClientInvitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
 
   @@map("client_evenements")
-=======
-// ── Enums ──────────────────────────────────────────────────────────────────────
-=======
-=======
->>>>>>> 7d95a31 (Fix Prisma)
+
 // ─── Enums ────────────────────────────────────────────────────────────────────
->>>>>>> f154208 (feat(s1): setup infrastructure — Prisma schema + Clerk + Resend + S3)
 
 enum TypeApporteur {
   PARTICULIER
@@ -626,25 +614,16 @@ model DAS2 {
 // ─── Documents (Coffre-fort) ──────────────────────────────────────────────────
 
 model Document {
-<<<<<<< HEAD
-  id        String       @id @default(cuid())
-  type      TypeDocument
-  s3Key     String?
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
->>>>>>> 9cae423 (Back-End Page créa opportunité WIP (not tested yet))
-=======
   id         String       @id @default(cuid())
   type       TypeDocument
-  urlS3      String
+  s3Key     String?
   nomFichier String
   horodatage String?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 
   entrepriseId String?
   entreprise   Entreprise? @relation(fields: [entrepriseId], references: [id])
   apporteurId  String?
   apporteur    Apporteur?  @relation(fields: [apporteurId], references: [id])
-
-  createdAt DateTime @default(now())
->>>>>>> f154208 (feat(s1): setup infrastructure — Prisma schema + Clerk + Resend + S3)
 }
