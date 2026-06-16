@@ -1,0 +1,112 @@
+.tableWrapper {
+  overflow-x: auto;
+  border: 1px solid #e8e8f0;
+  border-radius: 10px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #888;
+  background: #f9f9fb;
+  border-bottom: 1px solid #e8e8f0;
+}
+
+.tr {
+  border-bottom: 1px solid #f0f0f5;
+  transition: background-color 150ms;
+}
+
+.tr:last-child {
+  border-bottom: none;
+}
+
+.tr:hover {
+  background: #f9f9ff;
+}
+
+.td {
+  padding: 0.85rem 1rem;
+  color: #333;
+}
+
+.reference {
+  font-family: "DM Mono", monospace;
+  font-size: 0.8rem;
+  color: #4648D4;
+}
+
+.badge {
+  display: inline-flex;
+  padding: 0.15rem 0.5rem;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: #f3f3fa;
+  color: #555;
+}
+
+.button {
+  padding: 0.4rem 0.9rem;
+  border: none;
+  border-radius: 6px;
+  background: #4648D4;
+  color: white;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms;
+}
+
+.button:hover:not(:disabled) {
+  background: #3335b0;
+}
+
+.button:disabled {
+  background: #b0b0e0;
+  cursor: not-allowed;
+}
+
+.downloadLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  background: #eef0ff;
+  color: #4648D4;
+  font-size: 0.82rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 150ms;
+}
+
+.downloadLink:hover {
+  background: #4648D4;
+  color: white;
+}
+
+.empty {
+  padding: 2rem;
+  text-align: center;
+  color: #aaa;
+  font-size: 0.9rem;
+  border: 1px solid #e8e8f0;
+  border-radius: 10px;
+}
+
+.error {
+  font-size: 0.78rem;
+  color: #d32f2f;
+  margin: 0 0 0.4rem 0;
+}

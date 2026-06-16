@@ -12,14 +12,14 @@
  *   - Bouton "Continuer" activé seulement après validation
  */
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import styles from './VerificationSiret.module.css'
 
 /* ── Constantes ─────────────────────────────────────────────────── */
-const STEP        = 3
-const TOTAL_STEPS = 6
+const STEP        = 2
+const TOTAL_STEPS = 5
 
 /* ── Données simulées INSEE ─────────────────────────────────────── */
 const MOCK_SIRET_DATA = {
@@ -32,12 +32,11 @@ const MOCK_SIRET_DATA = {
 
 /* ── Stepper ────────────────────────────────────────────────────── */
 const STEPS_LIST = [
-  { num: 1, label: 'Choix du profil',              status: 'done',     sub: 'Validé' },
-  { num: 2, label: 'Informations personnelles',    status: 'done',     sub: 'Validé' },
-  { num: 3, label: 'Vérification SIRET',           status: 'active',   sub: 'En cours' },
-  { num: 4, label: 'Coordonnées bancaires (IBAN)', status: 'inactive', sub: null },
-  { num: 5, label: "Vérification d'identité (KYC)",status: 'inactive', sub: null },
-  { num: 6, label: 'Validation email & CGU',       status: 'inactive', sub: null },
+  { num: 1, label: 'Informations personnelles',    status: 'done',     sub: 'Validé'   },
+  { num: 2, label: 'Vérification SIRET',           status: 'active',   sub: 'En cours' },
+  { num: 3, label: 'Coordonnées bancaires (IBAN)', status: 'inactive', sub: null       },
+  { num: 4, label: "Vérification d'identité (KYC)",status: 'inactive', sub: null       },
+  { num: 5, label: 'Validation email & CGU',       status: 'inactive', sub: null       },
 ] as const
 
 /* ── Icône check ────────────────────────────────────────────────── */
@@ -53,6 +52,9 @@ function CheckIcon() {
 /* ── Composant principal ────────────────────────────────────────── */
 export default function VerificationSiret() {
   const router = useRouter()
+
+  const [ready, setReady] = useState(false)
+  useEffect(() => { setReady(true) }, [])
 
   /* État formulaire */
   const [siret,     setSiret]     = useState('')
@@ -104,9 +106,10 @@ export default function VerificationSiret() {
 
         <div className={styles.progressTrack}
           role="progressbar" aria-valuenow={STEP}
-          aria-valuemin={1} aria-valuemax={TOTAL_STEPS}>
+          aria-valuemin={1} aria-valuemax={TOTAL_STEPS}
+          aria-label={`Étape ${STEP} sur ${TOTAL_STEPS}`}>
           <div className={styles.progressFill}
-            style={{ width: `${(STEP / TOTAL_STEPS) * 100}%` }}/>
+            style={{ width: ready ? `${(STEP / TOTAL_STEPS) * 100}%` : '0%' }}/>
         </div>
       </header>
 

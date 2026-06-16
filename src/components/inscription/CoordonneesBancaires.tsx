@@ -27,22 +27,20 @@ function UploadIcon() {
   )
 }
 
-/* ── Steps selon le profil ───────────────────────────────────────── */
+/* ── Steps selon le profil (sans "Choix du profil") ────────────── */
 const STEPS_PARTICULIER = [
-  { num: 1, label: 'Choix du profil',              status: 'done',   sub: 'Validé' },
-  { num: 2, label: 'Informations personnelles',    status: 'done',   sub: 'Validé' },
-  { num: 3, label: 'Coordonnées bancaires (IBAN)', status: 'active', sub: 'En cours' },
-  { num: 4, label: "Vérification d'identité (KYC)",status: 'inactive', sub: null },
-  { num: 5, label: 'Validation email & CGU',       status: 'inactive', sub: null },
+  { num: 1, label: 'Informations personnelles',    status: 'done',     sub: 'Validé'   },
+  { num: 2, label: 'Coordonnées bancaires (IBAN)', status: 'active',   sub: 'En cours' },
+  { num: 3, label: "Vérification d'identité (KYC)",status: 'inactive', sub: null       },
+  { num: 4, label: 'Validation email & CGU',       status: 'inactive', sub: null       },
 ] as const
 
 const STEPS_PRO = [
-  { num: 1, label: 'Choix du profil',              status: 'done',   sub: 'Validé' },
-  { num: 2, label: 'Informations personnelles',    status: 'done',   sub: 'Validé' },
-  { num: 3, label: 'Vérification SIRET',           status: 'done',   sub: 'Validé' },
-  { num: 4, label: 'Coordonnées bancaires (IBAN)', status: 'active', sub: 'En cours' },
-  { num: 5, label: "Vérification d'identité (KYC)",status: 'inactive', sub: null },
-  { num: 6, label: 'Validation email & CGU',       status: 'inactive', sub: null },
+  { num: 1, label: 'Informations personnelles',    status: 'done',     sub: 'Validé'   },
+  { num: 2, label: 'Vérification SIRET',           status: 'done',     sub: 'Validé'   },
+  { num: 3, label: 'Coordonnées bancaires (IBAN)', status: 'active',   sub: 'En cours' },
+  { num: 4, label: "Vérification d'identité (KYC)",status: 'inactive', sub: null       },
+  { num: 5, label: 'Validation email & CGU',       status: 'inactive', sub: null       },
 ] as const
 
 /* ── Composant principal ────────────────────────────────────────── */
@@ -50,14 +48,16 @@ export default function CoordonneesBancaires() {
   const router = useRouter()
 
   const [profile, setProfile] = useState<string | null>(null)
+  const [ready,   setReady]   = useState(false)
 
   useEffect(() => {
     setProfile(sessionStorage.getItem('opus_profile'))
+    setReady(true)
   }, [])
 
   const isParticulier = profile === 'particulier'
-  const step      = isParticulier ? 3 : 4
-  const total     = isParticulier ? 5 : 6
+  const step      = isParticulier ? 2 : 3
+  const total     = isParticulier ? 4 : 5
   const stepsList = isParticulier ? STEPS_PARTICULIER : STEPS_PRO
   const prevHref  = isParticulier ? '/inscription/etape-2' : '/inscription/etape-3'
 
@@ -109,7 +109,7 @@ export default function CoordonneesBancaires() {
           role="progressbar" aria-valuenow={step}
           aria-valuemin={1} aria-valuemax={total}>
           <div className={styles.progressFill}
-            style={{ width: `${(step / total) * 100}%` }}/>
+            style={{ width: ready ? `${(step / total) * 100}%` : '0%' }}/>
         </div>
       </header>
 

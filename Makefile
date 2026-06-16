@@ -1,10 +1,10 @@
 .DEFAULT_GOAL := help
 
 # ─── Variables ────────────────────────────────────────────────────────────────
-CONTAINER_POSTGRES := mk42_postgres
-CONTAINER_APP      := mk42_app
-DB_USER            := mk42
-DB_NAME            := mk42_dev
+CONTAINER_POSTGRES := commissionpro_postgres
+CONTAINER_APP      := commissionpro_app
+DB_USER            := commissionpro
+DB_NAME            := commissionpro
 
 # ─── Help ─────────────────────────────────────────────────────────────────────
 .PHONY: help
@@ -64,11 +64,11 @@ shell-db: ## Shell bash dans le container PostgreSQL
 	docker exec -it $(CONTAINER_POSTGRES) bash
 
 .PHONY: pgadmin
-pgadmin: ## Ouvrir pgAdmin dans le navigateur (http://localhost:5050)
-	open http://localhost:5050 || xdg-open http://localhost:5050
+pgadmin: ## Ouvrir pgAdmin dans le navigateur (http://localhost:5051)
+	open http://localhost:5051 || xdg-open http://localhost:5051
 
 .PHONY: psql
-psql: ## Console psql dans la base mk42_dev
+psql: ## Console psql dans la base commissionpro
 	docker exec -it $(CONTAINER_POSTGRES) psql -U $(DB_USER) -d $(DB_NAME)
 
 # ─── Database ─────────────────────────────────────────────────────────────────
@@ -102,6 +102,10 @@ prisma-studio: ## Ouvrir Prisma Studio (port 5555)
 prisma-push: ## Push le schema sans migration (dev only)
 	docker exec -it $(CONTAINER_APP) npx prisma db push
 
+.PHONY: seed
+seed: ## Insérer les données de démonstration
+	docker exec -it $(CONTAINER_APP) sh -c "TS_NODE_COMPILER_OPTIONS='{\"module\":\"CommonJS\"}' npx ts-node prisma/seed.ts"
+
 # ─── Build ────────────────────────────────────────────────────────────────────
 .PHONY: build
 build: ## Builder l'application Next.js
@@ -114,4 +118,3 @@ lint: ## Linter le code
 .PHONY: typecheck
 typecheck: ## Vérifier les types TypeScript
 	docker exec -it $(CONTAINER_APP) npx tsc --noEmit
-
