@@ -1,6 +1,15 @@
-// Stub auth — replace with Clerk's auth() once configured
+import { auth } from '@clerk/nextjs/server';
+import { prisma } from '@/lib/prisma';
+
 export async function getCurrentEntrepriseId(): Promise<string> {
-  const stub = process.env.STUB_ENTREPRISE_ID;
-  if (!stub) throw new Error("STUB_ENTREPRISE_ID not set");
-  return stub;
+  const { userId } = await auth();
+  if (!userId) throw new Error('Non authentifié');
+
+  const entreprise = await prisma.entreprise.findUnique({
+    where: { utilisateur: { clerkId: userId } },
+    select: { id: true },
+  });
+
+  if (!entreprise) throw new Error('Aucune entreprise associée à ce compte');
+  return entreprise.id;
 }
