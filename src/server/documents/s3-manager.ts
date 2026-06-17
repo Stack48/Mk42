@@ -87,6 +87,7 @@ export async function uploadDocumentS3(input: UploadInput): Promise<UploadResult
     data: {
       type: input.type,
       s3Key,
+      nomFichier: filename,
       entrepriseId: input.entrepriseId,
       apporteurId: input.apporteurId ?? null,
       dateCreation: now,

@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import React from "react";
 import { renderToStream, Document, Page, Text, View, StyleSheet, Font } from "@react-pdf/renderer";
 import { Readable } from "stream";
+import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
+import { getCurrentEntrepriseId } from "@/lib/auth";
 
 const ce = React.createElement;
 
@@ -154,11 +156,23 @@ function buildPDF(link: LinkData) {
 
 export async function GET(request: Request, context: any) {
   try {
+    const { userId } = await auth();
+    if (!userId) return Response.json({ error: 'Non authentifié' }, { status: 401 });
+
+    const entrepriseId = await getCurrentEntrepriseId();
+
     const params = await context.params;
     const linkId = params.linkId;
 
-    const link = await prisma.trackingLink.findUnique({
-      where: { id: linkId },
+    const link = await prisma.trackingLink.findFirst({
+      where: {
+        id: linkId,
+        apporteur: {
+          contrats: {
+            some: { entrepriseId },
+          },
+        },
+      },
       include: { logs: { orderBy: { createdAt: "asc" } } },
     });
 

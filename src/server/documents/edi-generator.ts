@@ -74,7 +74,7 @@ export function generateDAS2EDI(
     "",
     "",
     "",
-    "1" // test indicator — remove for production
+    process.env.NODE_ENV === 'production' ? "0" : "1"
   );
   segmentCount++;
 
