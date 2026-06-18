@@ -1,18 +1,20 @@
 import { auth } from '@clerk/nextjs/server';
 import { verifyToken } from '@clerk/backend';
+import { cookies } from 'next/headers';
 
-/**
- * Retourne le userId Clerk pour les routes d'inscription.
- * Accepte les sessions "pending" (email non encore vérifié)
- * en décodant le JWT directement si auth() ne retourne pas de userId.
- */
 export async function getInscriptionUserId(req: Request): Promise<string | null> {
   const { userId } = await auth();
   if (userId) return userId;
 
-  const cookieHeader = req.headers.get('cookie') ?? '';
-  const match = cookieHeader.match(/__session=([^;]+)/);
-  const token = match?.[1] ? decodeURIComponent(match[1]) : null;
+  const bearerToken = req.headers.get('authorization')?.replace('Bearer ', '') ?? null;
+
+  const cookieStore = await cookies();
+  const sessionCookie =
+    cookieStore.get('__session')?.value ??
+    cookieStore.get('__clerk_db_jwt')?.value ??
+    null;
+
+  const token = bearerToken ?? sessionCookie;
   if (!token) return null;
 
   try {

@@ -2,15 +2,6 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-const C = {
-  primary: '#4648D4',
-  primaryDk: '#3533B0',
-  ink: '#111111',
-  text: '#374151',
-  border: '#E5E7EB',
-  bgTint: '#EEEEFF',
-}
-
 const NAV = [
   { href: '#fonctionnalites', label: 'Fonctionnalités' },
   { href: '#temoignages',     label: 'Témoignages' },
@@ -29,52 +20,30 @@ export default function Header() {
   }, [])
 
   return (
-    <header style={{
-      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-      background: scrolled ? 'rgba(255,255,255,0.95)' : '#fff',
-      backdropFilter: scrolled ? 'blur(12px)' : 'none',
-      borderBottom: `1px solid ${scrolled ? C.border : C.border}`,
-      transition: 'background 200ms',
-    }}>
-      <div style={{
-        maxWidth: 1200, margin: '0 auto', padding: '0 24px',
-        height: 60, display: 'flex', alignItems: 'center', gap: 32,
-      }}>
+    <header className={`fixed top-0 left-0 right-0 z-[100] border-b border-[#E5E7EB] transition-colors duration-200 ${
+      scrolled ? 'bg-white/95 backdrop-blur-[12px]' : 'bg-white'
+    }`}>
+      <div className="max-w-[1200px] mx-auto px-6 h-[60px] flex items-center gap-8">
 
-        {/* Logo */}
-        <Link href="/" style={{ textDecoration: 'none', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontWeight: 800, fontSize: 18, color: C.ink, letterSpacing: '-0.02em' }}>OPUS</span>
+        <Link href="/" className="no-underline shrink-0 flex items-center gap-1.5">
+          <span className="font-extrabold text-[18px] text-[#111111] tracking-[-0.02em]">OPUS</span>
         </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden md:flex" style={{ display: 'flex', gap: 4, flex: 1, justifyContent: 'center' }}>
+        <nav className="hidden md:flex gap-1 flex-1 justify-center">
           {NAV.map(({ href, label }) => (
-            <a key={href} href={href} style={{
-              padding: '6px 14px', fontSize: 14, fontWeight: 500,
-              color: C.text, textDecoration: 'none', borderRadius: 6,
-              transition: 'color 150ms, background 150ms',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.color = C.primary; e.currentTarget.style.background = C.bgTint }}
-              onMouseLeave={e => { e.currentTarget.style.color = C.text; e.currentTarget.style.background = 'transparent' }}
-            >{label}</a>
+            <a key={href} href={href}
+              className="px-3.5 py-1.5 text-sm font-medium text-[#374151] no-underline rounded-[6px] transition-[color,background] duration-150 hover:text-[#4648D4] hover:bg-[#EEEEFF]">
+              {label}
+            </a>
           ))}
         </nav>
 
-        {/* CTA */}
-        <Link href="/inscription" className="hidden md:inline-flex" style={{
-          background: C.primary, color: '#fff',
-          padding: '8px 18px', borderRadius: 7, fontSize: 13, fontWeight: 600,
-          textDecoration: 'none', flexShrink: 0, transition: 'background 150ms',
-        }}
-          onMouseEnter={e => (e.currentTarget.style.background = C.primaryDk)}
-          onMouseLeave={e => (e.currentTarget.style.background = C.primary)}
-        >
+        <Link href="/inscription"
+          className="hidden md:inline-flex bg-[#4648D4] hover:bg-[#3533B0] text-white px-[18px] py-2 rounded-[7px] text-[13px] font-semibold no-underline shrink-0 transition-colors duration-150">
           Démo Gratuite
         </Link>
 
-        {/* Burger */}
-        <button className="ml-auto md:hidden" onClick={() => setOpen(!open)}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, color: C.ink }}>
+        <button className="ml-auto md:hidden bg-transparent border-none cursor-pointer p-2 text-[#111111]" onClick={() => setOpen(!open)}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
             {open
               ? (<><line x1="4" y1="4" x2="16" y2="16"/><line x1="16" y1="4" x2="4" y2="16"/></>)
@@ -83,20 +52,18 @@ export default function Header() {
         </button>
       </div>
 
-      {/* Mobile menu */}
       {open && (
-        <div style={{ borderTop: `1px solid ${C.border}`, background: '#fff', padding: '12px 24px 20px' }}>
+        <div className="border-t border-[#E5E7EB] bg-white px-6 pt-3 pb-5">
           {NAV.map(({ href, label }) => (
-            <a key={href} href={href} onClick={() => setOpen(false)} style={{
-              display: 'block', padding: '11px 0', fontSize: 15, fontWeight: 500,
-              color: C.text, textDecoration: 'none', borderBottom: `1px solid ${C.border}`,
-            }}>{label}</a>
+            <a key={href} href={href} onClick={() => setOpen(false)}
+              className="block py-[11px] text-[15px] font-medium text-[#374151] no-underline border-b border-[#E5E7EB]">
+              {label}
+            </a>
           ))}
-          <Link href="/inscription" style={{
-            display: 'block', marginTop: 14, textAlign: 'center',
-            background: C.primary, color: '#fff',
-            padding: 12, borderRadius: 7, fontWeight: 600, textDecoration: 'none', fontSize: 14,
-          }}>Démo Gratuite</Link>
+          <Link href="/inscription"
+            className="block mt-3.5 text-center bg-[#4648D4] text-white p-3 rounded-[7px] font-semibold no-underline text-sm">
+            Démo Gratuite
+          </Link>
         </div>
       )}
     </header>

@@ -29,24 +29,21 @@ export default function Connexion() {
 
         <Link
           href="/"
-          className="text-[26px] font-extrabold tracking-[-0.5px] text-white no-underline animate-fade-up"
-          style={{ animationDelay: '0.05s' }}
+          className="text-[26px] font-extrabold tracking-[-0.5px] text-white no-underline animate-fade-up [animation-delay:0.05s]"
         >
           Opus
         </Link>
 
         <div className="my-auto py-12 max-md:my-0 max-md:pt-6 max-md:pb-2">
           <h2
-            className="mb-6 text-[30px] font-bold leading-[1.25] tracking-[-0.3px] text-white animate-fade-up max-md:text-[22px]"
-            style={{ animationDelay: '0.12s' }}
+            className="mb-6 text-[30px] font-bold leading-[1.25] tracking-[-0.3px] text-white animate-fade-up [animation-delay:0.12s] max-md:text-[22px]"
           >
             La conformité fiscale<br />
             de vos apports d&apos;affaires,<br />
             automatisée.
           </h2>
           <p
-            className="text-[13.5px] leading-[1.7] text-[#8a8a8a] animate-fade-up"
-            style={{ animationDelay: '0.20s' }}
+            className="text-[13.5px] leading-[1.7] text-[#8a8a8a] animate-fade-up [animation-delay:0.20s]"
           >
             Contrats horodatés · Signature électronique<br />
             Factures auto-générées · Export DAS2
@@ -60,15 +57,13 @@ export default function Connexion() {
         <div className="w-full max-w-[520px]">
 
           <h1
-            className="mb-2 text-[38px] font-extrabold tracking-[-0.8px] text-[#111] animate-fade-up max-md:text-[28px]"
-            style={{ animationDelay: '0.10s' }}
+            className="mb-2 text-[38px] font-extrabold tracking-[-0.8px] text-[#111] animate-fade-up [animation-delay:0.10s] max-md:text-[28px]"
           >
             Connexion
           </h1>
 
           <p
-            className="mb-9 text-sm leading-[1.5] text-[#8a8a9a] animate-fade-up"
-            style={{ animationDelay: '0.16s' }}
+            className="mb-9 text-sm leading-[1.5] text-[#8a8a9a] animate-fade-up [animation-delay:0.16s]"
           >
             Entrez vos identifiants pour accéder à votre espace.
           </p>
@@ -77,8 +72,7 @@ export default function Connexion() {
 
             {/* Email ──────────────────────────────────────────────── */}
             <div
-              className="mb-5 flex flex-col gap-1.5 animate-fade-up"
-              style={{ animationDelay: '0.22s' }}
+              className="mb-5 flex flex-col gap-1.5 animate-fade-up [animation-delay:0.22s]"
             >
               <label htmlFor="email" className="text-[13.5px] font-semibold text-[#111]">
                 Email
@@ -96,8 +90,7 @@ export default function Connexion() {
 
             {/* Mot de passe ───────────────────────────────────────── */}
             <div
-              className="mb-5 flex flex-col gap-1.5 animate-fade-up"
-              style={{ animationDelay: '0.22s' }}
+              className="mb-5 flex flex-col gap-1.5 animate-fade-up [animation-delay:0.22s]"
             >
               <label htmlFor="password" className="text-[13.5px] font-semibold text-[#111]">
                 Mot de passe
@@ -115,8 +108,7 @@ export default function Connexion() {
 
             {/* Checkbox + Mot de passe oublié ─────────────────────── */}
             <div
-              className="mt-1 mb-7 flex items-center justify-between animate-fade-up"
-              style={{ animationDelay: '0.28s' }}
+              className="mt-1 mb-7 flex items-center justify-between animate-fade-up [animation-delay:0.28s]"
             >
               <label className="flex cursor-pointer select-none items-center gap-2.5 text-[13.5px] text-[#444]">
                 {/* Checkbox native cachée, remplacée par un span stylisé */}
@@ -159,8 +151,7 @@ export default function Connexion() {
             {/* Bouton Se connecter ────────────────────────────────── */}
             <button
               type="submit"
-              className="mb-5 flex h-[52px] w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] border-none bg-[#4648d4] text-[16px] font-semibold tracking-[0.1px] text-white transition-[background-color,transform] duration-150 ease-in-out hover:bg-[#3533b0] active:scale-[0.99] animate-fade-up"
-              style={{ animationDelay: '0.32s' }}
+              className="mb-5 flex h-[52px] w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] border-none bg-[#4648d4] text-[16px] font-semibold tracking-[0.1px] text-white transition-[background-color,transform] duration-150 ease-in-out hover:bg-[#3533b0] active:scale-[0.99] animate-fade-up [animation-delay:0.32s]"
             >
               Se connecter
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -178,8 +169,7 @@ export default function Connexion() {
 
           {/* Lien vers l'inscription ────────────────────────────── */}
           <p
-            className="text-center text-[13.5px] text-[#8a8a9a] animate-fade-up"
-            style={{ animationDelay: '0.36s' }}
+            className="text-center text-[13.5px] text-[#8a8a9a] animate-fade-up [animation-delay:0.36s]"
           >
             Pas encore inscrit ?{' '}
             <Link

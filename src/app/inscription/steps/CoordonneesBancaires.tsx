@@ -45,7 +45,7 @@ function StepSidebar({ steps }: { steps: readonly SidebarStep[] }) {
                 s.status === 'done' || s.status === 'active' ? 'bg-[#1C3064] opacity-20' : 'bg-[#E5E7EB]'
               }`} aria-hidden="true" />
             )}
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-[13px] font-bold ${
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[13px] font-bold ${
               s.status === 'done'    ? 'bg-[#1C3064] text-white' :
               s.status === 'active' ? 'bg-[#4648D4] text-white' :
                                       'bg-[#E5E7EB] text-[#9CA3AF]'

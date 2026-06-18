@@ -79,7 +79,7 @@ function StepSidebar({ steps }: { steps: readonly SidebarStep[] }) {
                 s.status === 'done' || s.status === 'active' ? 'bg-[#1C3064] opacity-20' : 'bg-[#E5E7EB]'
               }`} aria-hidden="true" />
             )}
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-[13px] font-bold ${
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[13px] font-bold ${
               s.status === 'done'    ? 'bg-[#1C3064] text-white' :
               s.status === 'active' ? 'bg-[#4648D4] text-white' :
                                       'bg-[#E5E7EB] text-[#9CA3AF]'
@@ -190,7 +190,7 @@ export default function VerificationSiret({ initialValues = {}, onNext, onPrev }
                   placeholder="Ex : 832 547 891 00012" maxLength={17} autoComplete="off" />
               </div>
               <button type="button"
-                className="h-[46px] px-6 bg-[#4648D4] text-white rounded-lg text-sm font-semibold cursor-pointer whitespace-nowrap flex-shrink-0 inline-flex items-center gap-2 hover:bg-[#3533B0] disabled:bg-[#E5E7EB] disabled:text-[#9CA3AF] disabled:cursor-not-allowed transition-colors"
+                className="h-[46px] px-6 bg-[#4648D4] text-white rounded-lg text-sm font-semibold cursor-pointer whitespace-nowrap shrink-0 inline-flex items-center gap-2 hover:bg-[#3533B0] disabled:bg-[#E5E7EB] disabled:text-[#9CA3AF] disabled:cursor-not-allowed transition-colors"
                 onClick={handleVerify} disabled={loading || siret.trim() === ''}>
                 {loading && <span className="w-3.5 h-3.5 rounded-full border-2 border-white/40 border-t-white anim-spin-slow" />}
                 {loading ? 'Vérification…' : 'Vérifier'}
@@ -201,7 +201,7 @@ export default function VerificationSiret({ initialValues = {}, onNext, onPrev }
 
             {validated && (
               <div className="flex items-start gap-2.5 bg-green-50 border border-green-300 rounded-[10px] px-4 py-3.5 mb-6 anim-slide-down" role="alert">
-                <svg className="text-green-700 flex-shrink-0 mt-px" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg className="text-green-700 shrink-0 mt-px" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 1a8 8 0 1 0 0 16A8 8 0 0 0 9 1z" />
                   <path d="M6 9l2 2 4-4" />
                 </svg>

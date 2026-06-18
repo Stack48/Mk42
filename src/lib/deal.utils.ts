@@ -3,17 +3,9 @@
 
 import type { KanbanDealStatut } from "@/types/deal.types";
 
-const TRANSITIONS_AUTORISEES: Record<KanbanDealStatut, KanbanDealStatut[]> = {
-  PROSPECT: ["CONTACTE", "ANNULE"],
-  CONTACTE: ["SIGNE", "ANNULE"],
-  SIGNE:    ["PAYE", "ANNULE"],
-  PAYE:     [],
-  ANNULE:   [],
-};
-
 export function isTransitionDealValide(
   from: KanbanDealStatut,
   to: KanbanDealStatut
 ): boolean {
-  return TRANSITIONS_AUTORISEES[from].includes(to);
+  return from !== to;
 }

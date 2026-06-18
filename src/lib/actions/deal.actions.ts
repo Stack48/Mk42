@@ -203,7 +203,7 @@ export async function deleteDealDocument(
 export async function getDealsByStatut(): Promise<Record<KanbanDealStatut, KanbanDeal[]>> {
   const deals = await prisma.kanbanDeal.findMany({
     include: {
-      apporteur: { select: { id: true, nom: true, email: true } },
+      apporteur: { select: { id: true, nom: true, utilisateur: { select: { email: true } } } },
       documents: true,
       messages:  { where: { lu: false } }, // compte non lus uniquement
     },
@@ -214,7 +214,11 @@ export async function getDealsByStatut(): Promise<Record<KanbanDealStatut, Kanba
     PROSPECT: [], CONTACTE: [], SIGNE: [], PAYE: [], ANNULE: [],
   };
   for (const deal of deals) {
-    grouped[deal.statut as KanbanDealStatut].push(deal as unknown as KanbanDeal);
+    const flat = {
+      ...deal,
+      apporteur: { id: deal.apporteur.id, nom: deal.apporteur.nom, email: deal.apporteur.utilisateur?.email ?? '' },
+    };
+    grouped[deal.statut as KanbanDealStatut].push(flat as unknown as KanbanDeal);
   }
   return grouped;
 }
@@ -224,12 +228,17 @@ export async function getDeal(dealId: string): Promise<KanbanDeal | null> {
   const deal = await prisma.kanbanDeal.findUnique({
     where: { id: dealId },
     include: {
-      apporteur: { select: { id: true, nom: true, email: true } },
+      apporteur: { select: { id: true, nom: true, utilisateur: { select: { email: true } } } },
       documents: { orderBy: { createdAt: "desc" } },
       messages:  { orderBy: { createdAt: "asc" } },
     },
   });
-  return deal as unknown as KanbanDeal | null;
+  if (!deal) return null;
+  const flat = {
+    ...deal,
+    apporteur: { id: deal.apporteur.id, nom: deal.apporteur.nom, email: deal.apporteur.utilisateur?.email ?? '' },
+  };
+  return flat as unknown as KanbanDeal;
 }
 
 // ─── ACTIONS MESSAGERIE ───────────────────────────────────────────────────────

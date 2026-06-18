@@ -22,11 +22,10 @@ export function KanbanColumn({ statut, deals }: Props) {
   const { headerBg, label } = KANBAN_COLUMN_STYLES[statut];
 
   return (
-    <div className="flex flex-col w-64 flex-shrink-0">
+    <div className="flex flex-col w-64 shrink-0">
       {/* En-tête de colonne */}
       <div
-        style={{ backgroundColor: headerBg }}
-        className="rounded-t-[12px] px-3 py-2 flex items-center justify-between"
+        className={`${headerBg} rounded-t-[12px] px-3 py-2 flex items-center justify-between`}
       >
         <span className="text-sm font-semibold text-[#0F1117]">{label}</span>
         <span className="text-xs text-[#6B7280] bg-white/60 px-2 py-0.5 rounded-full">

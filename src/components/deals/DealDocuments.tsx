@@ -129,18 +129,18 @@ export function DealDocuments({ dealId, documents: initialDocs }: Props) {
               className="flex items-center justify-between bg-[#F8F9FF] rounded-[12px] px-3 py-2 border border-gray-100"
             >
               <div className="flex items-center gap-3 min-w-0">
-                <span className={`px-2 py-0.5 rounded text-xs font-medium flex-shrink-0 ${TYPE_COLORS[doc.type]}`}>
+                <span className={`px-2 py-0.5 rounded text-xs font-medium shrink-0 ${TYPE_COLORS[doc.type]}`}>
                   {TYPE_LABELS[doc.type]}
                 </span>
                 <span className="text-sm text-[#0F1117] truncate">{doc.nom}</span>
-                <span className="text-xs text-[#6B7280] flex-shrink-0">
+                <span className="text-xs text-[#6B7280] shrink-0">
                   {formatSize(doc.fileSize)}
                 </span>
               </div>
               <button
                 onClick={() => handleDelete(doc.id)}
                 disabled={isPending}
-                className="text-xs text-[#DC2626] hover:underline ml-3 flex-shrink-0 disabled:opacity-50"
+                className="text-xs text-[#DC2626] hover:underline ml-3 shrink-0 disabled:opacity-50"
               >
                 Supprimer
               </button>

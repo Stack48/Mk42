@@ -3,10 +3,11 @@ import { getInscriptionUserId } from '@/lib/auth-inscription';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@/generated/prisma/client/client';
+import { siretSchema } from '@/lib/validations/siret';
 
 const schema = z.object({
   raisonSociale: z.string().min(1),
-  siret: z.string().length(14, 'Le SIRET doit contenir 14 chiffres').regex(/^\d{14}$/, 'Le SIRET ne doit contenir que des chiffres'),
+  siret: siretSchema,
   adresseSiege: z.string().min(1),
   codeApe: z.string().optional(),
   representantLegal: z.string().min(1),

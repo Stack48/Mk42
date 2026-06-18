@@ -2,7 +2,28 @@ import { clerkClient } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@/generated/prisma/client/client';
 
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = 5;
+const RATE_WINDOW_MS = 15 * 60 * 1000;
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return true;
+  }
+  if (entry.count >= RATE_LIMIT) return false;
+  entry.count++;
+  return true;
+}
+
 export async function POST(req: Request) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+  if (!checkRateLimit(ip)) {
+    return Response.json({ error: 'Trop de tentatives. Réessayez dans 15 minutes.' }, { status: 429 });
+  }
+
   try {
     const { prenom, nom, email, motDePasse, profil, telephone, fonction } = await req.json();
 

@@ -1,12 +1,6 @@
 'use client'
 import { useState } from 'react'
 
-const C = {
-  primary: '#4648D4', primaryDk: '#3533B0',
-  primaryXL: '#EEEEFF', ink: '#111111',
-  muted: '#6B7280', border: '#E5E7EB',
-}
-
 const FEATURES = [
   {
     icon: <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6z"/><polyline points="12 2 12 6 16 6"/><line x1="8" y1="11" x2="12" y2="11"/><line x1="8" y1="14" x2="10" y2="14"/></svg>,
@@ -34,81 +28,60 @@ export default function Features() {
   const [hov, setHov] = useState<number | null>(null)
 
   return (
-    <section id="fonctionnalites" style={{ background: '#fff', padding: 'clamp(60px,7vw,90px) 24px' }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+    <section id="fonctionnalites" className="bg-white py-[clamp(60px,7vw,90px)] px-6">
+      <div className="max-w-[1100px] mx-auto">
 
-        {/* Header */}
-        <div style={{ marginBottom: 48 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.primary, marginBottom: 10, fontFamily: "'DM Mono', monospace" }}>
+        <div className="mb-12">
+          <p className="text-xs font-semibold tracking-[0.1em] uppercase text-[#4648D4] mb-2.5 font-['DM_Mono',monospace]">
             Fonctionnalités
           </p>
-          <h2 style={{ fontSize: 'clamp(24px,3.5vw,38px)', fontWeight: 800, color: C.ink, letterSpacing: '-0.02em', lineHeight: 1.2, maxWidth: 480, marginBottom: 0 }}>
+          <h2 className="text-[clamp(24px,3.5vw,38px)] font-extrabold text-[#111111] tracking-[-0.02em] leading-[1.2] max-w-[480px]">
             Toutes les fonctionnalités, sans les maux de tête
           </h2>
         </div>
 
-        {/* 2-col: cards + photo */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, alignItems: 'start' }}>
+        <div className="grid grid-cols-2 gap-8 items-start max-md:grid-cols-1">
 
-          {/* 2×2 cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+          <div className="grid grid-cols-2 gap-3.5 max-sm:grid-cols-1">
             {FEATURES.map((f, i) => (
               <div key={f.title}
                 onMouseEnter={() => setHov(i)} onMouseLeave={() => setHov(null)}
-                style={{
-                  background: '#fff', borderRadius: 10, padding: '20px 18px',
-                  border: `1px solid ${hov === i ? C.primary : C.border}`,
-                  boxShadow: hov === i ? '0 4px 20px rgba(70,72,212,0.1)' : '0 1px 3px rgba(0,0,0,0.04)',
-                  transition: 'border-color 200ms, box-shadow 200ms',
-                  cursor: 'default',
-                }}
+                className={`bg-white rounded-[10px] px-[18px] py-5 border transition-[border-color,box-shadow] duration-200 cursor-default ${
+                  hov === i
+                    ? 'border-[#4648D4] shadow-[0_4px_20px_rgba(70,72,212,0.1)]'
+                    : 'border-[#E5E7EB] shadow-[0_1px_3px_rgba(0,0,0,0.04)]'
+                }`}
               >
-                <div style={{ width: 38, height: 38, borderRadius: 8, background: C.primaryXL, color: C.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                <div className="w-[38px] h-[38px] rounded-lg bg-[#EEEEFF] text-[#4648D4] flex items-center justify-center mb-3">
                   {f.icon}
                 </div>
-                <h3 style={{ fontSize: 14, fontWeight: 700, color: C.ink, marginBottom: 6, lineHeight: 1.3 }}>{f.title}</h3>
-                <p style={{ fontSize: 13, color: C.muted, lineHeight: 1.6 }}>{f.desc}</p>
+                <h3 className="text-sm font-bold text-[#111111] mb-1.5 leading-[1.3]">{f.title}</h3>
+                <p className="text-[13px] text-[#6B7280] leading-[1.6]">{f.desc}</p>
               </div>
             ))}
           </div>
 
-          {/* Photo placeholder */}
-          <div style={{
-            borderRadius: 14, overflow: 'hidden', background: '#F3F4F6',
-            minHeight: 360, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative',
-          }}>
-            <div style={{ textAlign: 'center', padding: 32 }}>
-              <div style={{
-                width: 100, height: 100, borderRadius: '50%',
-                background: `linear-gradient(135deg, ${C.primary}, #6669e0)`,
-                margin: '0 auto 20px',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
+          <div className="rounded-[14px] overflow-hidden bg-[#F3F4F6] min-h-[360px] flex items-center justify-center relative">
+            <div className="text-center p-8">
+              <div className="w-[100px] h-[100px] rounded-full bg-[linear-gradient(135deg,#4648D4,#6669e0)] mx-auto mb-5 flex items-center justify-center">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
                   <path d="M16 3h-8l-2 4h12z"/>
                   <circle cx="12" cy="13" r="2"/>
                 </svg>
               </div>
-              <p style={{ fontSize: 15, fontWeight: 600, color: C.primary, marginBottom: 8 }}>Secteur BTP</p>
-              <p style={{ fontSize: 13, color: C.muted, lineHeight: 1.6, maxWidth: 240, margin: '0 auto' }}>
+              <p className="text-[15px] font-semibold text-[#4648D4] mb-2">Secteur BTP</p>
+              <p className="text-[13px] text-[#6B7280] leading-[1.6] max-w-[240px] mx-auto">
                 Parce que gérer son entreprise ne devrait pas ressembler à un contrôle fiscal.
               </p>
             </div>
           </div>
         </div>
 
-        <p style={{ marginTop: 32, fontSize: 13, color: '#9CA3AF', textAlign: 'center' }}>
+        <p className="mt-8 text-[13px] text-[#9CA3AF] text-center">
           Parce que gérer son entreprise ne devrait pas ressembler à un contrôle fiscal.
         </p>
       </div>
-
-      <style>{`
-        @media(max-width:860px){
-          #fonctionnalites > div > div:last-child > div:first-child{grid-template-columns:1fr!important}
-          #fonctionnalites > div > div:last-child{grid-template-columns:1fr!important}
-        }
-      `}</style>
     </section>
   )
 }

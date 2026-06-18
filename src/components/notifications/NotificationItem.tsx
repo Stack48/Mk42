@@ -26,7 +26,7 @@ export function NotificationItem({ notification, onClick = () => {} }: Props) {
     >
       <div className="flex items-start gap-3">
         {/* Icône du type d'événement */}
-        <span className="text-base mt-0.5 flex-shrink-0">{config.icon}</span>
+        <span className="text-base mt-0.5 shrink-0">{config.icon}</span>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
@@ -37,7 +37,7 @@ export function NotificationItem({ notification, onClick = () => {} }: Props) {
             </p>
             {/* Pastille verte si non lue */}
             {!notification.lu && (
-              <span className="flex-shrink-0 h-2 w-2 rounded-full bg-[#4F6EF7]" />
+              <span className="shrink-0 h-2 w-2 rounded-full bg-[#4F6EF7]" />
             )}
           </div>
           <p className="text-xs text-[#6B7280] mt-0.5 line-clamp-2">

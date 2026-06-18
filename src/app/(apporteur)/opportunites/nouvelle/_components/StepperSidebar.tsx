@@ -42,7 +42,7 @@ export default function StepperSidebar({ currentStep }: Props) {
                 <span className={styles.name}>
                   {step.label}
                   {status === 'done' && step.hint && (
-                    <span style={{ color: '#64748B', fontWeight: 400, marginLeft: 4 }}>
+                    <span className="text-[#64748B] font-normal ml-1">
                       {step.hint}
                     </span>
                   )}

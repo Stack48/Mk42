@@ -2,6 +2,7 @@ import { clerkClient } from '@clerk/nextjs/server';
 import { getInscriptionUserId } from '@/lib/auth-inscription';
 import { getResend } from '@/lib/resend';
 import { randomUUID } from 'crypto';
+import { validationEmailHtml } from '@/emails/validation-email';
 
 export async function POST(req: Request) {
   const userId = await getInscriptionUserId(req);
@@ -37,13 +38,7 @@ export async function POST(req: Request) {
         from: process.env.EMAIL_FROM ?? 'noreply@opus-btp.fr',
         to: email,
         subject: 'Vérifiez votre adresse email — Opus BTP',
-        html: `
-          <p>Bonjour ${user.firstName ?? ''},</p>
-          <p>Cliquez sur le lien ci-dessous pour vérifier votre adresse email et accéder à votre tableau de bord :</p>
-          <p><a href="${verifyUrl}" style="background:#2563eb;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;display:inline-block;">Vérifier mon adresse email</a></p>
-          <p>Ce lien expire dans 24 heures.</p>
-          <p>Si vous n'avez pas créé de compte, ignorez cet email.</p>
-        `,
+        html: validationEmailHtml({ url: verifyUrl, prenom: user.firstName ?? undefined }),
       });
 
       if (error) {

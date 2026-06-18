@@ -1,5 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 const isPublicRoute = createRouteMatcher([
   '/',
@@ -17,6 +18,14 @@ export const proxy = clerkMiddleware(async (auth, request) => {
   if (request.nextUrl.pathname.startsWith('/api/')) return NextResponse.next();
 
   const { userId, orgId, orgRole } = await auth.protect();
+
+  const utilisateur = await prisma.utilisateur.findUnique({
+    where: { clerkId: userId },
+    select: { emailVerified: true },
+  });
+  if (!utilisateur?.emailVerified) {
+    return NextResponse.redirect(new URL('/inscription/validation-email', request.url));
+  }
 
   if (isAdminRoute(request)) {
     if (!orgId || orgRole !== 'org:admin') {

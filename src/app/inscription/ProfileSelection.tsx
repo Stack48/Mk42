@@ -61,7 +61,7 @@ function ProfileCard({ profile, isSelected, onSelect, onChoose, delay }: Profile
       onClick={onSelect}
       onKeyDown={e => e.key === 'Enter' && onSelect()}
     >
-      <div className="w-[60px] h-[60px] rounded-full bg-[#BDD5EA] flex-shrink-0 mb-6" aria-hidden="true" />
+      <div className="w-[60px] h-[60px] rounded-full bg-[#BDD5EA] shrink-0 mb-6" aria-hidden="true" />
       <h2 className="text-[19px] font-bold text-opus-ink leading-[1.25] mb-2">{profile.title}</h2>
       <p className="text-sm text-opus-muted leading-relaxed mb-6">{profile.description}</p>
       <ul className="list-none p-0 m-0 flex-1 flex flex-col gap-1.5 mb-6" aria-label="Caractéristiques">

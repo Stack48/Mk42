@@ -61,11 +61,11 @@ export const KANBAN_COLUMN_STYLES: Record<
   KanbanDealStatut,
   { headerBg: string; label: string }
 > = {
-  PROSPECT: { headerBg: "#F3F4F6", label: "Prospect" },
-  CONTACTE: { headerBg: "#DBEAFE", label: "Contacté" },
-  SIGNE:    { headerBg: "#D1FAE5", label: "Signé" },
-  PAYE:     { headerBg: "#A7F3D0", label: "Payé" },
-  ANNULE:   { headerBg: "#FEE2E2", label: "Annulé" },
+  PROSPECT: { headerBg: "bg-[#F3F4F6]", label: "Prospect" },
+  CONTACTE: { headerBg: "bg-[#DBEAFE]", label: "Contacté" },
+  SIGNE:    { headerBg: "bg-[#D1FAE5]", label: "Signé" },
+  PAYE:     { headerBg: "bg-[#A7F3D0]", label: "Payé" },
+  ANNULE:   { headerBg: "bg-[#FEE2E2]", label: "Annulé" },
 };
 
 export const KANBAN_STATUTS: KanbanDealStatut[] = [

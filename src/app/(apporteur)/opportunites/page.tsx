@@ -131,7 +131,7 @@ export default async function OpportunitesPage() {
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div className="flex items-center gap-3">
                     <span className={`${styles.badge} ${statutClass}`}>
                       {STATUT_LABELS[opp.statut]}
                     </span>

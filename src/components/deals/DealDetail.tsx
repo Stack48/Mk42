@@ -107,7 +107,7 @@ export function DealDetail({ deal }: Props) {
       </div>
 
       {/* ── Colonne droite : chat (2/5) ── */}
-      <div className="lg:col-span-2 bg-white rounded-[12px] border border-gray-200 flex flex-col" style={{ minHeight: "500px" }}>
+      <div className="lg:col-span-2 bg-white rounded-[12px] border border-gray-200 flex flex-col min-h-[500px]">
         <DealChat
           dealId={deal.id}
           auteurId="admin"
