@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { ProfilId } from './types'
+import IconChevronLeft from '@/components/icons/IconChevronLeft'
 
 const STEP        = 1
 const TOTAL_STEPS = 6
@@ -112,9 +113,7 @@ export default function ProfileSelection({ onSelectProfil }: ProfileSelectionPro
             OPUS
           </Link>
           <Link href="/" className="inline-flex items-center gap-1 text-sm text-opus-muted no-underline hover:text-opus-ink transition-colors" aria-label="Retour à l'accueil">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <IconChevronLeft />
             Retour
           </Link>
         </div>

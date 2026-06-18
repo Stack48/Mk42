@@ -6,6 +6,11 @@ import { useRouter } from 'next/navigation'
 import { useSignIn } from '@clerk/nextjs'
 import { SignOutButton } from '@clerk/nextjs'
 import type { WizardFormData } from '../types'
+import IconCheck from '@/components/icons/IconCheck'
+import IconChevronLeft from '@/components/icons/IconChevronLeft'
+import IconEmail from '@/components/icons/IconEmail'
+import IconCheckboxMark from '@/components/icons/IconCheckboxMark'
+import IconRefresh from '@/components/icons/IconRefresh'
 
 const STEP        = 6
 const TOTAL_STEPS = 6
@@ -87,9 +92,7 @@ function StepSidebar({ steps }: { steps: readonly SidebarStep[] }) {
                                       'bg-[#E5E7EB] text-[#9CA3AF]'
             }`} aria-hidden="true">
               {s.status === 'done' ? (
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M2.5 7l3 3 6-6" />
-                </svg>
+                <IconCheck />
               ) : s.num}
             </div>
             <div className="flex flex-col gap-0.5 pt-[5px]">
@@ -245,9 +248,7 @@ export default function ValidationEmailCGU({ formData, onPrev }: Props) {
         <div className="max-w-[1200px] mx-auto px-16 h-16 flex items-center justify-between max-md:px-6">
           <Link href="/" className="text-2xl font-extrabold tracking-[-0.5px] text-[#0F172A] no-underline">OPUS</Link>
           <button type="button" className="inline-flex items-center gap-1 text-sm text-[#64748B] border-none bg-transparent p-0 cursor-pointer hover:text-[#0F172A] transition-colors disabled:opacity-50" onClick={onPrev} disabled={isLoading} aria-label="Retour">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <IconChevronLeft />
             Retour
           </button>
         </div>
@@ -281,9 +282,7 @@ export default function ValidationEmailCGU({ formData, onPrev }: Props) {
                       />
                       <div className="w-5 h-5 border-[1.5px] border-[#CBD5E1] rounded-[5px] bg-white peer-checked:bg-[#4648D4] peer-checked:border-[#4648D4] peer-focus:shadow-[0_0_0_3px_rgba(70,72,212,0.12)] transition-all" />
                       {checks[item.id] && (
-                        <svg className="absolute inset-0 m-auto w-3 h-3 text-white pointer-events-none" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M2 6l3 3 5-5" />
-                        </svg>
+                        <IconCheckboxMark />
                       )}
                     </div>
                     <div>
@@ -303,10 +302,7 @@ export default function ValidationEmailCGU({ formData, onPrev }: Props) {
             {/* Email */}
             <div>
               <div className="flex items-center gap-2.5 mb-3">
-                <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#4648D4" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="4" width="18" height="14" rx="2" />
-                  <path d="M2 7l9 6 9-6" />
-                </svg>
+                <IconEmail className="w-[22px] h-[22px] text-[#4648D4]" />
                 <h2 className="text-[18px] font-bold text-[#0F172A]">Vérification de votre email</h2>
               </div>
 
@@ -350,10 +346,7 @@ export default function ValidationEmailCGU({ formData, onPrev }: Props) {
                     <button type="button"
                       className="inline-flex items-center gap-1.5 bg-transparent border-none text-[13px] font-medium text-[#4648D4] cursor-pointer p-0 hover:opacity-75 transition-opacity"
                       onClick={handleSubmit}>
-                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M13 2v4H9" /><path d="M1 12v-4h4" />
-                        <path d="M11.5 5A5 5 0 0 0 3 5.5M2.5 9A5 5 0 0 0 11 8.5" />
-                      </svg>
+                      <IconRefresh />
                       Renvoyer le lien
                     </button>
                   </div>
@@ -366,9 +359,7 @@ export default function ValidationEmailCGU({ formData, onPrev }: Props) {
               <button type="button"
                 className="inline-flex items-center gap-1.5 px-6 py-3 bg-white border-[1.5px] border-[#D1D5DB] rounded-lg text-[15px] font-semibold text-[#0F172A] cursor-pointer hover:border-[#64748B] hover:bg-gray-50 transition-all disabled:opacity-50"
                 onClick={onPrev} disabled={isLoading}>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <IconChevronLeft />
                 Précédent
               </button>
               <button

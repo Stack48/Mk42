@@ -3,6 +3,7 @@ import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { SignOutButton } from "@clerk/nextjs";
 import { prisma } from "@/lib/prisma";
+import IconLogo from "@/components/icons/IconLogo";
 
 const NAV_ENTREPRISE = [
   { href: "/dashboard",    label: "Dashboard",         icon: "⊞" },
@@ -47,12 +48,7 @@ export async function Sidebar() {
       <div className="px-5 py-5 border-b border-[#E5E7EB]">
         <Link href="/" className="flex items-center gap-2 text-[#0F1117] no-underline">
           <span className="w-7 h-7 rounded-[7px] bg-[var(--opus-primary)] flex items-center justify-center">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <rect x="2.5" y="2.5" width="4.5" height="4.5" rx="1.2" fill="white" />
-              <rect x="9" y="2.5" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.55" />
-              <rect x="2.5" y="9" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.55" />
-              <rect x="9" y="9" width="4.5" height="4.5" rx="1.2" fill="white" />
-            </svg>
+            <IconLogo />
           </span>
           <span className="font-bold text-[17px] tracking-[0.01em]">Opus</span>
         </Link>

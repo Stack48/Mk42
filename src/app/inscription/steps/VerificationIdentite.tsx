@@ -3,6 +3,10 @@
 import { useState, useRef } from 'react'
 import Link from 'next/link'
 import type { Step5Data } from '../types'
+import IconCheck from '@/components/icons/IconCheck'
+import IconChevronLeft from '@/components/icons/IconChevronLeft'
+import IconArrowRight from '@/components/icons/IconArrowRight'
+import IconUpload from '@/components/icons/IconUpload'
 
 const STEP        = 5
 const TOTAL_STEPS = 6
@@ -50,9 +54,7 @@ function StepSidebar({ steps }: { steps: readonly SidebarStep[] }) {
                                       'bg-[#E5E7EB] text-[#9CA3AF]'
             }`} aria-hidden="true">
               {s.status === 'done' ? (
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M2.5 7l3 3 6-6" />
-                </svg>
+                <IconCheck />
               ) : s.num}
             </div>
             <div className="flex flex-col gap-0.5 pt-[5px]">
@@ -72,16 +74,6 @@ function StepSidebar({ steps }: { steps: readonly SidebarStep[] }) {
   )
 }
 
-function UploadIcon() {
-  return (
-    <svg width="36" height="36" viewBox="0 0 36 36" fill="none"
-      stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
-      className="text-[#4648D4] mb-1">
-      <rect x="4" y="4" width="28" height="28" rx="6" />
-      <path d="M18 24V14M13 19l5-5 5 5" />
-    </svg>
-  )
-}
 
 interface Props {
   initialValues?: Partial<Step5Data>
@@ -113,9 +105,7 @@ export default function VerificationIdentite({ initialValues = {}, onNext, onPre
         <div className="max-w-[1200px] mx-auto px-16 h-16 flex items-center justify-between max-md:px-6">
           <Link href="/" className="text-2xl font-extrabold tracking-[-0.5px] text-[#0F172A] no-underline">OPUS</Link>
           <button type="button" className="inline-flex items-center gap-1 text-sm text-[#64748B] border-none bg-transparent p-0 cursor-pointer hover:text-[#0F172A] transition-colors" onClick={onPrev} aria-label="Retour">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <IconChevronLeft />
             Retour
           </button>
         </div>
@@ -149,7 +139,7 @@ export default function VerificationIdentite({ initialValues = {}, onNext, onPre
                 >
                   <input ref={kbisRef} type="file" accept=".pdf,.png,.jpg,.jpeg" className="hidden"
                     onChange={e => { const f = e.target.files?.[0]; if (f) setKbisFile(f) }} />
-                  <UploadIcon />
+                  <IconUpload className="text-[#4648D4] mb-1" />
                   <p className="text-sm font-semibold text-[#0F172A]">Cliquez ou glissez votre K-Bis ici</p>
                   <p className="text-[13px] text-[#64748B]">PDF, PNG ou JPEG (max 5 Mo)</p>
                   {kbisFile && <p className="text-xs text-green-600 font-medium">✓ {kbisFile.name}</p>}
@@ -185,7 +175,7 @@ export default function VerificationIdentite({ initialValues = {}, onNext, onPre
                 >
                   <input ref={idRef} type="file" accept=".pdf,.png,.jpg,.jpeg" className="hidden"
                     onChange={e => { const f = e.target.files?.[0]; if (f) setIdFile(f) }} />
-                  <UploadIcon />
+                  <IconUpload className="text-[#4648D4] mb-1" />
                   <p className="text-sm font-semibold text-[#0F172A]">Cliquez ou glissez votre pièce d&apos;identité ici</p>
                   <p className="text-[13px] text-[#64748B]">(Recto / Verso) — PDF, PNG ou JPEG (max 5 Mo)</p>
                   {idFile && <p className="text-xs text-green-600 font-medium">✓ {idFile.name}</p>}
@@ -198,9 +188,7 @@ export default function VerificationIdentite({ initialValues = {}, onNext, onPre
               <button type="button" className={btnPrevCls} onClick={onPrev}>Précédent</button>
               <button type="button" className={btnNextCls} onClick={() => onNext({ docType, docNum, kbisFile, idFile })}>
                 Continuer
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <IconArrowRight />
               </button>
             </div>
 

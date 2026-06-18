@@ -1,4 +1,5 @@
 'use client'
+import IconStar from '@/components/icons/IconStar'
 
 const TESTIMONIALS = [
   {
@@ -22,9 +23,7 @@ function Stars() {
   return (
     <span className="flex gap-0.5">
       {[1,2,3,4,5].map(i => (
-        <svg key={i} width="14" height="14" viewBox="0 0 16 16" fill="#F59E0B">
-          <path d="M8 1l1.85 3.75L14 5.5l-3 2.92.7 4.08L8 10.4l-3.7 2.1.7-4.08-3-2.92 4.15-.75z"/>
-        </svg>
+        <IconStar key={i} />
       ))}
     </span>
   )

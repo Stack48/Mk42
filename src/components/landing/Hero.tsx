@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import DashboardPreview from './DashboardPreview'
+import IconBolt from '@/components/icons/IconBolt'
 
 export default function Hero() {
   const [email, setEmail] = useState('')
@@ -18,9 +19,7 @@ export default function Hero() {
 
         <div className="flex justify-center mb-6">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#E5E7EB] bg-[#EEEEFF] text-[13px] font-medium text-[#4648D4]">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="#4648D4">
-              <path d="M7.833 1.167L2.917 7.583h4.25l-.834 5.25 5.25-6.416H7.25z"/>
-            </svg>
+            <IconBolt />
             Découvrez tout ce qui peut être transformé avec les pros de votre entreprise
           </span>
         </div>

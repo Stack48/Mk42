@@ -5,6 +5,10 @@
 import type { Metadata } from 'next'
 import { SignUp } from '@clerk/nextjs'
 import Link from 'next/link'
+import IconLogo from '@/components/icons/IconLogo'
+import IconCheckSquare from '@/components/icons/IconCheckSquare'
+import IconLines from '@/components/icons/IconLines'
+import IconPlus from '@/components/icons/IconPlus'
 
 export const metadata: Metadata = {
   title: 'Opus — Créer un compte',
@@ -12,30 +16,17 @@ export const metadata: Metadata = {
 
 const FEATURES = [
   {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-        <path d="M9 11l2 2 4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-        <rect x="2.5" y="2.5" width="15" height="15" rx="3.5" stroke="currentColor" strokeWidth="1.5" />
-      </svg>
-    ),
+    icon: <IconCheckSquare />,
     title: 'Contrats légaux automatiques',
     desc: 'Générés et signés en quelques secondes, conformes au droit français.',
   },
   {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-        <path d="M4 10h12M4 6h8M4 14h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      </svg>
-    ),
+    icon: <IconLines />,
     title: 'DAS2 et factures en 1 clic',
     desc: "Export fiscal prêt à l'emploi, zéro risque de redressement.",
   },
   {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-        <path d="M10 3v14M3 10h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      </svg>
-    ),
+    icon: <IconPlus />,
     title: 'Coffre-fort sécurisé RGPD',
     desc: 'Tous vos documents archivés 10 ans, accessibles à tout moment.',
   },
@@ -55,12 +46,7 @@ export default async function ComptePage({
         <div className="mb-10">
           <Link href="/" className="inline-flex items-center gap-2 no-underline">
             <span className="w-[30px] h-[30px] rounded-[7px] bg-[var(--opus-primary)] flex items-center justify-center">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <rect x="2.5" y="2.5" width="4.5" height="4.5" rx="1.2" fill="white" />
-                <rect x="9" y="2.5" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.55" />
-                <rect x="2.5" y="9" width="4.5" height="4.5" rx="1.2" fill="white" fillOpacity="0.55" />
-                <rect x="9" y="9" width="4.5" height="4.5" rx="1.2" fill="white" />
-              </svg>
+              <IconLogo />
             </span>
             <span className="font-bold text-[17px] text-[var(--opus-ink)] tracking-[0.01em]">
               OPUS

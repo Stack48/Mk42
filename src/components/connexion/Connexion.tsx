@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import IconCheckMini from '@/components/icons/IconCheckMini'
+import IconArrowRight from '@/components/icons/IconArrowRight'
 
 /* Classe partagée par les deux champs de saisie — identique pixel-perfect. */
 const INPUT_CLASS =
@@ -125,17 +127,7 @@ export default function Connexion() {
                       : 'border-[#c4c6d2] bg-white'
                   }`}
                 >
-                  {rememberMe && (
-                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none" aria-hidden="true">
-                      <path
-                        d="M1 4L3.5 6.5L9 1"
-                        stroke="white"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  )}
+                  {rememberMe && <IconCheckMini />}
                 </span>
                 Rester connecté
               </label>
@@ -154,15 +146,7 @@ export default function Connexion() {
               className="mb-5 flex h-[52px] w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] border-none bg-[#4648d4] text-[16px] font-semibold tracking-[0.1px] text-white transition-[background-color,transform] duration-150 ease-in-out hover:bg-[#3533b0] active:scale-[0.99] animate-fade-up [animation-delay:0.32s]"
             >
               Se connecter
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path
-                  d="M3 8h10M9 4l4 4-4 4"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <IconArrowRight />
             </button>
 
           </form>

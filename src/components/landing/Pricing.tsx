@@ -1,10 +1,9 @@
 'use client'
 import Link from 'next/link'
+import IconCheck from '@/components/icons/IconCheck'
 
 const CHECK = (highlight: boolean) => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke={highlight ? 'rgba(255,255,255,0.9)' : '#4648D4'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="2.5 7 5.5 10.5 11.5 4"/>
-  </svg>
+  <IconCheck stroke={highlight ? 'rgba(255,255,255,0.9)' : '#4648D4'} />
 )
 
 const PLANS = [

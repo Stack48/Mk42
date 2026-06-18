@@ -3,6 +3,10 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import type { Step3Data } from '../types'
+import IconCheck from '@/components/icons/IconCheck'
+import IconChevronLeft from '@/components/icons/IconChevronLeft'
+import IconArrowRight from '@/components/icons/IconArrowRight'
+import IconCircleCheck from '@/components/icons/IconCircleCheck'
 
 const STEP        = 3
 const TOTAL_STEPS = 6
@@ -85,9 +89,7 @@ function StepSidebar({ steps }: { steps: readonly SidebarStep[] }) {
                                       'bg-[#E5E7EB] text-[#9CA3AF]'
             }`} aria-hidden="true">
               {s.status === 'done' ? (
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M2.5 7l3 3 6-6" />
-                </svg>
+                <IconCheck />
               ) : s.num}
             </div>
             <div className="flex flex-col gap-0.5 pt-[5px]">
@@ -160,9 +162,7 @@ export default function VerificationSiret({ initialValues = {}, onNext, onPrev }
         <div className="max-w-[1200px] mx-auto px-16 h-16 flex items-center justify-between max-md:px-6">
           <Link href="/" className="text-2xl font-extrabold tracking-[-0.5px] text-[#0F172A] no-underline">OPUS</Link>
           <button type="button" className="inline-flex items-center gap-1 text-sm text-[#64748B] border-none bg-transparent p-0 cursor-pointer hover:text-[#0F172A] transition-colors" onClick={onPrev} aria-label="Retour">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <IconChevronLeft />
             Retour
           </button>
         </div>
@@ -201,10 +201,7 @@ export default function VerificationSiret({ initialValues = {}, onNext, onPrev }
 
             {validated && (
               <div className="flex items-start gap-2.5 bg-green-50 border border-green-300 rounded-[10px] px-4 py-3.5 mb-6 anim-slide-down" role="alert">
-                <svg className="text-green-700 shrink-0 mt-px" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 1a8 8 0 1 0 0 16A8 8 0 0 0 9 1z" />
-                  <path d="M6 9l2 2 4-4" />
-                </svg>
+                <IconCircleCheck className="text-green-700 shrink-0 mt-px w-[18px] h-[18px]" />
                 <div>
                   <p className="text-[13px] font-bold text-green-700 tracking-[0.02em] mb-0.5">✓ FORMAT SIRET VALIDE</p>
                   <p className="text-[13px] text-green-700 opacity-85">Complétez les informations ci-dessous</p>
@@ -256,9 +253,7 @@ export default function VerificationSiret({ initialValues = {}, onNext, onPrev }
               <button type="button" className={btnPrevCls} onClick={onPrev}>Précédent</button>
               <button type="button" className={btnNextCls} disabled={!validated} onClick={handleContinue}>
                 Continuer
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <IconArrowRight />
               </button>
             </div>
           </div>

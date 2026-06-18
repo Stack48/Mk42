@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import IconMenuToggle from '@/components/icons/IconMenuToggle'
 
 const NAV = [
   { href: '#fonctionnalites', label: 'Fonctionnalités' },
@@ -44,11 +45,7 @@ export default function Header() {
         </Link>
 
         <button className="ml-auto md:hidden bg-transparent border-none cursor-pointer p-2 text-[#111111]" onClick={() => setOpen(!open)}>
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
-            {open
-              ? (<><line x1="4" y1="4" x2="16" y2="16"/><line x1="16" y1="4" x2="4" y2="16"/></>)
-              : (<><line x1="3" y1="6" x2="17" y2="6"/><line x1="3" y1="11" x2="17" y2="11"/><line x1="3" y1="16" x2="17" y2="16"/></>)}
-          </svg>
+          <IconMenuToggle open={open} />
         </button>
       </div>
 

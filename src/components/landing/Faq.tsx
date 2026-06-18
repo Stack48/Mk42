@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import IconFaqToggle from '@/components/icons/IconFaqToggle'
 
 const ITEMS = [
   { q: 'Mes commissions seront-elles reconnues par l\'État ?', a: "Oui. Opus génère tous les documents légaux requis : contrats conformes au Code civil, factures ou reçus d'honoraires, et déclaration DAS2 pour l'URSSAF. Vos commissions sont ainsi totalement traçables et fiscalement reconnues." },
@@ -43,9 +44,7 @@ export default function Faq() {
                     <span className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-[background,transform] duration-200 ${
                       isOpen ? 'bg-[#4648D4] text-white rotate-45' : 'bg-[#F3F4F6] text-[#4648D4]'
                     }`}>
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                        <line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/>
-                      </svg>
+                      <IconFaqToggle />
                     </span>
                   </button>
                   <div className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${isOpen ? 'max-h-[300px]' : 'max-h-0'}`}>

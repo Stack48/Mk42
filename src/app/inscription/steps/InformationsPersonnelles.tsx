@@ -3,6 +3,11 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import type { Step2Data } from '../types'
+import IconCheck from '@/components/icons/IconCheck'
+import IconChevronLeft from '@/components/icons/IconChevronLeft'
+import IconArrowRight from '@/components/icons/IconArrowRight'
+import IconEyeOpen from '@/components/icons/IconEyeOpen'
+import IconEyeClosed from '@/components/icons/IconEyeClosed'
 
 const STEP        = 2
 const TOTAL_STEPS = 6
@@ -33,28 +38,7 @@ const btnPrevCls = "px-6 py-3 bg-white border-[1.5px] border-[#D1D5DB] rounded-l
 const btnNextCls = "inline-flex items-center gap-2 px-7 py-3 bg-[#4648D4] text-white rounded-lg text-[15px] font-semibold cursor-pointer hover:bg-[#3533B0] hover:-translate-y-px active:scale-[0.98] transition-all"
 
 function EyeIcon({ visible }: { visible: boolean }) {
-  return visible ? (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  ) : (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" />
-      <line x1="1" y1="1" x2="23" y2="23" />
-    </svg>
-  )
-}
-
-function CheckIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="white"
-      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M2.5 7l3 3 6-6" />
-    </svg>
-  )
+  return visible ? <IconEyeOpen /> : <IconEyeClosed />
 }
 
 interface Props {
@@ -108,9 +92,7 @@ export default function InformationsPersonnelles({ initialValues = {}, onNext, o
         <div className="max-w-[1200px] mx-auto px-16 h-16 flex items-center justify-between max-md:px-6">
           <Link href="/" className="text-2xl font-extrabold tracking-[-0.5px] text-[#0F172A] no-underline" aria-label="Accueil Opus">OPUS</Link>
           <button type="button" className="inline-flex items-center gap-1 text-sm text-[#64748B] border-none bg-transparent p-0 cursor-pointer hover:text-[#0F172A] transition-colors" onClick={onPrev} aria-label="Retour">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <IconChevronLeft />
             Retour
           </button>
         </div>
@@ -191,9 +173,7 @@ export default function InformationsPersonnelles({ initialValues = {}, onNext, o
               <button type="button" className={btnPrevCls} onClick={onPrev}>Précédent</button>
               <button type="submit" className={btnNextCls}>
                 Continuer
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <IconArrowRight />
               </button>
             </div>
           </form>
@@ -227,9 +207,7 @@ function StepSidebar({ steps }: { steps: readonly SidebarStep[] }) {
                                        'bg-[#E5E7EB] text-[#9CA3AF]'
             }`} aria-hidden="true">
               {s.status === 'done' ? (
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M2.5 7l3 3 6-6" />
-                </svg>
+                <IconCheck />
               ) : s.num}
             </div>
             <div className="flex flex-col gap-0.5 pt-[5px]">

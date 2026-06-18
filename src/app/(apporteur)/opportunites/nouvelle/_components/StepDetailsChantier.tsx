@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { OpportuniteFormData } from '../page'
 import { stepDetailsChantierSchema } from '@/lib/validations/opportunite'
 import styles from './css/StepDetailsChantier.module.css'
+import IconArrowRight from '@/components/icons/IconArrowRight'
 
 const TYPES_TRAVAUX = [
   'Maçonnerie & Gros œuvre',
@@ -175,9 +176,7 @@ export default function StepDetailsChantier({ formData, setFormData, onNext, onP
         </button>
         <button type="button" className={styles.btnNext} onClick={handleNext}>
           Continuer
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <IconArrowRight />
         </button>
       </div>
     </div>
