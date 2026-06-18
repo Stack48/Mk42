@@ -1,12 +1,12 @@
 {
   "Servers": {
     "1": {
-      "Name": "commissionpro_dev",
+      "Name": "mk42_dev",
       "Group": "Docker",
       "Host": "postgres",
       "Port": 5432,
-      "MaintenanceDB": "commissionpro",
-      "Username": "commissionpro",
+      "MaintenanceDB": "mk42_dev",
+      "Username": "mk42",
       "SSLMode": "prefer"
     }
   }

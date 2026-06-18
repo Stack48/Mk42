@@ -1,4 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
 
 const isPublicRoute = createRouteMatcher([
   '/',
@@ -7,15 +8,35 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks(.*)',
 ]);
 
-export default clerkMiddleware(async (auth, req) => {
-  if (!isPublicRoute(req)) {
-    await auth.protect();
+const isAdminRoute = createRouteMatcher(['/admin(.*)']);
+
+export const proxy = clerkMiddleware(async (auth, request) => {
+  if (isPublicRoute(request)) return NextResponse.next();
+
+  // Les API routes gèrent leur propre authentification (retournent 401 JSON)
+  if (request.nextUrl.pathname.startsWith('/api/')) return NextResponse.next();
+
+  const { userId, orgId, orgRole } = await auth.protect();
+
+  if (isAdminRoute(request)) {
+    if (!orgId || orgRole !== 'org:admin') {
+      const url = new URL('/dashboard', request.url);
+      return NextResponse.redirect(url);
+    }
   }
+
+  if (!userId) {
+    const url = new URL('/connexion', request.url);
+    return NextResponse.redirect(url);
+  }
+
+  return NextResponse.next();
 });
 
 export const config = {
   matcher: [
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
     '/(api|trpc)(.*)',
+    '/__clerk/(.*)',
   ],
 };

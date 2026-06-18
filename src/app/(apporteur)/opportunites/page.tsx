@@ -60,12 +60,12 @@ export default async function OpportunitesPage() {
   const { userId } = await auth()
   if (!userId) redirect('/connexion')
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.utilisateur.findUnique({
     where: { clerkId: userId },
   })
 
   const apporteur = user
-    ? await prisma.apporteur.findUnique({ where: { userId: user.id } })
+    ? await prisma.apporteur.findUnique({ where: { utilisateurId: user.id } })
     : null
 
   const opportunites = apporteur
