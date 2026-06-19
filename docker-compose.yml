@@ -13,18 +13,32 @@ services:
       - |
         docker-entrypoint.sh postgres &
         pid=$$!
-        until pg_isready -U "$${POSTGRES_USER:-postgres}" -d "$${POSTGRES_DB:-postgres}"; do
+
+        # Attendre sur la base "postgres" (toujours disponible) et non sur "mk42"
+        until pg_isready -U "$${POSTGRES_USER:-postgres}" -d postgres; do
           sleep 1
         done
 
-        if [ -z "$(psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='mk42'" -U "$${POSTGRES_USER:-postgres}" -d "$${POSTGRES_DB:-postgres}")" ]; then
-          psql -v ON_ERROR_STOP=1 -U "$${POSTGRES_USER:-postgres}" -d "$${POSTGRES_DB:-postgres}" -c "CREATE ROLE mk42 LOGIN PASSWORD 'mk42password';"
-        fi
+        # Créer la base mk42 si elle n'existe pas (volume existant d'une ancienne exécution)
+        psql -U "$${POSTGRES_USER:-postgres}" -d postgres \
+          -tc "SELECT 1 FROM pg_database WHERE datname='mk42'" | grep -q 1 || \
+          psql -U "$${POSTGRES_USER:-postgres}" -d postgres \
+            -c "CREATE DATABASE mk42;"
 
-        psql -v ON_ERROR_STOP=1 -U "$${POSTGRES_USER:-postgres}" -d "$${POSTGRES_DB:-postgres}" \
+        # Créer le rôle mk42 si nécessaire
+        psql -U "$${POSTGRES_USER:-postgres}" -d postgres \
+          -tc "SELECT 1 FROM pg_roles WHERE rolname='mk42'" | grep -q 1 || \
+          psql -v ON_ERROR_STOP=1 -U "$${POSTGRES_USER:-postgres}" -d postgres \
+            -c "CREATE ROLE mk42 LOGIN PASSWORD 'mk42password';"
+
+        # Configurer le rôle et les droits sur la base (connexion via postgres)
+        psql -v ON_ERROR_STOP=1 -U "$${POSTGRES_USER:-postgres}" -d postgres \
           -c "ALTER ROLE mk42 WITH LOGIN CREATEDB;" \
           -c "ALTER DATABASE mk42 OWNER TO mk42;" \
-          -c "GRANT ALL PRIVILEGES ON DATABASE mk42 TO mk42;" \
+          -c "GRANT ALL PRIVILEGES ON DATABASE mk42 TO mk42;"
+
+        # Droits sur le schéma public (nécessite une connexion à mk42)
+        psql -v ON_ERROR_STOP=1 -U "$${POSTGRES_USER:-postgres}" -d mk42 \
           -c "GRANT ALL ON SCHEMA public TO mk42;" \
           -c "ALTER SCHEMA public OWNER TO mk42;"
 
