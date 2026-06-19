@@ -4,7 +4,7 @@
 CONTAINER_POSTGRES := mk42_postgres
 CONTAINER_APP      := mk42_app
 DB_USER            := mk42
-DB_NAME            := mk42_dev
+DB_NAME            := mk42
 
 # ─── Help ─────────────────────────────────────────────────────────────────────
 .PHONY: help
@@ -68,7 +68,7 @@ pgadmin: ## Ouvrir pgAdmin dans le navigateur (http://localhost:5050)
 	open http://localhost:5050 || xdg-open http://localhost:5050
 
 .PHONY: psql
-psql: ## Console psql dans la base mk42_dev
+psql: ## Console psql dans la base mk42
 	docker exec -it $(CONTAINER_POSTGRES) psql -U $(DB_USER) -d $(DB_NAME)
 
 # ─── Database ─────────────────────────────────────────────────────────────────

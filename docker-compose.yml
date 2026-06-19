@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: mk42_dev
+      POSTGRES_DB: mk42
     command:
       - /bin/sh
       - -c
@@ -23,18 +23,18 @@ services:
 
         psql -v ON_ERROR_STOP=1 -U "$${POSTGRES_USER:-postgres}" -d "$${POSTGRES_DB:-postgres}" \
           -c "ALTER ROLE mk42 WITH LOGIN CREATEDB;" \
-          -c "ALTER DATABASE mk42_dev OWNER TO mk42;" \
-          -c "GRANT ALL PRIVILEGES ON DATABASE mk42_dev TO mk42;" \
+          -c "ALTER DATABASE mk42 OWNER TO mk42;" \
+          -c "GRANT ALL PRIVILEGES ON DATABASE mk42 TO mk42;" \
           -c "GRANT ALL ON SCHEMA public TO mk42;" \
           -c "ALTER SCHEMA public OWNER TO mk42;"
 
         wait $$pid
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U mk42 -d mk42_dev"]
+      test: ['CMD-SHELL', 'pg_isready -U mk42 -d mk42_dev']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -45,8 +45,8 @@ services:
       dockerfile: Dockerfile.dev
     container_name: mk42_app
     ports:
-      - "3000:3000"
-      - "5555:5555"
+      - '3000:3000'
+      - '5555:5555'
     volumes:
       - .:/app
       - mk42_node_modules:/app/node_modules
@@ -54,7 +54,7 @@ services:
       - .env.local
     environment:
       # Écrase .env.local pour utiliser le hostname du container postgres
-      DATABASE_URL: "postgresql://mk42:mk42password@postgres:5432/mk42_dev?schema=public"
+      DATABASE_URL: 'postgresql://mk42:mk42password@postgres:5432/mk42?schema=public'
     depends_on:
       postgres:
         condition: service_healthy
@@ -68,7 +68,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
       PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
     ports:
-      - "5050:80"
+      - '5050:80'
     volumes:
       - ./docker/pgadmin/servers.json:/pgadmin4/servers.json:ro
     depends_on:
