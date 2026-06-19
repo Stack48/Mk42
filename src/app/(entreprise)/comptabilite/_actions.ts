@@ -39,6 +39,27 @@ export async function exportDocumentAction(
   }
 }
 
+// ── Apporteur — conversions vers le format DAS2 / PDF ───────────────────────
+
+type ApporteurNomInfo = { type: string; nom: string; prenom: string; raisonSociale: string | null };
+
+function apporteurTypeDAS2(type: string): "pro" | "particulier" {
+  return type === "PROFESSIONNEL" ? "pro" : "particulier";
+}
+
+function apporteurNomOuRS(apporteur: ApporteurNomInfo): string {
+  return apporteur.type === "PROFESSIONNEL" && apporteur.raisonSociale
+    ? apporteur.raisonSociale
+    : `${apporteur.prenom} ${apporteur.nom}`.trim();
+}
+
+// Date JS → format JJMMAAAA attendu par l'EDI DAS2 (DGFiP)
+function formatDateNaissanceEDI(d: Date): string {
+  const jj = String(d.getUTCDate()).padStart(2, "0");
+  const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
+  return `${jj}${mm}${d.getUTCFullYear()}`;
+}
+
 // ── DAS2 ──────────────────────────────────────────────────────────────────────
 
 async function exportDAS2(annee: number): Promise<ExportDocumentResult> {
@@ -64,11 +85,11 @@ async function exportDAS2(annee: number): Promise<ExportDocumentResult> {
       },
       include: { apporteur: true },
     }),
+    // Le Recu n'a pas de statut : sa date de versement fait foi du paiement.
     prisma.recu.findMany({
       where: {
         entrepriseId,
-        dateEmission: { gte: debut, lte: fin },
-        statut: "PAYE",
+        dateVersement: { gte: debut, lte: fin },
       },
       include: { apporteur: true },
     }),
@@ -84,17 +105,17 @@ async function exportDAS2(annee: number): Promise<ExportDocumentResult> {
 
   for (const r of recus) {
     const entry = totauxMap.get(r.apporteurId) ?? { apporteur: r.apporteur, total: 0 };
-    entry.total += r.montantBrut;
+    entry.total += r.montant;
     totauxMap.set(r.apporteurId, entry);
   }
 
   const beneficiaires: BeneficiaireDAS2[] = Array.from(totauxMap.values()).map(
     ({ apporteur, total }) => ({
       id: apporteur.id,
-      type: (apporteur.type as "pro" | "particulier") ?? "particulier",
-      nomOuRS: apporteur.nom,
+      type: apporteurTypeDAS2(apporteur.type),
+      nomOuRS: apporteurNomOuRS(apporteur),
       siret: apporteur.siret ?? undefined,
-      dateNaissance: apporteur.dateNaissance ?? undefined,
+      dateNaissance: apporteur.dateNaissance ? formatDateNaissanceEDI(apporteur.dateNaissance) : undefined,
       lieuNaissance: apporteur.lieuNaissance ?? undefined,
       adresse: apporteur.adresse ?? undefined,
       montantBrutAnnuel: total,
@@ -117,39 +138,51 @@ async function exportDAS2(annee: number): Promise<ExportDocumentResult> {
     throw new Error(`Validation EDI échouée : ${detail}`);
   }
 
-  const montantTotal = Array.from(totauxMap.values()).reduce((s, v) => s + v.total, 0);
-
   const result = await uploadDocumentS3({
     type: "DAS2",
     contenu: ediContent,
     entrepriseId,
     metadata: {
       annee,
-      montantTotal,
+      montantTotal: beneficiaires.reduce((s, b) => s + b.montantBrutAnnuel, 0),
       nombreBeneficiaires: beneficiaires.length,
       dateGeneration: new Date().toISOString(),
     },
   });
 
-  await prisma.dAS2.upsert({
-    where: { entrepriseId_annee: { entrepriseId, annee } },
-    create: {
-      entrepriseId,
-      annee,
-      statut: "GENERE",
-      s3Key: result.s3Key,
-      dateExport: new Date(),
-      montantTotal,
-      nombreBeneficiaires: beneficiaires.length,
-    },
-    update: {
-      statut: "GENERE",
-      s3Key: result.s3Key,
-      dateExport: new Date(),
-      montantTotal,
-      nombreBeneficiaires: beneficiaires.length,
-    },
-  });
+  // Une ligne DAS2 par bénéficiaire — contrainte d'unicité [entrepriseId, annee, nomBeneficiaire].
+  // Le fichier EDI exporté couvre tous les bénéficiaires de l'année : même s3Key/lien sur chaque ligne.
+  await Promise.all(
+    Array.from(totauxMap.values()).map(({ apporteur, total }) => {
+      const nomBeneficiaire = apporteurNomOuRS(apporteur);
+      return prisma.dAS2.upsert({
+        where: {
+          entrepriseId_annee_nomBeneficiaire: { entrepriseId, annee, nomBeneficiaire },
+        },
+        create: {
+          entrepriseId,
+          annee,
+          statut: "GENERE",
+          nomBeneficiaire,
+          adresseBeneficiaire: apporteur.adresse ?? "",
+          siretBeneficiaire: apporteur.siret,
+          dateNaissanceBeneficiaire: apporteur.dateNaissance,
+          lieuNaissanceBeneficiaire: apporteur.lieuNaissance,
+          montantTotal: total,
+          s3Key: result.s3Key,
+          urlExport: result.lienSigne,
+        },
+        update: {
+          statut: "GENERE",
+          adresseBeneficiaire: apporteur.adresse ?? "",
+          siretBeneficiaire: apporteur.siret,
+          montantTotal: total,
+          s3Key: result.s3Key,
+          urlExport: result.lienSigne,
+        },
+      });
+    })
+  );
 
   return {
     lienSigne: result.lienSigne,
@@ -170,7 +203,7 @@ async function exportFacturePDF(factureId: string): Promise<ExportDocumentResult
 
   const facture = await prisma.facture.findUniqueOrThrow({
     where: { id: factureId },
-    include: { apporteur: true, entreprise: true },
+    include: { apporteur: { include: { utilisateur: true } }, entreprise: true },
   });
 
   if (facture.entrepriseId !== entrepriseId) {
@@ -179,26 +212,26 @@ async function exportFacturePDF(factureId: string): Promise<ExportDocumentResult
 
   const pdfBuffer = await generatePDF({
     type: "facture",
-    numFacture: facture.numFacture,
+    numFacture: facture.numero,
     dateEmission: facture.dateEmission,
     entreprise: {
       raisonSociale: facture.entreprise.raisonSociale,
       siret: facture.entreprise.siret,
-      adresse: facture.entreprise.adresse,
+      adresse: facture.entreprise.adresseSiege,
       email: facture.entreprise.email,
       telephone: facture.entreprise.telephone ?? undefined,
       numeroTVA: facture.entreprise.numeroTVA ?? undefined,
     },
     apporteur: {
-      nom: facture.apporteur.nom,
-      email: facture.apporteur.email,
-      type: facture.apporteur.type as "pro" | "particulier",
+      nom: apporteurNomOuRS(facture.apporteur),
+      email: facture.apporteur.utilisateur.email,
+      type: apporteurTypeDAS2(facture.apporteur.type),
       siret: facture.apporteur.siret ?? undefined,
       adresse: facture.apporteur.adresse ?? undefined,
     },
     montantHT: facture.montantHT,
-    tauxTVA: facture.tauxTVA,
-    montantTVA: facture.montantTVA,
+    tauxTVA: facture.tauxTva,
+    montantTVA: facture.montantTva,
     montantTTC: facture.montantTTC,
   });
 
@@ -207,7 +240,7 @@ async function exportFacturePDF(factureId: string): Promise<ExportDocumentResult
     contenu: pdfBuffer,
     entrepriseId,
     apporteurId: facture.apporteurId,
-    metadata: { factureId, numFacture: facture.numFacture },
+    metadata: { factureId, numFacture: facture.numero },
   });
 }
 
@@ -222,7 +255,7 @@ async function exportRecuPDF(recuId: string): Promise<ExportDocumentResult> {
 
   const recu = await prisma.recu.findUniqueOrThrow({
     where: { id: recuId },
-    include: { apporteur: true, entreprise: true },
+    include: { apporteur: { include: { utilisateur: true } }, entreprise: true },
   });
 
   if (recu.entrepriseId !== entrepriseId) {
@@ -231,21 +264,21 @@ async function exportRecuPDF(recuId: string): Promise<ExportDocumentResult> {
 
   const pdfBuffer = await generatePDF({
     type: "recu",
-    numRecu: recu.numRecu,
-    dateEmission: recu.dateEmission,
+    numRecu: recu.numero,
+    dateEmission: recu.dateVersement ?? recu.createdAt,
     entreprise: {
       raisonSociale: recu.entreprise.raisonSociale,
       siret: recu.entreprise.siret,
-      adresse: recu.entreprise.adresse,
+      adresse: recu.entreprise.adresseSiege,
       email: recu.entreprise.email,
     },
     apporteur: {
-      nom: recu.apporteur.nom,
-      email: recu.apporteur.email,
+      nom: apporteurNomOuRS(recu.apporteur),
+      email: recu.apporteur.utilisateur.email,
       type: "particulier",
-      dateNaissance: recu.apporteur.dateNaissance ?? undefined,
+      dateNaissance: recu.apporteur.dateNaissance?.toLocaleDateString("fr-FR"),
     },
-    montantBrut: recu.montantBrut,
+    montantBrut: recu.montant,
   });
 
   return uploadDocumentS3({
@@ -253,7 +286,7 @@ async function exportRecuPDF(recuId: string): Promise<ExportDocumentResult> {
     contenu: pdfBuffer,
     entrepriseId,
     apporteurId: recu.apporteurId,
-    metadata: { recuId, numRecu: recu.numRecu },
+    metadata: { recuId, numRecu: recu.numero },
   });
 }
 
@@ -286,28 +319,28 @@ async function exportCSV(
       orderBy: { dateEmission: "asc" },
     }),
     prisma.recu.findMany({
-      where: { entrepriseId, dateEmission: { gte: dateDebut, lte: dateFin } },
+      where: { entrepriseId, dateVersement: { gte: dateDebut, lte: dateFin } },
       include: { apporteur: true },
-      orderBy: { dateEmission: "asc" },
+      orderBy: { dateVersement: "asc" },
     }),
   ]);
 
   const lignes = [
     ...factures.map((f) => ({
       date: f.dateEmission,
-      reference: f.numFacture,
+      reference: f.numero,
       type: "Facture" as const,
-      apporteur: f.apporteur.nom,
+      apporteur: apporteurNomOuRS(f.apporteur),
       montantTTC: f.montantTTC,
       statut: f.statut,
     })),
     ...recus.map((r) => ({
-      date: r.dateEmission,
-      reference: r.numRecu,
+      date: r.dateVersement ?? r.createdAt,
+      reference: r.numero,
       type: "Reçu" as const,
-      apporteur: r.apporteur.nom,
-      montantTTC: r.montantBrut,
-      statut: r.statut,
+      apporteur: apporteurNomOuRS(r.apporteur),
+      montantTTC: r.montant,
+      statut: r.dateVersement ? "PAYE" : "EN_ATTENTE",
     })),
   ].sort((a, b) => a.date.getTime() - b.date.getTime());
 

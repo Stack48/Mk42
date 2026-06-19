@@ -154,6 +154,7 @@ model Apporteur {
   recus         Recu[]
   documents     Document[]
   notifications Notification[]
+  trackingLinks TrackingLink[]
 
   @@map("apporteurs")
 }
@@ -394,12 +395,13 @@ model ClientEvenement {
 // ─── Tracking ────────────────────────────────────────────────────────────────
 
 model TrackingLink {
-  id          String   @id @default(cuid())
-  token       String   @unique @default(uuid())
+  id          String    @id @default(cuid())
+  token       String    @unique @default(uuid())
   apporteurId String
+  apporteur   Apporteur @relation(fields: [apporteurId], references: [id])
   missionId   String
-  statut      String   @default("ACTIF")
-  createdAt   DateTime @default(now())
+  statut      String    @default("ACTIF")
+  createdAt   DateTime  @default(now())
 
   logs TrackingLog[]
 

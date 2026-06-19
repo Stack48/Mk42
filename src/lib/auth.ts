@@ -5,7 +5,7 @@ export async function getCurrentEntrepriseId(): Promise<string> {
   const { userId } = await auth();
   if (!userId) throw new Error('Non authentifié');
 
-  const entreprise = await prisma.entreprise.findUnique({
+  const entreprise = await prisma.entreprise.findFirst({
     where: { utilisateur: { clerkId: userId } },
     select: { id: true },
   });

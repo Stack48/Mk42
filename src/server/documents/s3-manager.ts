@@ -22,6 +22,14 @@ function getS3Client(): S3Client {
 
 export type DocumentType = "FACTURE" | "RECU" | "DAS2" | "CSV";
 
+// Mapping vers l'enum Prisma TypeDocument — le CSV est un export ponctuel,
+// non centralisé dans le coffre-fort documentaire (pas d'équivalent dans l'enum).
+const PRISMA_DOCUMENT_TYPE: Partial<Record<DocumentType, "FACTURE" | "RECU" | "DAS2_EXPORT">> = {
+  FACTURE: "FACTURE",
+  RECU: "RECU",
+  DAS2: "DAS2_EXPORT",
+};
+
 const EXT: Record<DocumentType, string> = {
   FACTURE: "pdf",
   RECU: "pdf",
@@ -83,20 +91,25 @@ export async function uploadDocumentS3(input: UploadInput): Promise<UploadResult
 
   const dateExpiration = new Date(now.getTime() + SIGNED_URL_TTL_SECONDS * 1000);
 
-  const doc = await prisma.document.create({
-    data: {
-      type: input.type,
-      s3Key,
-      nomFichier: filename,
-      entrepriseId: input.entrepriseId,
-      apporteurId: input.apporteurId ?? null,
-      dateCreation: now,
-      metadata: input.metadata ? JSON.parse(JSON.stringify(input.metadata)) : undefined,
-    },
-  });
+  const typeDocument = PRISMA_DOCUMENT_TYPE[input.type];
+
+  const documentId = typeDocument
+    ? (
+        await prisma.document.create({
+          data: {
+            type: typeDocument,
+            s3Key,
+            nomFichier: filename,
+            entrepriseId: input.entrepriseId,
+            apporteurId: input.apporteurId ?? null,
+            metadata: input.metadata ? JSON.parse(JSON.stringify(input.metadata)) : undefined,
+          },
+        })
+      ).id
+    : uuid;
 
   return {
-    documentId: doc.id,
+    documentId,
     s3Key,
     lienSigne: signedUrl,
     dateExpiration,
