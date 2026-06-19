@@ -9,6 +9,7 @@ import StepInfosClient from './_components/StepInfosClient'
 import StepDetailsChantier from './_components/StepDetailsChantier'
 import StepSoumettre from './_components/StepSoumettre'
 import styles from './page.module.css'
+import IconChevronLeft from '@/components/icons/IconChevronLeft'
 
 export type OpportuniteFormData = {
   clientType: 'PRO' | 'PARTICULIER'
@@ -94,9 +95,7 @@ export default function NouvelleopportunitePage() {
             className={styles.backBtn}
             onClick={() => router.back()}
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <IconChevronLeft />
             Retour
           </button>
         </div>

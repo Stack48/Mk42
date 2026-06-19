@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 import { config } from "dotenv";
-config({ path: ".env" });
-config({ path: ".env.local", override: true });
-=======
-import "dotenv/config";
->>>>>>> 8eeab98 (Fix Prisma)
+config({ path: ".env.local" });
 import { defineConfig } from "prisma/config";
 
 const databaseUrl = process.env["DATABASE_URL"];
@@ -18,10 +13,6 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-<<<<<<< HEAD
-    url: process.env["DATABASE_URL"] as string,
-=======
     url: databaseUrl,
->>>>>>> 8eeab98 (Fix Prisma)
   },
 });

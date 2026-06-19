@@ -1,44 +1,80 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: commissionpro_postgres
+    container_name: mk42_postgres
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: commissionpro
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mk42
+    command:
+      - /bin/sh
+      - -c
+      - |
+        docker-entrypoint.sh postgres &
+        pid=$$!
+        until pg_isready -U "$${POSTGRES_USER:-postgres}" -d "$${POSTGRES_DB:-postgres}"; do
+          sleep 1
+        done
+
+        if [ -z "$(psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='mk42'" -U "$${POSTGRES_USER:-postgres}" -d "$${POSTGRES_DB:-postgres}")" ]; then
+          psql -v ON_ERROR_STOP=1 -U "$${POSTGRES_USER:-postgres}" -d "$${POSTGRES_DB:-postgres}" -c "CREATE ROLE mk42 LOGIN PASSWORD 'mk42password';"
+        fi
+
+        psql -v ON_ERROR_STOP=1 -U "$${POSTGRES_USER:-postgres}" -d "$${POSTGRES_DB:-postgres}" \
+          -c "ALTER ROLE mk42 WITH LOGIN CREATEDB;" \
+          -c "ALTER DATABASE mk42 OWNER TO mk42;" \
+          -c "GRANT ALL PRIVILEGES ON DATABASE mk42 TO mk42;" \
+          -c "GRANT ALL ON SCHEMA public TO mk42;" \
+          -c "ALTER SCHEMA public OWNER TO mk42;"
+
+        wait $$pid
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'psql -U postgres -d mk42 -tAc "SELECT 1 FROM pg_roles WHERE rolname=''mk42''" | grep -q 1']
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 15
 
   app:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: commissionpro_app
+    container_name: mk42_app
+    ports:
+      - '3000:3000'
+      - '5555:5555'
+    volumes:
+      - .:/app
+      - mk42_node_modules:/app/node_modules
+    env_file:
+      - .env.local
+    environment:
+      # Écrase .env.local pour utiliser le hostname du container postgres
+      DATABASE_URL: 'postgresql://mk42:mk42password@postgres:5432/mk42?schema=public'
     depends_on:
       postgres:
         condition: service_healthy
-    environment:
-      DATABASE_URL: "postgresql://postgres:password@postgres:5432/commissionpro"
-      DEFAULT_COMMISSION_RATE: 5
-      STORAGE_DRIVER: "local"
-      LOCAL_STORAGE_PATH: "./storage/contrats"
-      AES_ENCRYPTION_KEY: "cdb5e14891371230226ea554da83c5de0f9c4fb8904d7e6c62f25016a37e28f6"
-      NEXT_PUBLIC_BASE_URL: "http://localhost:3000"
-    ports:
-      - "3000:3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/.next
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: mk42_pgadmin
     restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local.dev
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
+    ports:
+      - '5050:80'
+    volumes:
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   postgres_data:
+  mk42_node_modules:

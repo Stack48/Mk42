@@ -1,12 +1,9 @@
 'use client'
 import Link from 'next/link'
+import IconCheck from '@/components/icons/IconCheck'
 
-const C = { primary: '#4648D4', primaryDk: '#3533B0', primaryXL: '#EEEEFF', ink: '#111111', muted: '#6B7280', border: '#E5E7EB', text: '#374151' }
-
-const CHECK = (color: string) => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="2.5 7 5.5 10.5 11.5 4"/>
-  </svg>
+const CHECK = (highlight: boolean) => (
+  <IconCheck stroke={highlight ? 'rgba(255,255,255,0.9)' : '#4648D4'} />
 )
 
 const PLANS = [
@@ -32,65 +29,61 @@ const PLANS = [
 
 export default function Pricing() {
   return (
-    <section id="prix" style={{ background: '#ffffff', padding: 'clamp(60px,7vw,90px) 24px' }}>
-      <div style={{ maxWidth: 1060, margin: '0 auto' }}>
+    <section id="prix" className="bg-white py-[clamp(60px,7vw,90px)] px-6">
+      <div className="max-w-[1060px] mx-auto">
 
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.primary, marginBottom: 10, fontFamily: "'DM Mono', monospace" }}>Tarifs</p>
-          <h2 style={{ fontSize: 'clamp(24px,3.5vw,38px)', fontWeight: 800, color: C.ink, letterSpacing: '-0.02em', marginBottom: 8 }}>
+        <div className="text-center mb-12">
+          <p className="text-xs font-semibold tracking-[0.1em] uppercase text-[#4648D4] mb-2.5 font-['DM_Mono',monospace]">Tarifs</p>
+          <h2 className="text-[clamp(24px,3.5vw,38px)] font-extrabold text-[#111111] tracking-[-0.02em] mb-2">
             Choisissez votre forfait
           </h2>
-          <p style={{ fontSize: 14, color: C.muted }}>Des prix justes qui évoluent avec votre entreprise</p>
+          <p className="text-sm text-[#6B7280]">Des prix justes qui évoluent avec votre entreprise</p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, alignItems: 'start' }}>
+        <div className="grid grid-cols-3 gap-4 items-start max-md:grid-cols-1">
           {PLANS.map(plan => (
-            <div key={plan.name} style={{
-              background: plan.highlight ? C.primary : '#fff',
-              border: `1.5px solid ${plan.highlight ? C.primary : C.border}`,
-              borderRadius: 14, padding: '28px 24px',
-              transition: 'box-shadow 200ms',
-            }}
-              onMouseEnter={e => { if (!plan.highlight) e.currentTarget.style.boxShadow = '0 4px 20px rgba(70,72,212,0.1)' }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none' }}
+            <div key={plan.name}
+              className={`rounded-[14px] px-6 py-7 border-[1.5px] transition-shadow duration-200 hover:shadow-[0_4px_20px_rgba(70,72,212,0.1)] ${
+                plan.highlight
+                  ? 'bg-[#4648D4] border-[#4648D4]'
+                  : 'bg-white border-[#E5E7EB]'
+              }`}
             >
-              <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 8, fontFamily: "'DM Mono', monospace", color: plan.highlight ? 'rgba(255,255,255,0.7)' : C.muted }}>
+              <p className={`text-xs font-semibold tracking-[0.05em] uppercase mb-2 font-['DM_Mono',monospace] ${
+                plan.highlight ? 'text-white/70' : 'text-[#6B7280]'
+              }`}>
                 {plan.name}
               </p>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 2, marginBottom: 6 }}>
-                <span style={{ fontSize: 40, fontWeight: 800, color: plan.highlight ? '#fff' : C.ink, letterSpacing: '-0.03em', lineHeight: 1 }}>
+              <div className="flex items-baseline gap-0.5 mb-1.5">
+                <span className={`text-[40px] font-extrabold tracking-[-0.03em] leading-none ${
+                  plan.highlight ? 'text-white' : 'text-[#111111]'
+                }`}>
                   {plan.price}{plan.unit}
                 </span>
-                {plan.period && <span style={{ fontSize: 13, color: plan.highlight ? 'rgba(255,255,255,0.65)' : C.muted }}>{plan.period}</span>}
+                {plan.period && <span className={`text-[13px] ${plan.highlight ? 'text-white/65' : 'text-[#6B7280]'}`}>{plan.period}</span>}
               </div>
-              <p style={{ fontSize: 13, color: plan.highlight ? 'rgba(255,255,255,0.7)' : C.muted, marginBottom: 20, lineHeight: 1.5 }}>{plan.desc}</p>
+              <p className={`text-[13px] mb-5 leading-[1.5] ${plan.highlight ? 'text-white/70' : 'text-[#6B7280]'}`}>{plan.desc}</p>
 
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <ul className="list-none p-0 m-0 mb-6 flex flex-col gap-2">
                 {plan.features.map(f => (
-                  <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: plan.highlight ? 'rgba(255,255,255,0.85)' : C.text }}>
-                    <span style={{ flexShrink: 0 }}>{CHECK(plan.highlight ? 'rgba(255,255,255,0.9)' : C.primary)}</span>
+                  <li key={f} className={`flex items-center gap-2 text-[13px] ${plan.highlight ? 'text-white/85' : 'text-[#374151]'}`}>
+                    <span className="shrink-0">{CHECK(plan.highlight)}</span>
                     {f}
                   </li>
                 ))}
               </ul>
 
-              <Link href="/inscription" style={{
-                display: 'block', textAlign: 'center', padding: '10px 16px', borderRadius: 8,
-                fontSize: 13, fontWeight: 600, textDecoration: 'none',
-                transition: 'opacity 150ms',
-                ...(plan.highlight
-                  ? { background: '#fff', color: C.primary }
-                  : { background: C.primaryXL, color: C.primary }),
-              }}
-                onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
-                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+              <Link href="/inscription"
+                className={`block text-center px-4 py-2.5 rounded-lg text-[13px] font-semibold no-underline transition-opacity duration-150 hover:opacity-85 ${
+                  plan.highlight
+                    ? 'bg-white text-[#4648D4]'
+                    : 'bg-[#EEEEFF] text-[#4648D4]'
+                }`}
               >{plan.btn}</Link>
             </div>
           ))}
         </div>
       </div>
-
-      <style>{`@media(max-width:768px){#prix [style*="repeat(3,1fr)"]{grid-template-columns:1fr!important}}`}</style>
     </section>
   )
 }

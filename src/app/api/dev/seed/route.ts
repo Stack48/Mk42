@@ -28,7 +28,7 @@ export async function POST() {
     return Response.json({ error: 'Aucun email sur ce compte Clerk' }, { status: 400 })
   }
 
-  const user = await prisma.user.upsert({
+  const user = await prisma.utilisateur.upsert({
     where: { clerkId: userId },
     update: { email },
     create: {
@@ -36,9 +36,10 @@ export async function POST() {
       email,
       apporteur: {
         create: {
-          nom:    clerkUser.lastName  ?? 'Test',
-          prenom: clerkUser.firstName ?? 'Dev',
-          type:   'PARTICULIER',
+          nom:       clerkUser.lastName  ?? 'Test',
+          prenom:    clerkUser.firstName ?? 'Dev',
+          type:      'PARTICULIER',
+          telephone: '',
         },
       },
     },

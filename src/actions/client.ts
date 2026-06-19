@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { Prisma } from "@/generated/prisma/client";
+import { Prisma } from "../generated/prisma/client";
 
 type ActionResult =
   | { success: true; clientId: string }
