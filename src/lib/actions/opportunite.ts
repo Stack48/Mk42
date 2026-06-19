@@ -1,4 +1,3 @@
-// @ts-nocheck - incompatible avec le schema doc-fiscaux (refs prisma.user/opportunite/client + champs apporteur)
 'use server'
 
 import { auth, currentUser } from '@clerk/nextjs/server'
@@ -29,11 +28,7 @@ export async function createOpportunite(
   if (!userId) return { success: false, error: 'Non authentifié' }
 
   // 2. Retrouver l'apporteur via clerkId
-<<<<<<< HEAD
   const user = await prisma.utilisateur.findUnique({
-=======
-  const user = await prisma.user.findUnique({
->>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
     where: { clerkId: userId },
   })
   if (!user) {
@@ -41,11 +36,7 @@ export async function createOpportunite(
   }
 
   const apporteur = await prisma.apporteur.findUnique({
-<<<<<<< HEAD
     where: { utilisateurId: user.id },
-=======
-    where: { userId: user.id },
->>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
   })
   if (!apporteur) {
     return { success: false, error: 'Profil apporteur incomplet — veuillez finaliser votre inscription' }

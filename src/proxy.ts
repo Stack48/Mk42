@@ -1,9 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
-<<<<<<< HEAD
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-=======
->>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
 
 const isPublicRoute = createRouteMatcher([
   '/',
@@ -12,7 +9,6 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks(.*)',
 ]);
 
-<<<<<<< HEAD
 const isAdminRoute = createRouteMatcher(['/admin(.*)']);
 
 export const proxy = clerkMiddleware(async (auth, request) => {
@@ -44,21 +40,12 @@ export const proxy = clerkMiddleware(async (auth, request) => {
   }
 
   return NextResponse.next();
-=======
-export default clerkMiddleware(async (auth, req) => {
-  if (!isPublicRoute(req)) {
-    await auth.protect();
-  }
->>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
 });
 
 export const config = {
   matcher: [
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
     '/(api|trpc)(.*)',
-<<<<<<< HEAD
     '/__clerk/(.*)',
-=======
->>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
   ],
 };

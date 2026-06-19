@@ -19,17 +19,8 @@
       }
     ],
     "paths": {
-<<<<<<< HEAD
       "@/*": ["./src/*"]
     }
-=======
-      "@/*": [
-        "./src/*",
-        "./*"
-      ]
-    },
-    "target": "ES2017"
->>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
   },
   "include": [
     "next-env.d.ts",
@@ -39,14 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-<<<<<<< HEAD
   "exclude": ["node_modules"]
-=======
-  "exclude": [
-    "node_modules",
-    "app/**/*",
-    "components/**/*",
-    "lib/**/*"
-  ]
->>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
 }

@@ -391,7 +391,6 @@ model ClientEvenement {
   @@map("client_evenements")
 }
 
-<<<<<<< HEAD
 // ─── Tracking ────────────────────────────────────────────────────────────────
 
 model TrackingLink {
@@ -562,5 +561,3 @@ model Document {
   @@map("documents")
 }
 
-=======
->>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)

@@ -8,11 +8,8 @@ import {
   stepInfosClientParticulierSchema,
 } from '@/lib/validations/opportunite'
 import styles from './css/StepInfosClient.module.css'
-<<<<<<< HEAD
 import IconCircleCheck from '@/components/icons/IconCircleCheck'
 import IconArrowRight from '@/components/icons/IconArrowRight'
-=======
->>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
 
 interface InseeResult {
   raisonSociale: string
@@ -223,14 +220,7 @@ export default function StepInfosClient({ formData, setFormData, onNext, onPrev 
             {/* Bannière succès */}
             {verifySuccess && (
               <div className={styles.successBanner} role="alert">
-<<<<<<< HEAD
                 <IconCircleCheck />
-=======
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#15803D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <circle cx="8" cy="8" r="7" />
-                  <path d="M5 8l2 2 4-4" />
-                </svg>
->>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
                 <div>
                   <p className={styles.successTitle}>✓ SIRET VALIDE</p>
                   <p className={styles.successSub}>
@@ -406,13 +396,7 @@ export default function StepInfosClient({ formData, setFormData, onNext, onPrev 
         </button>
         <button type="button" className={styles.btnNext} onClick={handleNext}>
           Continuer
-<<<<<<< HEAD
           <IconArrowRight />
-=======
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
->>>>>>> 8e30293 (refactor: migration majeure next16/react19/prisma7, integration clerk et module apporteur)
         </button>
       </div>
     </div>
