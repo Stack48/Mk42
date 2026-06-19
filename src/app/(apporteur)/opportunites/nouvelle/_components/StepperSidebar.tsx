@@ -1,12 +1,5 @@
 import styles from './css/StepperSidebar.module.css'
-
-function CheckIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M2.5 7l3 3 6-6" />
-    </svg>
-  )
-}
+import IconCheck from '@/components/icons/IconCheck'
 
 const STEPS = [
   { num: 1, label: 'Vos informations',          hint: '(pré-rempli)' },
@@ -36,13 +29,13 @@ export default function StepperSidebar({ currentStep }: Props) {
               aria-current={status === 'active' ? 'step' : undefined}
             >
               <div className={styles.badge} aria-hidden="true">
-                {status === 'done' ? <CheckIcon /> : step.num}
+                {status === 'done' ? <IconCheck /> : step.num}
               </div>
               <div className={styles.content}>
                 <span className={styles.name}>
                   {step.label}
                   {status === 'done' && step.hint && (
-                    <span style={{ color: '#64748B', fontWeight: 400, marginLeft: 4 }}>
+                    <span className="text-[#64748B] font-normal ml-1">
                       {step.hint}
                     </span>
                   )}

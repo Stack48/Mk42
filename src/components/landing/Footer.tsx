@@ -2,149 +2,63 @@
 
 import Link from 'next/link'
 import s from './Footer.module.css'
+import IconOpusFooter from '@/components/icons/IconOpusFooter'
 
-/* ── Icône Opus — path exact du Footer.svg Figma ───────────────── */
-function OpusIcon() {
-  return (
-    <svg width="24" height="22" viewBox="33 66 22 22" fill="none" aria-hidden="true"
-      style={{ display: 'block', flexShrink: 0 }}>
-      <path
-        d="M44 67L34 72L44 77L54 72L44 67Z M34 82L44 87L54 82H34Z M34 77L44 82L54 77H34Z"
-        fill="#4648D4"
-      />
-    </svg>
-  )
-}
-
-/* ── Tokens ─────────────────────────────────────────────────────── */
-const ink   = '#131B23'
-const text  = '#2A3A48'
-const muted = '#5A6E7C'
-const blue  = '#4648D4'
-
-/* ── Footer ─────────────────────────────────────────────────────── */
 export default function Footer() {
   return (
-    <footer
-      className={s.footer}
-      style={{
-        background: '#ffffff',
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: 540,
-      }}
-    >
-      {/* ── Zone principale ── */}
-      <div style={{
-        position: 'relative', zIndex: 1,
-        flex: 1,
-        maxWidth: 1200, margin: '0 auto', width: '100%',
-        padding: '56px 40px 0',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'stretch',   /* colonne gauche prend toute la hauteur */
-        boxSizing: 'border-box',
-      }}>
+    <footer className={`${s.footer} bg-white box-border flex flex-col min-h-[540px]`}>
 
-        {/* ── Colonne gauche : tagline en haut, logo en bas ── */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',  /* tagline haut / logo bas */
-          width: 255,
-          paddingBottom: 32,
-        }}>
-          {/* Tagline (haut) */}
-          <p style={{
-            fontSize: 13, fontWeight: 400, lineHeight: 1.7,
-            color: text, margin: 0, fontFamily: 'inherit',
-          }}>
+      <div className="relative z-[1] flex-1 max-w-[1200px] mx-auto w-full px-10 pt-14 flex justify-between items-stretch box-border">
+
+        <div className="flex flex-col justify-between w-[255px] pb-8">
+          <p className="text-[13px] font-normal leading-[1.7] text-[#2A3A48] m-0">
             Nous fournissons une plateforme rationalisée
             pour les entreprises du bâtiment de toute envergure.
           </p>
 
-          {/* Logo [icon] OPUS (bas — sur la barre horizontale) */}
-          <Link href="/" aria-label="Accueil Opus" style={{
-            display: 'flex', flexDirection: 'row',
-            alignItems: 'center', gap: 9,
-            textDecoration: 'none',
-          }}>
-            <OpusIcon />
-            <span style={{
-              fontSize: 16, fontWeight: 800,
-              color: ink, letterSpacing: '0.04em',
-              lineHeight: 1, fontFamily: 'inherit',
-            }}>
+          <Link href="/" aria-label="Accueil Opus" className="flex flex-row items-center gap-[9px] no-underline">
+            <IconOpusFooter />
+            <span className="text-base font-extrabold text-[#131B23] tracking-[0.04em] leading-none">
               OPUS
             </span>
           </Link>
         </div>
 
-        {/* ── 3 colonnes navigation ── */}
-        <div style={{
-          display: 'flex', gap: 80,
-          alignItems: 'flex-start',
-          paddingBottom: 32,
-        }}>
+        <div className="flex gap-20 items-start pb-8">
 
-          {/* Colonne 1 */}
           <div>
-            <p style={{
-              fontSize: 11, fontWeight: 700, letterSpacing: '0.13em',
-              textTransform: 'uppercase', color: ink,
-              margin: '0 0 16px', fontFamily: 'inherit',
-            }}>Menu</p>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <li><Link href="/"                style={{ fontSize: 13, fontWeight: 400, color: blue,  textDecoration: 'none', display: 'block', fontFamily: 'inherit' }}>Accueil</Link></li>
-              <li><Link href="/#about"          style={{ fontSize: 13, fontWeight: 400, color: text,  textDecoration: 'none', display: 'block', fontFamily: 'inherit' }}>À propos</Link></li>
-              <li><Link href="/#fonctionnalites"style={{ fontSize: 13, fontWeight: 400, color: text,  textDecoration: 'none', display: 'block', fontFamily: 'inherit' }}>Fonctionnalités</Link></li>
-              <li><Link href="/blog"            style={{ fontSize: 13, fontWeight: 400, color: text,  textDecoration: 'none', display: 'block', fontFamily: 'inherit' }}>Blog</Link></li>
-              <li><Link href="/contact"         style={{ fontSize: 13, fontWeight: 400, color: text,  textDecoration: 'none', display: 'block', fontFamily: 'inherit' }}>Contact</Link></li>
+            <p className="text-[11px] font-bold tracking-[0.13em] uppercase text-[#131B23] m-0 mb-4">Menu</p>
+            <ul className="list-none p-0 m-0 flex flex-col gap-2.5">
+              <li><Link href="/"                 className="text-[13px] font-normal text-[#4648D4] no-underline block">Accueil</Link></li>
+              <li><Link href="/#about"           className="text-[13px] font-normal text-[#2A3A48] no-underline block">À propos</Link></li>
+              <li><Link href="/#fonctionnalites" className="text-[13px] font-normal text-[#2A3A48] no-underline block">Fonctionnalités</Link></li>
+              <li><Link href="/blog"             className="text-[13px] font-normal text-[#2A3A48] no-underline block">Blog</Link></li>
+              <li><Link href="/contact"          className="text-[13px] font-normal text-[#2A3A48] no-underline block">Contact</Link></li>
             </ul>
           </div>
 
-          {/* Colonne 2 */}
           <div>
-            <p style={{
-              fontSize: 11, fontWeight: 700, letterSpacing: '0.13em',
-              textTransform: 'uppercase', color: ink,
-              margin: '0 0 16px', fontFamily: 'inherit',
-            }}>Menu</p>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <li><Link href="/"       style={{ fontSize: 13, fontWeight: 400, color: text, textDecoration: 'none', display: 'block', fontFamily: 'inherit' }}>Accueil</Link></li>
-              <li><Link href="/#about" style={{ fontSize: 13, fontWeight: 400, color: text, textDecoration: 'none', display: 'block', fontFamily: 'inherit' }}>À propos</Link></li>
+            <p className="text-[11px] font-bold tracking-[0.13em] uppercase text-[#131B23] m-0 mb-4">Menu</p>
+            <ul className="list-none p-0 m-0 flex flex-col gap-2.5">
+              <li><Link href="/"       className="text-[13px] font-normal text-[#2A3A48] no-underline block">Accueil</Link></li>
+              <li><Link href="/#about" className="text-[13px] font-normal text-[#2A3A48] no-underline block">À propos</Link></li>
             </ul>
           </div>
 
-          {/* Colonne 3 */}
           <div>
-            <p style={{
-              fontSize: 11, fontWeight: 700, letterSpacing: '0.13em',
-              textTransform: 'uppercase', color: ink,
-              margin: '0 0 16px', fontFamily: 'inherit',
-            }}>Menu</p>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <li><Link href="/" style={{ fontSize: 13, fontWeight: 400, color: text, textDecoration: 'none', display: 'block', fontFamily: 'inherit' }}>Accueil</Link></li>
+            <p className="text-[11px] font-bold tracking-[0.13em] uppercase text-[#131B23] m-0 mb-4">Menu</p>
+            <ul className="list-none p-0 m-0 flex flex-col gap-2.5">
+              <li><Link href="/" className="text-[13px] font-normal text-[#2A3A48] no-underline block">Accueil</Link></li>
             </ul>
 
-            <p style={{
-              fontSize: 11, fontWeight: 700, letterSpacing: '0.13em',
-              textTransform: 'uppercase', color: ink,
-              margin: '24px 0 14px', fontFamily: 'inherit',
-            }}>Autres</p>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <p className="text-[11px] font-bold tracking-[0.13em] uppercase text-[#131B23] mt-6 mb-3.5">Autres</p>
+            <ul className="list-none p-0 m-0 flex flex-col gap-2.5">
               {['Instagram','Facebook','LinkedIn','Twitter'].map(name => (
                 <li key={name}>
                   <a
                     href={`https://${name.toLowerCase()}.com`}
                     target="_blank" rel="noopener noreferrer"
-                    style={{
-                      fontSize: 13, fontWeight: 400, color: text,
-                      textDecoration: 'underline', textUnderlineOffset: 3,
-                      textDecorationColor: 'rgba(42,58,72,0.4)',
-                      display: 'block', fontFamily: 'inherit',
-                    }}
+                    className="text-[13px] font-normal text-[#2A3A48] underline underline-offset-[3px] decoration-[rgba(42,58,72,0.4)] block"
                   >
                     {name}
                   </a>
@@ -156,25 +70,21 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ── Barre copyright ── */}
-      <div style={{ position: 'relative', zIndex: 1, padding: '0 40px', boxSizing: 'border-box' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ height: 1, background: '#E4ECF1' }} />
-          <div style={{
-            display: 'flex', justifyContent: 'space-between',
-            alignItems: 'center', padding: '18px 0 24px',
-          }}>
-            <p style={{ fontSize: 13, fontWeight: 400, color: muted, margin: 0, fontFamily: 'inherit' }}>
+      <div className="relative z-[1] px-10 box-border">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="h-px bg-[#E4ECF1]" />
+          <div className="flex justify-between items-center py-[18px] pb-6">
+            <p className="text-[13px] font-normal text-[#5A6E7C] m-0">
               © 2026 OPUS. Tous droits réservés.
             </p>
-            <ul style={{ display: 'flex', gap: 28, listStyle: 'none', padding: 0, margin: 0 }}>
+            <ul className="flex gap-7 list-none p-0 m-0">
               {[
                 ['CGU',              '/cgu'],
                 ['Mentions Légales', '/mentions-legales'],
                 ['Confidentialité',  '/confidentialite'],
               ].map(([label, href]) => (
                 <li key={label}>
-                  <Link href={href} style={{ fontSize: 13, fontWeight: 400, color: muted, textDecoration: 'none', fontFamily: 'inherit' }}>
+                  <Link href={href} className="text-[13px] font-normal text-[#5A6E7C] no-underline">
                     {label}
                   </Link>
                 </li>
