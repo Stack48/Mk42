@@ -1,7 +1,7 @@
 {
   "Servers": {
     "1": {
-      "Name": "mk42_dev",
+      "Name": "mk42",
       "Group": "Docker",
       "Host": "postgres",
       "Port": 5432,

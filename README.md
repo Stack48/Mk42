@@ -68,7 +68,7 @@ cp .env.local .env.local
 ```
 
 ```env
-DATABASE_URL="postgresql://mk42:mk42password@localhost:5432/mk42_dev?schema=public"
+DATABASE_URL="postgresql://mk42:mk42password@localhost:5432/mk42?schema=public"
 ```
 
 > Dans le container Docker, `DATABASE_URL` est automatiquement surchargé pour pointer vers le service `postgres`.
