@@ -29,6 +29,15 @@ const STEPS_SANS_SIRET = [
   { num: 6, label: 'Validation email & CGU',       status: 'inactive', sub: null       },
 ] as const
 
+const ALLOWED_MIME  = ['application/pdf', 'image/png', 'image/jpeg']
+const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 Mo
+
+function validateFile(file: File): string | null {
+  if (!ALLOWED_MIME.includes(file.type)) return 'Format non supporté. Utilisez PDF, PNG, JPG ou JPEG.'
+  if (file.size > MAX_FILE_SIZE) return 'Le fichier dépasse la taille maximale de 10 Mo.'
+  return null
+}
+
 const inputCls = "h-[46px] px-3.5 bg-gray-100 border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] outline-none w-full transition-all focus:border-[#4648D4] focus:shadow-[0_0_0_3px_rgba(70,72,212,0.12)] focus:bg-white"
 const labelCls = "text-[13px] font-medium text-[#1E293B]"
 const btnPrevCls = "px-6 py-3 bg-white border-[1.5px] border-[#D1D5DB] rounded-lg text-[15px] font-semibold text-[#0F172A] cursor-pointer hover:border-[#64748B] hover:bg-gray-50 transition-all"
@@ -39,13 +48,13 @@ interface SidebarStep { num: number; label: string; status: StepStatus; sub: str
 
 function StepSidebar({ steps }: { steps: readonly SidebarStep[] }) {
   return (
-    <aside className="bg-white border-[1.5px] border-[#E2E8F0] rounded-[14px] p-7 pl-6 sticky top-20 anim-fade-in anim-d250 max-lg:static max-lg:[order:-1]" aria-label="Progression">
+    <aside className="bg-white border-[1.5px] border-[#E2E8F0] rounded-[14px] p-7 pl-6 sticky top-20 anim-fade-in anim-d250 max-lg:static max-lg:-order-1" aria-label="Progression">
       <p className="text-[15px] font-semibold text-[#0F172A] mb-6">Étapes de l&apos;inscription</p>
       <ol className="list-none p-0 m-0">
         {steps.map((s, idx) => (
           <li key={s.num} className="flex items-start gap-3.5 py-3 relative">
             {idx < steps.length - 1 && (
-              <div className={`absolute left-[15px] top-[44px] bottom-[-12px] w-0.5 ${
+              <div className={`absolute left-3.75 top-11 -bottom-3 w-0.5 ${
                 s.status === 'done' || s.status === 'active' ? 'bg-[#1C3064] opacity-20' : 'bg-[#E5E7EB]'
               }`} aria-hidden="true" />
             )}
@@ -58,7 +67,7 @@ function StepSidebar({ steps }: { steps: readonly SidebarStep[] }) {
                 <IconCheck />
               ) : s.num}
             </div>
-            <div className="flex flex-col gap-0.5 pt-[5px]">
+            <div className="flex flex-col gap-0.5 pt-1.25">
               <span className={`text-sm leading-[1.3] ${s.status === 'inactive' ? 'font-normal text-[#9CA3AF]' : 'font-medium text-[#0F172A]'}`}>
                 {s.label}
               </span>
@@ -95,17 +104,24 @@ export default function CoordonneesBancaires({ initialValues = {}, profil, onNex
     (e: React.ChangeEvent<HTMLInputElement>) =>
       setForm(prev => ({ ...prev, [key]: e.target.value }))
 
-  const [ribFile,  setRibFile]  = useState<File | null>(initialValues.ribFile ?? null)
-  const [dragging, setDragging] = useState(false)
-  const [erreur,   setErreur]   = useState('')
+  const [ribFile,   setRibFile]  = useState<File | null>(initialValues.ribFile ?? null)
+  const [ribError,  setRibError] = useState('')
+  const [dragging,  setDragging] = useState(false)
+  const [erreur,    setErreur]   = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleFile = (file: File | null) => { if (file) setRibFile(file) }
+  const handleFile = (file: File) => {
+    const err = validateFile(file)
+    if (err) { setRibError(err); return }
+    setRibError('')
+    setRibFile(file)
+  }
 
   const onDrop = (e: React.DragEvent) => {
     e.preventDefault()
     setDragging(false)
-    handleFile(e.dataTransfer.files[0] ?? null)
+    const f = e.dataTransfer.files[0]
+    if (f) handleFile(f)
   }
 
   const handleContinue = () => {
@@ -119,20 +135,20 @@ export default function CoordonneesBancaires({ initialValues = {}, profil, onNex
   return (
     <div className="min-h-screen bg-white">
 
-      <header className="bg-white sticky top-0 z-[100] shadow-[0_1px_0_#E2E8F0]">
-        <div className="max-w-[1200px] mx-auto px-16 h-16 flex items-center justify-between max-md:px-6">
+      <header className="bg-white sticky top-0 z-100 shadow-[0_1px_0_#E2E8F0]">
+        <div className="max-w-300 mx-auto px-16 h-16 flex items-center justify-between max-md:px-6">
           <Link href="/" className="text-2xl font-extrabold tracking-[-0.5px] text-[#0F172A] no-underline">OPUS</Link>
           <button type="button" className="inline-flex items-center gap-1 text-sm text-[#64748B] border-none bg-transparent p-0 cursor-pointer hover:text-[#0F172A] transition-colors" onClick={onPrev} aria-label="Retour">
             <IconChevronLeft />
             Retour
           </button>
         </div>
-        <div className="w-full h-[3px] bg-[#E5EBF0] overflow-hidden" role="progressbar" aria-valuenow={STEP} aria-valuemin={1} aria-valuemax={TOTAL_STEPS}>
-          <div className="h-full bg-[#1C3064] rounded-[0_2px_2px_0] transition-[width] duration-[450ms]" style={{ width: `${(STEP / TOTAL_STEPS) * 100}%` }} />
+        <div className="w-full h-0.75 bg-[#E5EBF0] overflow-hidden" role="progressbar" aria-valuenow={STEP} aria-valuemin={1} aria-valuemax={TOTAL_STEPS}>
+          <div className="h-full bg-[#1C3064] rounded-[0_2px_2px_0] transition-[width] duration-450" style={{ width: `${(STEP / TOTAL_STEPS) * 100}%` }} />
         </div>
       </header>
 
-      <main className="max-w-[1200px] mx-auto px-16 py-16 pb-20 max-md:px-6 max-md:py-10">
+      <main className="max-w-300 mx-auto px-16 py-16 pb-20 max-md:px-6 max-md:py-10">
         <p className="text-[13px] font-semibold text-[#4648D4] tracking-[0.01em] mb-2.5 anim-fade-up anim-d050">Étape {STEP} sur {TOTAL_STEPS}</p>
         <h1 className="text-[32px] font-bold text-[#0F172A] tracking-[-0.4px] mb-1.5 anim-fade-up anim-d100 max-md:text-[26px]">Coordonnées bancaires</h1>
         <p className="text-[15px] text-[#64748B] mb-9 anim-fade-up anim-d150">Renseignez vos informations bancaires</p>
@@ -140,7 +156,7 @@ export default function CoordonneesBancaires({ initialValues = {}, profil, onNex
         <div className="grid grid-cols-[1fr_360px] gap-12 items-start max-lg:grid-cols-1">
 
           <div className="bg-white border-[1.5px] border-[#E2E8F0] rounded-[14px] p-8 anim-fade-up anim-d200">
-            <div className="grid grid-cols-2 gap-x-5 gap-y-[18px] max-md:grid-cols-1">
+            <div className="grid grid-cols-2 gap-x-5 gap-y-4.5 max-md:grid-cols-1">
 
               <div className="flex flex-col gap-1.5 col-span-2 max-md:col-span-1">
                 <label htmlFor="titulaire" className={labelCls}>Nom du Titulaire du compte <span className="text-[#4648D4] ml-0.5">*</span></label>
@@ -178,11 +194,12 @@ export default function CoordonneesBancaires({ initialValues = {}, profil, onNex
                   aria-label="Zone de dépôt du RIB"
                 >
                   <input ref={fileInputRef} type="file" accept=".pdf,.png,.jpg,.jpeg" className="hidden"
-                    onChange={e => handleFile(e.target.files?.[0] ?? null)} />
+                    onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }} />
                   <IconUpload className="text-[#4648D4] mb-1" />
                   <p className="text-sm font-semibold text-[#0F172A]">Cliquez ou glissez votre fichier ici</p>
-                  <p className="text-[13px] text-[#64748B]">PDF, PNG ou JPEG (max 5 Mo)</p>
+                  <p className="text-[13px] text-[#64748B]">PDF, PNG, JPG ou JPEG (max 10 Mo)</p>
                   {ribFile && <p className="text-[13px] text-[#4648D4] font-medium mt-1">{ribFile.name}</p>}
+                  {ribError && <p className="text-xs text-red-600 font-medium mt-1">{ribError}</p>}
                 </div>
               </div>
 
@@ -199,7 +216,7 @@ export default function CoordonneesBancaires({ initialValues = {}, profil, onNex
             </div>
 
             <button type="button"
-              className="block mx-auto mt-2 text-[13px] text-[#6B7280] bg-transparent border-none cursor-pointer hover:underline"
+              className="block mx-auto mt-6 text-[13px] text-[#6B7280] bg-transparent border-none cursor-pointer hover:underline"
               onClick={() => onNext({ ...form, ribFile: null })}>
               Passer cette étape
             </button>

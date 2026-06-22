@@ -24,7 +24,7 @@ export const proxy = clerkMiddleware(async (auth, request) => {
     select: { emailVerified: true },
   });
   if (!utilisateur?.emailVerified) {
-    return NextResponse.redirect(new URL('/inscription/validation-email', request.url));
+    return NextResponse.redirect(new URL('/inscription?step=6', request.url));
   }
 
   if (isAdminRoute(request)) {

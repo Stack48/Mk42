@@ -31,6 +31,7 @@ const ROLES = [
 ]
 
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/
+const EMAIL_REGEX    = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const inputCls = "h-[46px] px-3.5 bg-gray-100 border border-[#E5E7EB] rounded-lg text-sm text-[#0F172A] outline-none w-full transition-all focus:border-[#4648D4] focus:shadow-[0_0_0_3px_rgba(70,72,212,0.12)] focus:bg-white placeholder:text-[#B0B8C1]"
 const labelCls = "text-[13px] font-medium text-[#1E293B]"
@@ -67,6 +68,10 @@ export default function InformationsPersonnelles({ initialValues = {}, onNext, o
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    if (!EMAIL_REGEX.test(form.email)) {
+      setErreur('Veuillez entrer une adresse email valide (ex : nom@domaine.com).')
+      return
+    }
     if (form.motDePasse !== form.confirmation) {
       setErreur('Les mots de passe ne correspondent pas.')
       return
@@ -88,20 +93,20 @@ export default function InformationsPersonnelles({ initialValues = {}, onNext, o
   return (
     <div className="min-h-screen bg-opus-bg">
 
-      <header className="bg-white sticky top-0 z-[100] shadow-[0_1px_0_#E2EDF5]">
-        <div className="max-w-[1200px] mx-auto px-16 h-16 flex items-center justify-between max-md:px-6">
+      <header className="bg-white sticky top-0 z-100 shadow-[0_1px_0_#E2EDF5]">
+        <div className="max-w-300 mx-auto px-16 h-16 flex items-center justify-between max-md:px-6">
           <Link href="/" className="text-2xl font-extrabold tracking-[-0.5px] text-[#0F172A] no-underline" aria-label="Accueil Opus">OPUS</Link>
           <button type="button" className="inline-flex items-center gap-1 text-sm text-[#64748B] border-none bg-transparent p-0 cursor-pointer hover:text-[#0F172A] transition-colors" onClick={onPrev} aria-label="Retour">
             <IconChevronLeft />
             Retour
           </button>
         </div>
-        <div className="w-full h-[3px] bg-[#E5EBF0] overflow-hidden" role="progressbar" aria-valuenow={STEP} aria-valuemin={1} aria-valuemax={TOTAL_STEPS} aria-label={`Étape ${STEP} sur ${TOTAL_STEPS}`}>
-          <div className="h-full bg-[#1C3064] rounded-[0_2px_2px_0] transition-[width] duration-[450ms]" style={{ width: `${(STEP / TOTAL_STEPS) * 100}%` }} />
+        <div className="w-full h-0.75 bg-[#E5EBF0] overflow-hidden" role="progressbar" aria-valuenow={STEP} aria-valuemin={1} aria-valuemax={TOTAL_STEPS} aria-label={`Étape ${STEP} sur ${TOTAL_STEPS}`}>
+          <div className="h-full bg-[#1C3064] rounded-[0_2px_2px_0] transition-[width] duration-450" style={{ width: `${(STEP / TOTAL_STEPS) * 100}%` }} />
         </div>
       </header>
 
-      <main className="max-w-[1200px] mx-auto px-16 py-16 pb-20 max-md:px-6 max-md:py-10">
+      <main className="max-w-300 mx-auto px-16 py-16 pb-20 max-md:px-6 max-md:py-10">
         <p className="text-[13px] font-semibold text-[#4648D4] tracking-[0.01em] mb-2.5 anim-fade-up anim-d050">Étape {STEP} sur {TOTAL_STEPS}</p>
         <h1 className="text-[32px] font-bold text-[#0F172A] leading-[1.15] tracking-[-0.4px] mb-1.5 anim-fade-up anim-d100 max-md:text-[26px]">Informations personnelles</h1>
         <p className="text-[15px] text-[#64748B] mb-10 anim-fade-up anim-d150">Configurez votre profil utilisateur</p>
@@ -128,7 +133,20 @@ export default function InformationsPersonnelles({ initialValues = {}, onNext, o
 
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="telephone" className={labelCls}>Numéro de téléphone <span className="text-[#4648D4] ml-0.5">*</span></label>
-                <input id="telephone" type="tel" className={inputCls} value={form.telephone} onChange={set('telephone')} required autoComplete="tel" />
+                <input
+                  id="telephone"
+                  type="tel"
+                  inputMode="numeric"
+                  className={inputCls}
+                  value={form.telephone}
+                  onChange={e => {
+                    const val = e.target.value.replace(/[^\d+]/g, '')
+                    setForm(prev => ({ ...prev, telephone: val }))
+                  }}
+                  required
+                  autoComplete="tel"
+                  placeholder="0612345678"
+                />
               </div>
 
               <div className="flex flex-col gap-1.5">
@@ -191,13 +209,13 @@ interface SidebarStep { num: number; label: string; status: StepStatus; sub: str
 
 function StepSidebar({ steps }: { steps: readonly SidebarStep[] }) {
   return (
-    <aside className="bg-white border-[1.5px] border-[#E2E8F0] rounded-[14px] p-7 pl-6 sticky top-20 anim-fade-in anim-d250 max-lg:static max-lg:[order:-1]" aria-label="Progression de l'inscription">
+    <aside className="bg-white border-[1.5px] border-[#E2E8F0] rounded-[14px] p-7 pl-6 sticky top-20 anim-fade-in anim-d250 max-lg:static max-lg:-order-1" aria-label="Progression de l'inscription">
       <p className="text-[15px] font-semibold text-[#0F172A] mb-6">Étapes de l&apos;inscription</p>
       <ol className="list-none p-0 m-0">
         {steps.map((s, idx) => (
           <li key={s.num} className="flex items-start gap-3.5 py-3 relative">
             {idx < steps.length - 1 && (
-              <div className={`absolute left-[15px] top-[44px] bottom-[-12px] w-0.5 ${
+              <div className={`absolute left-3.75 top-11 -bottom-3 w-0.5 ${
                 s.status === 'done' || s.status === 'active' ? 'bg-[#1C3064] opacity-20' : 'bg-[#E5E7EB]'
               }`} aria-hidden="true" />
             )}
@@ -210,7 +228,7 @@ function StepSidebar({ steps }: { steps: readonly SidebarStep[] }) {
                 <IconCheck />
               ) : s.num}
             </div>
-            <div className="flex flex-col gap-0.5 pt-[5px]">
+            <div className="flex flex-col gap-0.5 pt-1.25">
               <span className={`text-sm leading-[1.3] ${s.status === 'inactive' ? 'font-normal text-[#9CA3AF]' : 'font-medium text-[#0F172A]'}`}>
                 {s.label}
               </span>
