@@ -19,14 +19,14 @@ function MiniDash({ title, stats }: { title: string, stats: { label: string, val
         borderColor: '#4648D4',
         transition: { duration: 0.28, ease: EASE_POWER3 },
       }}
-      className="bg-white rounded-[10px] border border-gray-200 p-3.5 shadow-[0_2px_8px_rgba(0,0,0,0.05)] will-change-transform"
+      className="bg-white rounded-[10px] border border-gray-200 p-3.5 shadow-[0_2px_8px_rgba(0,0,0,0.05)] will-change-transform h-full min-h-[180px] flex flex-col"
     >
-      <p className="text-[11px] font-semibold text-opus-ink mb-2.5">{title}</p>
-      <div className="flex gap-2">
+      <p className="text-[11px] font-semibold text-opus-ink mb-2.5 break-words">{title}</p>
+      <div className="flex gap-2 flex-wrap">
         {stats.map(s => (
-          <div key={s.label} className="flex-1 bg-gray-50 rounded-md px-2.5 py-2 border border-gray-200">
-            <p className="text-[15px] font-extrabold text-opus-primary">{s.value}</p>
-            <p className="text-[9px] text-gray-500 mt-0.5 leading-snug">{s.label}</p>
+          <div key={s.label} className="flex-1 min-w-[80px] bg-gray-50 rounded-md px-2.5 py-2 border border-gray-200">
+            <p className="text-[15px] font-extrabold text-opus-primary break-words">{s.value}</p>
+            <p className="text-[9px] text-gray-500 mt-0.5 leading-snug break-words">{s.label}</p>
           </div>
         ))}
       </div>
@@ -52,7 +52,7 @@ const DASHBOARDS = [
 
 export default function WhyOpus() {
   return (
-    <section id="temoignages" className="bg-white py-[clamp(60px,7vw,90px)] px-6">
+    <section id="temoignages" className="bg-white py-[clamp(60px,7vw,90px)] px-4 sm:px-6 overflow-x-hidden">
       <div className="max-w-[1100px] mx-auto">
 
         <div className="text-center mb-12">
@@ -85,7 +85,7 @@ export default function WhyOpus() {
           initial="hidden"
           whileInView="visible"
           viewport={VIEWPORT}
-          className="grid grid-cols-3 gap-4 mb-4 max-md:grid-cols-1"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4 items-stretch"
         >
           {DASHBOARDS.slice(0, 3).map((d, i) => (
             <MiniDash key={i} title={d.title} stats={d.stats} />
@@ -97,7 +97,7 @@ export default function WhyOpus() {
           initial="hidden"
           whileInView="visible"
           viewport={VIEWPORT}
-          className="grid grid-cols-2 gap-4 max-md:grid-cols-1"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch"
         >
           {DASHBOARDS.slice(3).map((d, i) => (
             <MiniDash key={i} title={d.title} stats={d.stats} />

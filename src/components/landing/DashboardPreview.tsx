@@ -76,63 +76,68 @@ const NAV_ITEMS = [
 
 export default function DashboardPreview() {
   return (
-    <div className="rounded-xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.12),0_4px_16px_rgba(0,0,0,0.06)] border border-gray-200 bg-white">
+    <div className="rounded-xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.12),0_4px_16px_rgba(0,0,0,0.06)] border border-gray-200 bg-white w-full">
 
-      <div className="flex items-center gap-1.5 px-3.5 py-[10px] bg-gray-50 border-b border-gray-200">
-        <span className="w-2.5 h-2.5 rounded-full bg-[#FC5F57] inline-block" />
-        <span className="w-2.5 h-2.5 rounded-full bg-[#FDBC2C] inline-block" />
-        <span className="w-2.5 h-2.5 rounded-full bg-[#25CC40] inline-block" />
-        <div className="flex-1 ml-2 bg-white rounded-[5px] px-2.5 py-[3px] text-[11px] text-gray-400 border border-gray-200">
+      <div className="flex items-center gap-1.5 px-3 sm:px-3.5 py-[10px] bg-gray-50 border-b border-gray-200">
+        <span className="w-2.5 h-2.5 rounded-full bg-[#FC5F57] inline-block shrink-0" />
+        <span className="w-2.5 h-2.5 rounded-full bg-[#FDBC2C] inline-block shrink-0" />
+        <span className="w-2.5 h-2.5 rounded-full bg-[#25CC40] inline-block shrink-0" />
+        <div className="flex-1 ml-2 bg-white rounded-[5px] px-2.5 py-[3px] text-[10px] sm:text-[11px] text-gray-400 border border-gray-200 truncate min-w-0">
           app.opus-btp.fr/dashboard
         </div>
       </div>
 
-      <div className="flex min-h-[420px]">
+      <div className="flex flex-col md:flex-row md:min-h-[420px]">
 
-        <div className="w-[180px] bg-gray-50 border-r border-gray-200 py-4 shrink-0">
-          <div className="px-4 pb-4 border-b border-gray-200 mb-2">
+        <div className="md:w-[180px] bg-gray-50 border-b md:border-b-0 md:border-r border-gray-200 py-3 md:py-4 shrink-0">
+          <div className="px-4 pb-3 md:pb-4 border-b border-gray-200 md:mb-2">
             <span className="font-bold text-[15px] text-opus-ink">Opus</span>
           </div>
-          {NAV_ITEMS.map(item => (
-            <div key={item.label} className={`px-4 py-2 text-xs cursor-default border-l-[3px] ${item.active ? 'font-semibold text-opus-primary bg-opus-primary-xl border-l-opus-primary' : 'font-normal text-gray-500 bg-transparent border-l-transparent'}`}>
-              {item.label}
-            </div>
-          ))}
+          <div className="flex md:block overflow-x-auto md:overflow-visible">
+            {NAV_ITEMS.map(item => (
+              <div
+                key={item.label}
+                className={`px-3 md:px-4 py-2 text-[11px] md:text-xs cursor-default whitespace-nowrap border-l-0 md:border-l-[3px] border-b-2 md:border-b-0 ${item.active ? 'font-semibold text-opus-primary bg-opus-primary-xl border-b-opus-primary md:border-l-opus-primary' : 'font-normal text-gray-500 bg-transparent border-b-transparent md:border-l-transparent'}`}
+              >
+                {item.label}
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="flex-1 p-5 bg-white overflow-hidden">
-          <p className="text-base font-bold text-opus-ink mb-4">Tableau de bord</p>
+        <div className="flex-1 p-3.5 sm:p-5 bg-white overflow-hidden min-w-0">
+          <p className="text-sm sm:text-base font-bold text-opus-ink mb-3 sm:mb-4">Tableau de bord</p>
 
-          <div className="grid grid-cols-4 gap-3 mb-5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mb-4 sm:mb-5">
             {KPIS.map((k, kpiIndex) => (
-              <div key={k.label} className="bg-gray-50 rounded-lg px-3.5 py-3 border border-gray-200">
-                <p className="text-[10px] text-gray-400 mb-1">{k.label}</p>
+              <div key={k.label} className="bg-gray-50 rounded-lg px-3 sm:px-3.5 py-2.5 sm:py-3 border border-gray-200 min-w-0">
+                <p className="text-[10px] text-gray-400 mb-1 truncate">{k.label}</p>
                 <KpiValue value={k.value} kpiIndex={kpiIndex} />
               </div>
             ))}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="min-w-0">
               <p className="text-xs font-semibold text-gray-700 mb-2.5">Actions classées</p>
               {['Contrat Martin', 'DAS2 Dupont', 'Facture #124'].map((item, i) => (
                 <div key={item} className={`flex items-center gap-2 py-[7px] ${i < 2 ? 'border-b border-gray-100' : ''}`}>
                   <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: ['#25CC40','#4648D4','#FDBC2C'][i] }} />
-                  <span className="text-[11px] text-gray-700 flex-1">{item}</span>
-                  <span className="text-[10px] text-gray-400">Aujourd&apos;hui</span>
+                  <span className="text-[11px] text-gray-700 flex-1 truncate">{item}</span>
+                  <span className="text-[10px] text-gray-400 shrink-0">Aujourd&apos;hui</span>
                 </div>
               ))}
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-xs font-semibold text-gray-700 mb-2.5">Dernières transactions</p>
               {[
                 { name: 'M. Martin',   amount: '1 200€' },
                 { name: 'Mme Bernard', amount: '850€'   },
                 { name: 'SCI Lebrun',  amount: '3 400€' },
               ].map((t, i) => (
-                <div key={t.name} className={`flex items-center justify-between py-[7px] ${i < 2 ? 'border-b border-gray-100' : ''}`}>
-                  <span className="text-[11px] text-gray-700">{t.name}</span>
-                  <span className="text-[11px] font-semibold text-opus-ink">{t.amount}</span>
+                <div key={t.name} className={`flex items-center justify-between gap-2 py-[7px] ${i < 2 ? 'border-b border-gray-100' : ''}`}>
+                  <span className="text-[11px] text-gray-700 truncate">{t.name}</span>
+                  <span className="text-[11px] font-semibold text-opus-ink shrink-0">{t.amount}</span>
                 </div>
               ))}
             </div>

@@ -22,19 +22,19 @@ const PLANS = [
     name: 'Gratuit', price: '0', unit: '€', period: '', highlight: false,
     desc: "Tout ce qui est dans Gratuit plus :",
     features: ["1 apporteur d'affaires", '5 documents par mois', 'Contrats basiques', 'Support par email', 'Processus avancés'],
-    btn: '→ Essayer gratuitement',
+    btn: 'Essayer gratuitement',
   },
   {
     name: 'Pro', price: '3.99', unit: '€', period: '/mois', highlight: true,
     desc: "Tout ce qui est dans Gratuit plus :",
     features: ['Apporteurs illimités', 'Documents illimités', 'DAS2 automatique', 'Coffre-fort 6 ans', 'Signature eIDAS', 'Export FEC', 'Recommandations IA'],
-    btn: '→ Essayer professionnel',
+    btn: 'Essayer professionnel',
   },
   {
     name: 'Ultra', price: '6.99', unit: '€', period: '/mois', highlight: false,
-    desc: "Tout ce qui est dans Ultra plus :",
+    desc: "Tout ce qui est dans Pro plus :",
     features: ['Tout Pro inclus', 'Multi-entreprises', 'API access', 'Processus avancés', 'Recommandations IA', 'Manager de compte'],
-    btn: '→ Essayer gratuitement',
+    btn: 'Essayer gratuitement',
   },
 ]
 
@@ -117,7 +117,7 @@ const cardVariants = (highlight: boolean) => ({
 
 export default function Pricing() {
   return (
-    <section id="prix" className="bg-white py-[clamp(60px,7vw,90px)] px-6">
+    <section id="prix" className="bg-white py-[clamp(60px,7vw,90px)] px-4 sm:px-6 overflow-x-hidden">
       <div className="max-w-[1060px] mx-auto">
 
         <div className="text-center mb-12">
@@ -161,7 +161,7 @@ export default function Pricing() {
           initial="hidden"
           whileInView="visible"
           viewport={VIEWPORT}
-          className="grid grid-cols-3 gap-4 items-start max-md:grid-cols-1"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch"
         >
           {PLANS.map(plan => (
             <motion.div
@@ -172,7 +172,7 @@ export default function Pricing() {
                   ? { y: -6, boxShadow: '0 24px 60px rgba(70,72,212,0.3)', transition: { duration: 0.3, ease: EASE_POWER3 } }
                   : { y: -4, boxShadow: '0 16px 40px rgba(70,72,212,0.12)', transition: { duration: 0.3, ease: EASE_POWER3 } }
               }
-              className={`rounded-[14px] px-6 py-7 will-change-transform border-[1.5px] ${plan.highlight ? 'bg-opus-primary border-opus-primary' : 'bg-white border-gray-200'}`}
+              className={`rounded-[14px] px-5 sm:px-6 py-7 will-change-transform border-[1.5px] flex flex-col min-h-[520px] h-full ${plan.highlight ? 'bg-opus-primary border-opus-primary' : 'bg-white border-gray-200'}`}
             >
               <p className={`text-xs font-semibold tracking-[0.05em] uppercase mb-3 font-mono ${plan.highlight ? 'text-white/70' : 'text-gray-500'}`}>
                 {plan.name}
@@ -191,7 +191,7 @@ export default function Pricing() {
                 {plan.desc}
               </p>
 
-              <ul className="list-none p-0 m-0 mb-6 flex flex-col gap-2">
+              <ul className="list-none p-0 m-0 mb-6 flex flex-col gap-2 flex-1">
                 {plan.features.map((f, fi) => (
                   <motion.li
                     key={f}
@@ -209,9 +209,13 @@ export default function Pricing() {
 
               <Link
                 href="/inscription"
-                className={`block text-center px-4 py-[10px] rounded-lg text-[13px] font-semibold no-underline transition-opacity duration-150 hover:opacity-80 ${plan.highlight ? 'bg-white text-opus-primary' : 'bg-opus-primary-xl text-opus-primary'}`}
+                className={`mt-auto flex items-center justify-center gap-2 px-4 py-[10px] rounded-lg text-[13px] font-semibold no-underline transition-opacity duration-150 hover:opacity-80 ${plan.highlight ? 'bg-white text-opus-primary' : 'bg-opus-primary-xl text-opus-primary'}`}
               >
-                {plan.btn}
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 relative -top-px">
+                  <line x1="2" y1="7" x2="12" y2="7" />
+                  <polyline points="8 3 12 7 8 11" />
+                </svg>
+                <span className="leading-none">{plan.btn}</span>
               </Link>
             </motion.div>
           ))}

@@ -13,11 +13,11 @@ export default function Faq() {
   const [open, setOpen] = useState<number | null>(null)
 
   return (
-    <section id="faq" className="bg-white py-[clamp(60px,7vw,90px)] px-6">
+    <section id="faq" className="bg-white py-[clamp(60px,7vw,90px)] px-4 sm:px-6 overflow-x-hidden">
       <div className="max-w-[1100px] mx-auto">
-        <div className="grid grid-cols-[260px_1fr] gap-16 items-start max-md:grid-cols-1">
+        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8 lg:gap-16 items-start">
 
-          <div className="sticky top-[100px] max-md:static">
+          <div className="lg:sticky lg:top-[100px]">
             <h2 className="text-[clamp(24px,3vw,34px)] font-extrabold text-opus-ink tracking-[-0.02em] leading-tight mb-3.5">
               Questions<br />Fréquentes.
             </h2>
@@ -37,17 +37,17 @@ export default function Faq() {
                   <button
                     onClick={() => setOpen(isOpen ? null : i)}
                     aria-expanded={isOpen}
-                    className="w-full text-left px-5 py-4 bg-transparent border-none cursor-pointer flex items-center justify-between gap-3"
+                    className="w-full text-left px-4 sm:px-5 py-4 bg-transparent border-none cursor-pointer flex items-center justify-between gap-3"
                   >
-                    <span className="text-sm font-semibold text-opus-ink leading-snug">{item.q}</span>
-                    <span className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 ${isOpen ? 'bg-opus-primary text-white rotate-45' : 'bg-gray-100 text-opus-primary'}`}>
+                    <span className="text-sm font-semibold text-opus-ink leading-snug break-words">{item.q}</span>
+                    <span className={`shrink-0 w-6 h-6 rounded-full inline-flex items-center justify-center transition-all duration-200 ${isOpen ? 'bg-opus-primary text-white rotate-45' : 'bg-gray-100 text-opus-primary'}`}>
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                         <line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/>
                       </svg>
                     </span>
                   </button>
-                  <div className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${isOpen ? 'max-h-[300px]' : 'max-h-0'}`}>
-                    <p className="px-5 pb-4 text-sm text-gray-700 leading-[1.7]">{item.a}</p>
+                  <div className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${isOpen ? 'max-h-[500px]' : 'max-h-0'}`}>
+                    <p className="px-4 sm:px-5 pb-4 text-sm text-gray-700 leading-[1.7] break-words">{item.a}</p>
                   </div>
                 </div>
               )

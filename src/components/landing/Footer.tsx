@@ -13,16 +13,22 @@ function OpusIcon() {
 
 export default function Footer() {
   return (
-    <footer className={`${s.footer} bg-white flex flex-col min-h-[540px] box-border`}>
+    <footer className={`${s.footer} bg-white flex flex-col md:min-h-[540px] box-border`}>
 
-      <div className="relative z-[1] flex-1 max-w-[1200px] mx-auto w-full px-10 pt-14 pb-0 flex justify-between items-stretch box-border max-md:flex-col max-md:gap-10 max-md:px-6 max-md:pt-10">
+      <div className="relative z-[1] flex-1 max-w-[1200px] mx-auto w-full px-6 md:px-10 pt-10 md:pt-14 pb-0 flex flex-col md:flex-row md:justify-between md:items-stretch gap-10 box-border">
 
-        <div className="flex flex-col justify-between w-[255px] pb-8 max-md:w-full max-md:pb-0">
+        <div className="flex flex-col gap-6 md:gap-0 md:justify-between md:w-[255px] md:pb-8 w-full">
+          <Link href="/" aria-label="Accueil Opus" className="flex md:hidden flex-row items-center gap-[9px] no-underline">
+            <OpusIcon />
+            <span className="text-base font-extrabold text-opus-ink tracking-[0.04em] leading-none">
+              OPUS
+            </span>
+          </Link>
           <p className="text-[13px] font-normal leading-[1.7] text-opus-text m-0">
             Nous fournissons une plateforme rationalisée
             pour les entreprises du bâtiment de toute envergure.
           </p>
-          <Link href="/" aria-label="Accueil Opus" className="flex flex-row items-center gap-[9px] no-underline">
+          <Link href="/" aria-label="Accueil Opus" className="hidden md:flex flex-row items-center gap-[9px] no-underline">
             <OpusIcon />
             <span className="text-base font-extrabold text-opus-ink tracking-[0.04em] leading-none">
               OPUS
@@ -30,9 +36,9 @@ export default function Footer() {
           </Link>
         </div>
 
-        <div className="flex gap-20 items-start pb-8 max-md:flex-wrap max-md:gap-8">
+        <div className="flex flex-wrap gap-10 md:gap-20 items-start md:pb-8">
 
-          <div>
+          <div className="min-w-[120px]">
             <p className="text-[11px] font-bold tracking-[0.13em] uppercase text-opus-ink m-0 mb-4">Menu</p>
             <ul className="list-none p-0 m-0 flex flex-col gap-2.5">
               <li><Link href="/"                 className="text-[13px] font-normal text-opus-primary no-underline block">Accueil</Link></li>
@@ -43,7 +49,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="min-w-[120px]">
             <p className="text-[11px] font-bold tracking-[0.13em] uppercase text-opus-ink m-0 mb-4">Réseaux</p>
             <ul className="list-none p-0 m-0 flex flex-col gap-2.5">
               {['Instagram','Facebook','LinkedIn','Twitter'].map(name => (
@@ -62,14 +68,14 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="relative z-[1] px-10 box-border max-md:px-6">
+      <div className="relative z-[1] px-6 md:px-10 box-border mt-8 md:mt-0">
         <div className="max-w-[1200px] mx-auto">
           <div className="h-px bg-[#E4ECF1]" />
-          <div className="flex justify-between items-center py-[18px] pb-6 max-md:flex-col max-md:gap-3 max-md:items-start">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center py-[18px] pb-6 gap-3 md:gap-0 items-start">
             <p className="text-[13px] font-normal text-opus-muted m-0">
               © 2026 OPUS. Tous droits réservés.
             </p>
-            <ul className="flex gap-7 list-none p-0 m-0 max-md:flex-wrap max-md:gap-4">
+            <ul className="flex flex-wrap gap-4 md:gap-7 list-none p-0 m-0">
               {[
                 ['CGU',              '/cgu'],
                 ['Mentions Légales', '/mentions-legales'],

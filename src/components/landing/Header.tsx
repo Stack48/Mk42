@@ -45,11 +45,18 @@ export default function Header() {
           ))}
         </nav>
 
-        <Link href="/inscription"
-          className="hidden md:inline-flex bg-opus-primary hover:bg-opus-primary-dk text-white px-[18px] py-2 rounded-[7px] text-[13px] font-semibold no-underline shrink-0 transition-colors duration-150"
-        >
-          Démo Gratuite
-        </Link>
+        <div className="hidden md:flex items-center gap-2 shrink-0">
+          <Link href="/connexion"
+            className="inline-flex items-center justify-center px-[14px] py-2 rounded-[7px] text-[13px] font-semibold text-opus-primary border border-opus-primary hover:bg-opus-primary-xl no-underline transition-colors duration-150"
+          >
+            Connexion
+          </Link>
+          <Link href="/inscription"
+            className="inline-flex items-center justify-center bg-opus-primary hover:bg-opus-primary-dk text-white px-[18px] py-2 rounded-[7px] text-[13px] font-semibold no-underline transition-colors duration-150"
+          >
+            Démo Gratuite
+          </Link>
+        </div>
 
         <button
           className="ml-auto md:hidden bg-transparent border-none cursor-pointer p-2 text-opus-ink"
@@ -71,8 +78,15 @@ export default function Header() {
               className="block py-[11px] text-[15px] font-medium text-gray-700 no-underline border-b border-gray-200"
             >{label}</a>
           ))}
+          <Link href="/connexion"
+            onClick={() => setOpen(false)}
+            className="block mt-3.5 text-center text-opus-primary border border-opus-primary py-3 rounded-[7px] font-semibold no-underline text-sm"
+          >
+            Connexion
+          </Link>
           <Link href="/inscription"
-            className="block mt-3.5 text-center bg-opus-primary text-white py-3 rounded-[7px] font-semibold no-underline text-sm"
+            onClick={() => setOpen(false)}
+            className="block mt-2 text-center bg-opus-primary text-white py-3 rounded-[7px] font-semibold no-underline text-sm"
           >
             Démo Gratuite
           </Link>

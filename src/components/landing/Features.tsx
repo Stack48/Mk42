@@ -82,11 +82,11 @@ function FeatureCard({ feature }: { feature: typeof FEATURES[0] }) {
   }, [rotX, rotY])
 
   return (
-    <div ref={ref} className="[perspective:700px]" onMouseMove={onMove} onMouseLeave={onLeave}>
+    <div ref={ref} className="[perspective:700px] h-full" onMouseMove={onMove} onMouseLeave={onLeave}>
       <motion.div
         variants={staggerItemVariants}
         style={{ rotateX: sRotX, rotateY: sRotY, transformStyle: 'preserve-3d' }}
-        className="bg-white rounded-[10px] p-[18px] border border-gray-200 shadow-sm cursor-default will-change-transform"
+        className="bg-white rounded-[10px] p-[18px] border border-gray-200 shadow-sm cursor-default will-change-transform h-full min-h-[180px] flex flex-col"
         whileHover={{
           borderColor: '#4648D4',
           boxShadow: '0 20px 50px rgba(70,72,212,0.16)',
@@ -96,12 +96,12 @@ function FeatureCard({ feature }: { feature: typeof FEATURES[0] }) {
         <motion.div
           whileHover={{ scale: 1.15, rotate: -6 }}
           transition={{ duration: 0.28, ease: EASE_POWER3 }}
-          className="w-[38px] h-[38px] rounded-lg bg-opus-primary-xl text-opus-primary flex items-center justify-center mb-3"
+          className="w-[38px] h-[38px] rounded-lg bg-opus-primary-xl text-opus-primary flex items-center justify-center mb-3 shrink-0"
         >
           {feature.icon}
         </motion.div>
-        <h3 className="text-sm font-bold text-opus-ink mb-1.5 leading-snug">{feature.title}</h3>
-        <p className="text-[13px] text-gray-500 leading-relaxed">{feature.desc}</p>
+        <h3 className="text-sm font-bold text-opus-ink mb-1.5 leading-snug break-words">{feature.title}</h3>
+        <p className="text-[13px] text-gray-500 leading-relaxed break-words">{feature.desc}</p>
       </motion.div>
     </div>
   )
@@ -109,7 +109,7 @@ function FeatureCard({ feature }: { feature: typeof FEATURES[0] }) {
 
 export default function Features() {
   return (
-    <section id="fonctionnalites" className="bg-white py-[clamp(60px,7vw,90px)] px-6">
+    <section id="fonctionnalites" className="bg-white py-[clamp(60px,7vw,90px)] px-4 sm:px-6 overflow-x-hidden">
       <div className="max-w-[1100px] mx-auto">
 
         <div className="mb-12">
@@ -138,14 +138,14 @@ export default function Features() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-8 items-start max-[860px]:grid-cols-1">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
 
           <motion.div
             variants={staggerContainerVariants}
             initial="hidden"
             whileInView="visible"
             viewport={VIEWPORT}
-            className="grid grid-cols-2 gap-3.5"
+            className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 items-stretch"
           >
             {FEATURES.map(f => (
               <FeatureCard key={f.title} feature={f} />
@@ -158,7 +158,7 @@ export default function Features() {
             whileInView="visible"
             viewport={VIEWPORT}
             transition={{ delay: 0.3 }}
-            className="rounded-[14px] overflow-hidden bg-gray-100 min-h-[360px] flex items-center justify-center max-[860px]:hidden"
+            className="rounded-[14px] overflow-hidden bg-gray-100 min-h-[360px] flex items-center justify-center hidden lg:flex"
           >
             <div className="text-center p-8">
               <div className="w-[100px] h-[100px] rounded-full bg-gradient-to-br from-opus-primary to-[#6669e0] mx-auto mb-5 flex items-center justify-center">
