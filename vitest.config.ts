@@ -9,7 +9,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": resolve(__dirname, "."), // résolution de l'alias @/* comme dans tsconfig
+      "@": resolve(__dirname, "src"), // résolution de l'alias @/* comme dans tsconfig
     },
   },
 });
