@@ -76,7 +76,8 @@ export function generateDAS2EDI(
     "",
     process.env.NODE_ENV === 'production' ? "0" : "1"
   );
-  segmentCount++;
+  // UNB n'est pas compté : c'est l'enveloppe d'interchange, hors du message
+  // UNH...UNT que UNT.segmentCount doit dénombrer (cf. validateDAS2EDI).
 
   // UNH — Message Header
   const messageRef = `MSG-${annee}-001`;

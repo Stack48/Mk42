@@ -6,10 +6,12 @@
 // Usage (depuis le container mk42_app) :
 //   docker exec -it mk42_app npx ts-node --project tsconfig.seed.json scripts/seed-comptabilite-test.ts <email>
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../src/generated/prisma/client/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 import crypto from "node:crypto";
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+const prisma = new PrismaClient({ adapter });
 
 // Siret @unique en base mais sans contrainte de format réel (test only) :
 // dérivé de l'email pour rester stable entre deux exécutions du script.
