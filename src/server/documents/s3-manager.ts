@@ -10,17 +10,52 @@ import { randomUUID } from "crypto";
 const BUCKET = process.env.AWS_S3_BUCKET ?? "opus-btp-documents";
 const SIGNED_URL_TTL_SECONDS = 15 * 60; // 15 min
 
-function getS3Client(): S3Client {
-  return new S3Client({
+// Dev local : MinIO en remplacement d'AWS S3 (voir docker-compose.yml).
+// Deux endpoints distincts car le conteneur app résout "minio" via le réseau
+// Docker interne pour le PUT, alors que le lien signé renvoyé est ouvert par
+// le navigateur sur l'hôte (localhost) pour le GET. Même bucket, même clé —
+// seul le chemin réseau diffère, la signature SigV4 reste valide.
+const S3_ENDPOINT_INTERNAL = process.env.S3_ENDPOINT_INTERNAL;
+const S3_ENDPOINT_PUBLIC = process.env.S3_ENDPOINT_PUBLIC;
+
+function s3Config(endpoint: string | undefined) {
+  if (endpoint) {
+    return {
+      region: "us-east-1",
+      endpoint,
+      forcePathStyle: true,
+      credentials: {
+        accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
+      },
+    };
+  }
+  return {
     region: process.env.AWS_REGION ?? "eu-west-3",
     credentials: {
       accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
     },
-  });
+  };
+}
+
+function getS3Client(): S3Client {
+  return new S3Client(s3Config(S3_ENDPOINT_INTERNAL));
+}
+
+function getPublicS3Client(): S3Client {
+  return new S3Client(s3Config(S3_ENDPOINT_PUBLIC ?? S3_ENDPOINT_INTERNAL));
 }
 
 export type DocumentType = "FACTURE" | "RECU" | "DAS2" | "CSV";
+
+// Mapping vers l'enum Prisma TypeDocument — le CSV est un export ponctuel,
+// non centralisé dans le coffre-fort documentaire (pas d'équivalent dans l'enum).
+const PRISMA_DOCUMENT_TYPE: Partial<Record<DocumentType, "FACTURE" | "RECU" | "DAS2_EXPORT">> = {
+  FACTURE: "FACTURE",
+  RECU: "RECU",
+  DAS2: "DAS2_EXPORT",
+};
 
 const EXT: Record<DocumentType, string> = {
   FACTURE: "pdf",
@@ -76,26 +111,32 @@ export async function uploadDocumentS3(input: UploadInput): Promise<UploadResult
   );
 
   const signedUrl = await getSignedUrl(
-    client,
+    getPublicS3Client(),
     new GetObjectCommand({ Bucket: BUCKET, Key: s3Key }),
     { expiresIn: SIGNED_URL_TTL_SECONDS }
   );
 
   const dateExpiration = new Date(now.getTime() + SIGNED_URL_TTL_SECONDS * 1000);
 
-  const doc = await prisma.document.create({
-    data: {
-      type: input.type,
-      s3Key,
-      entrepriseId: input.entrepriseId,
-      apporteurId: input.apporteurId ?? null,
-      dateCreation: now,
-      metadata: input.metadata ? JSON.parse(JSON.stringify(input.metadata)) : undefined,
-    },
-  });
+  const typeDocument = PRISMA_DOCUMENT_TYPE[input.type];
+
+  const documentId = typeDocument
+    ? (
+        await prisma.document.create({
+          data: {
+            type: typeDocument,
+            s3Key,
+            nomFichier: filename,
+            entrepriseId: input.entrepriseId,
+            apporteurId: input.apporteurId ?? null,
+            metadata: input.metadata ? JSON.parse(JSON.stringify(input.metadata)) : undefined,
+          },
+        })
+      ).id
+    : uuid;
 
   return {
-    documentId: doc.id,
+    documentId,
     s3Key,
     lienSigne: signedUrl,
     dateExpiration,
@@ -103,9 +144,8 @@ export async function uploadDocumentS3(input: UploadInput): Promise<UploadResult
 }
 
 export async function getSignedDownloadUrl(s3Key: string): Promise<string> {
-  const client = getS3Client();
   return getSignedUrl(
-    client,
+    getPublicS3Client(),
     new GetObjectCommand({ Bucket: BUCKET, Key: s3Key }),
     { expiresIn: SIGNED_URL_TTL_SECONDS }
   );

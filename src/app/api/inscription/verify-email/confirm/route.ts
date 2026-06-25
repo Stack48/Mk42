@@ -9,6 +9,11 @@ export async function GET(req: Request) {
 
   if (!token || !userId) return redirect('/inscription?step=6&error=lien-invalide');
 
+  // redirect() lève une exception interne (NEXT_REDIRECT) pour fonctionner —
+  // elle ne doit jamais être appelée à l'intérieur de ce try/catch, sinon le
+  // catch ci-dessous l'intercepte et écrase la redirection par une erreur.
+  let target = '/dashboard';
+
   try {
     const client = await clerkClient();
     const user = await client.users.getUser(userId);
@@ -19,26 +24,26 @@ export async function GET(req: Request) {
       typeof meta.emailVerifExpiresAt !== 'number' ||
       Date.now() > meta.emailVerifExpiresAt
     ) {
-      return redirect('/inscription?step=6&error=lien-expire');
+      target = '/inscription?step=6&error=lien-expire';
+    } else {
+      await Promise.all([
+        client.users.updateUserMetadata(userId, {
+          privateMetadata: {
+            ...meta,
+            emailVerifToken: null,
+            emailVerifExpiresAt: null,
+          },
+        }),
+        prisma.utilisateur.update({
+          where: { clerkId: userId },
+          data: { emailVerified: true },
+        }),
+      ]);
     }
-
-    await Promise.all([
-      client.users.updateUserMetadata(userId, {
-        privateMetadata: {
-          ...meta,
-          emailVerifToken: null,
-          emailVerifExpiresAt: null,
-        },
-      }),
-      prisma.utilisateur.update({
-        where: { clerkId: userId },
-        data: { emailVerified: true },
-      }),
-    ]);
-
-    return redirect('/dashboard');
   } catch (err) {
     console.error('[GET /api/inscription/verify-email/confirm]', err);
-    return redirect('/inscription?step=6&error=erreur-serveur');
+    target = '/inscription?step=6&error=erreur-serveur';
   }
+
+  return redirect(target);
 }

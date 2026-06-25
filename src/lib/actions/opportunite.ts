@@ -73,10 +73,13 @@ export async function createOpportunite(
   })
 
   // 5. Créer l'Opportunite en base
+  // MVP mono-entreprise : une seule Entreprise existe, les apporteurs lui soumettent
+  // toutes leurs opportunités (pas encore de sélection d'entreprise au formulaire).
+  const entreprise = await prisma.entreprise.findFirstOrThrow()
   const opportunite = await prisma.opportunite.create({
     data: {
       apporteurId:   apporteur.id,
-      entrepriseId:  undefined,
+      entrepriseId:  entreprise.id,
       clientId:      client.id,
       statut:        'SOUMISE',
       typeTravaux:   formData.typesTravaux,

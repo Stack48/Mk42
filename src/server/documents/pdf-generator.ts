@@ -11,6 +11,9 @@ export interface EntrepriseInfo {
   email: string;
   telephone?: string;
   numeroTVA?: string;
+  formeJuridique?: string;
+  capitalSocial?: number;
+  rcsVille?: string;
 }
 
 export interface ApporteurInfo {
@@ -26,6 +29,7 @@ export interface FactureInput {
   type: "facture";
   numFacture: string;
   dateEmission: Date;
+  dateEcheance?: Date;
   entreprise: EntrepriseInfo;
   apporteur: ApporteurInfo;
   montantHT: number;
@@ -163,6 +167,19 @@ function formatDate(d: Date): string {
   });
 }
 
+function formatMentionsLegales(e: EntrepriseInfo): string | null {
+  const parts: string[] = [];
+  if (e.formeJuridique) {
+    parts.push(
+      e.capitalSocial !== undefined
+        ? `${e.formeJuridique} au capital de ${formatMontant(e.capitalSocial)}`
+        : e.formeJuridique
+    );
+  }
+  if (e.rcsVille) parts.push(`RCS ${e.rcsVille} ${e.siret}`);
+  return parts.length > 0 ? parts.join(" — ") : null;
+}
+
 function FacturePDF({ input }: { input: FactureInput }) {
   return React.createElement(
     Document,
@@ -178,7 +195,10 @@ function FacturePDF({ input }: { input: FactureInput }) {
         React.createElement(
           Text,
           { style: styles.headerSubtitle },
-          `N° ${input.numFacture} — Émise le ${formatDate(input.dateEmission)}`
+          `N° ${input.numFacture} — Émise le ${formatDate(input.dateEmission)}` +
+            (input.dateEcheance
+              ? ` — Échéance le ${formatDate(input.dateEcheance)}`
+              : " — Paiement à réception")
         )
       ),
       // Émetteur
@@ -210,6 +230,17 @@ function FacturePDF({ input }: { input: FactureInput }) {
             { style: styles.row },
             React.createElement(Text, { style: styles.label }, "N° TVA Intracom :"),
             React.createElement(Text, { style: styles.value }, input.entreprise.numeroTVA)
+          ),
+        formatMentionsLegales(input.entreprise) &&
+          React.createElement(
+            View,
+            { style: styles.row },
+            React.createElement(Text, { style: styles.label }, "Mentions légales :"),
+            React.createElement(
+              Text,
+              { style: styles.value },
+              formatMentionsLegales(input.entreprise)!
+            )
           )
       ),
       // Destinataire
@@ -254,7 +285,7 @@ function FacturePDF({ input }: { input: FactureInput }) {
           React.createElement(
             Text,
             { style: styles.colLibelle },
-            `Commission d'apport d'affaires${input.referenceChantier ? ` — ${input.referenceChantier}` : ""}`
+            `Commission d'apport d'affaires${input.referenceChantier ? ` — ${input.referenceChantier}` : ""} (Montant HT)`
           ),
           React.createElement(Text, { style: styles.colMontant }, formatMontant(input.montantHT))
         ),
@@ -278,7 +309,7 @@ function FacturePDF({ input }: { input: FactureInput }) {
         React.createElement(
           Text,
           null,
-          "Pénalités de retard applicables au taux légal en vigueur. Indemnité forfaitaire pour frais de recouvrement : 40 €. TVA non récupérable par l'émetteur."
+          "Pénalités de retard applicables au taux légal en vigueur en cas de non-paiement à l'échéance. Indemnité forfaitaire pour frais de recouvrement : 40 €."
         )
       ),
       React.createElement(
@@ -390,5 +421,5 @@ export async function generatePDF(input: PDFInput): Promise<Buffer> {
       : React.createElement(RecuPDF, { input });
 
   // renderToBuffer works in Node.js (Server Action context), never in browser SSR
-  return renderToBuffer(element as React.ReactElement);
+  return renderToBuffer(element as Parameters<typeof renderToBuffer>[0]);
 }
