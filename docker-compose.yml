@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: mk42_dev
+      POSTGRES_DB: mk42
     command:
       - /bin/sh
       - -c
@@ -14,16 +14,16 @@ services:
         docker-entrypoint.sh postgres &
         pid=$$!
 
-        # Attendre sur la base "postgres" (toujours disponible) et non sur "mk42_dev"
+        # Attendre sur la base "postgres" (toujours disponible) et non sur "mk42"
         until pg_isready -U "$${POSTGRES_USER:-postgres}" -d postgres; do
           sleep 1
         done
 
-        # Créer la base mk42_dev si elle n'existe pas (volume existant d'une ancienne exécution)
+        # Créer la base mk42 si elle n'existe pas (volume existant d'une ancienne exécution)
         psql -U "$${POSTGRES_USER:-postgres}" -d postgres \
-          -tc "SELECT 1 FROM pg_database WHERE datname='mk42_dev'" | grep -q 1 || \
+          -tc "SELECT 1 FROM pg_database WHERE datname='mk42'" | grep -q 1 || \
           psql -U "$${POSTGRES_USER:-postgres}" -d postgres \
-            -c "CREATE DATABASE mk42_dev;"
+            -c "CREATE DATABASE mk42;"
 
         # Créer le rôle mk42 si nécessaire
         psql -U "$${POSTGRES_USER:-postgres}" -d postgres \
@@ -34,11 +34,11 @@ services:
         # Configurer le rôle et les droits sur la base (connexion via postgres)
         psql -v ON_ERROR_STOP=1 -U "$${POSTGRES_USER:-postgres}" -d postgres \
           -c "ALTER ROLE mk42 WITH LOGIN CREATEDB PASSWORD 'mk42password';" \
-          -c "ALTER DATABASE mk42_dev OWNER TO mk42;" \
-          -c "GRANT ALL PRIVILEGES ON DATABASE mk42_dev TO mk42;"
+          -c "ALTER DATABASE mk42 OWNER TO mk42;" \
+          -c "GRANT ALL PRIVILEGES ON DATABASE mk42 TO mk42;"
 
-        # Droits sur le schéma public (nécessite une connexion à mk42_dev)
-        psql -v ON_ERROR_STOP=1 -U "$${POSTGRES_USER:-postgres}" -d mk42_dev \
+        # Droits sur le schéma public (nécessite une connexion à mk42)
+        psql -v ON_ERROR_STOP=1 -U "$${POSTGRES_USER:-postgres}" -d mk42 \
           -c "GRANT ALL ON SCHEMA public TO mk42;" \
           -c "ALTER SCHEMA public OWNER TO mk42;"
 
@@ -48,7 +48,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'psql -U postgres -d mk42_dev -tAc "SELECT 1 FROM pg_roles WHERE rolname=''mk42''" | grep -q 1']
+      test:
+        [
+          'CMD-SHELL',
+          'psql -U postgres -d mk42 -tAc "SELECT 1 FROM pg_roles WHERE rolname=''mk42''" | grep -q 1',
+        ]
       interval: 5s
       timeout: 5s
       retries: 15
@@ -68,7 +72,7 @@ services:
       - .env.local
     environment:
       # Écrase .env.local pour utiliser le hostname du container postgres
-      DATABASE_URL: 'postgresql://mk42:mk42password@postgres:5432/mk42_dev?schema=public'
+      DATABASE_URL: 'postgresql://mk42:mk42password@postgres:5432/mk42?schema=public'
       # MinIO local en remplacement d'AWS S3 (credentials .env.local sont des
       # placeholders) : endpoint interne pour les PUT (réseau Docker), endpoint
       # public pour les liens signés ouverts par le navigateur sur l'hôte.
