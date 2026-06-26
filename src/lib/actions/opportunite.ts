@@ -8,7 +8,7 @@ import {
   stepInfosClientParticulierSchema,
   stepDetailsChantierSchema,
 } from '@/lib/validations/opportunite'
-import type { OpportuniteFormData } from '@/app/(apporteur)/opportunites/nouvelle/page'
+import type { OpportuniteFormData } from '@/app/(dashboard)/opportunites/nouvelle/page'
 
 let _resend: Resend | null = null
 function getResend(): Resend | null {

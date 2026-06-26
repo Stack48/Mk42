@@ -2,8 +2,9 @@
 
 import { useActionState } from "react";
 import { useClerk } from "@clerk/nextjs";
-import { CheckCircle, Clock, XCircle, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
 import { updateEntrepriseProfile, type ActionState } from "./_actions";
+import KycBadge from "./KycBadge";
 
 export type ProfilEntrepriseFormProps = {
   email: string;
@@ -15,24 +16,6 @@ export type ProfilEntrepriseFormProps = {
   bic: string | null;
   nomTitulaireIban: string | null;
   statutKyc: "EN_ATTENTE" | "VALIDE" | "REFUSE";
-};
-
-const KYC_BADGE: Record<"VALIDE" | "EN_ATTENTE" | "REFUSE", React.ReactNode> = {
-  VALIDE: (
-    <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
-      <CheckCircle className="w-3 h-3" /> Vérifié
-    </span>
-  ),
-  EN_ATTENTE: (
-    <span className="inline-flex items-center gap-1 text-xs font-medium text-orange-700 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-full">
-      <Clock className="w-3 h-3" /> En attente
-    </span>
-  ),
-  REFUSE: (
-    <span className="inline-flex items-center gap-1 text-xs font-medium text-red-700 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full">
-      <XCircle className="w-3 h-3" /> Refusé
-    </span>
-  ),
 };
 
 export default function ProfilEntrepriseForm({
@@ -98,7 +81,7 @@ export default function ProfilEntrepriseForm({
       <section className="bg-white rounded-xl border border-[#E5E7EB] p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-[#0F1117]">Informations Professionnelles</h2>
-          {KYC_BADGE[statutKyc]}
+          <KycBadge statut={statutKyc} />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">

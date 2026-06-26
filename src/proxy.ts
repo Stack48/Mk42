@@ -23,7 +23,7 @@ export const proxy = clerkMiddleware(async (auth, request) => {
     where: { clerkId: userId },
     select: { emailVerified: true },
   });
-if (!utilisateur) {
+  if (!utilisateur) {
     return NextResponse.redirect(new URL('/inscription', request.url));
   }
   if (!utilisateur.emailVerified) {
@@ -35,11 +35,6 @@ if (!utilisateur) {
       const url = new URL('/dashboard', request.url);
       return NextResponse.redirect(url);
     }
-  }
-
-  if (!userId) {
-    const url = new URL('/connexion', request.url);
-    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();

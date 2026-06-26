@@ -57,7 +57,7 @@ export default function ConnexionPage() {
           </p>
         </div>
 
-        <SignIn forceRedirectUrl="/dashboard" />
+        <SignIn fallbackRedirectUrl="/dashboard" />
       </div>
 
       {/* ── DROITE — Panneau marketing ── */}

@@ -43,7 +43,7 @@ export default async function ProfilPage() {
     },
   });
 
-  if (!utilisateur) redirect("/connexion");
+  if (!utilisateur) redirect("/inscription");
 
   return (
     <div className="max-w-2xl">
@@ -54,7 +54,7 @@ export default async function ProfilPage() {
         </p>
       </div>
 
-      {utilisateur.profil === "entreprise" && utilisateur.entreprise ? (
+      {utilisateur.entreprise ? (
         <ProfilEntrepriseForm
           email={utilisateur.email}
           telephone={utilisateur.entreprise.telephone}
