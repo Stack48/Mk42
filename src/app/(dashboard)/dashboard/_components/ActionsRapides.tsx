@@ -1,10 +1,11 @@
 // src/app/(dashboard)/dashboard/_components/ActionsRapides.tsx
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 interface Action {
   label: string;
   href: string;
-  icon: string; // emoji ou texte court
+  icon: ReactNode;
 }
 
 interface ActionsRapidesProps {

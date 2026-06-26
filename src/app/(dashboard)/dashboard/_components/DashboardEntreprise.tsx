@@ -4,12 +4,18 @@ import { ActionsRapides } from "./ActionsRapides";
 import { ActionsRecentes } from "./ActionsRecentes";
 import { DernieresTransactions } from "./DernieresTransactions";
 import { AffairesRecentesTable } from "./AffairesRecentesTable";
+import IconChartLine from "@/components/icons/IconChartLine";
+import IconFileContract from "@/components/icons/IconFileContract";
+import IconDownload from "@/components/icons/IconDownload";
+import IconUpload from "@/components/icons/IconUpload";
+
+const ICON_CLS = "w-4 h-4 shrink-0";
 
 const ACTIONS_ENTREPRISE = [
-  { label: "Suivre mes gains",        href: "/commissions",  icon: "💰" },
-  { label: "Signer un contrat",       href: "/contrats",     icon: "✍️" },
-  { label: "Télécharger mes factures",href: "/comptabilite", icon: "⬇️" },
-  { label: "Exporter Documents",      href: "/comptabilite", icon: "📤" },
+  { label: "Suivre mes gains",         href: "/commissions",  icon: <IconChartLine className={ICON_CLS} /> },
+  { label: "Signer un contrat",        href: "/contrats",     icon: <IconFileContract className={ICON_CLS} /> },
+  { label: "Télécharger mes factures", href: "/comptabilite", icon: <IconDownload className={ICON_CLS} /> },
+  { label: "Exporter Documents",       href: "/comptabilite", icon: <IconUpload className={ICON_CLS} /> },
 ];
 
 export async function DashboardEntreprise({ entrepriseId }: { entrepriseId: string }) {

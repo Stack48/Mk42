@@ -4,22 +4,31 @@ import { auth } from "@clerk/nextjs/server";
 import { SignOutButton } from "@clerk/nextjs";
 import { prisma } from "@/lib/prisma";
 import IconLogo from "@/components/icons/IconLogo";
+import IconDashboardGrid from "@/components/icons/IconDashboardGrid";
+import IconBuilding from "@/components/icons/IconBuilding";
+import IconBriefClip from "@/components/icons/IconBriefClip";
+import IconChartLine from "@/components/icons/IconChartLine";
+import IconDocList from "@/components/icons/IconDocList";
+import IconFileContract from "@/components/icons/IconFileContract";
+import IconBell from "@/components/icons/IconBell";
+
+const ICON_CLS = "w-4 h-4 shrink-0";
 
 const NAV_ENTREPRISE = [
-  { href: "/dashboard",    label: "Dashboard",         icon: "⊞" },
-  { href: "/clients",      label: "Mes Clients",       icon: "👥" },
-  { href: "/deals",        label: "Deals",             icon: "📋" },
-  { href: "/comptabilite", label: "Comptabilité",      icon: "📊" },
+  { href: "/dashboard",    label: "Dashboard",         icon: <IconDashboardGrid className={ICON_CLS} /> },
+  { href: "/clients",      label: "Mes Clients",       icon: <IconBuilding className={ICON_CLS} /> },
+  { href: "/deals",        label: "Deals",             icon: <IconBriefClip className={ICON_CLS} /> },
+  { href: "/comptabilite", label: "Comptabilité",      icon: <IconChartLine className={ICON_CLS} /> },
 ];
 
 const NAV_APPORTEUR = [
-  { href: "/dashboard",    label: "Dashboard",         icon: "⊞" },
-  { href: "/opportunites", label: "Mes Opportunités",  icon: "🎯" },
-  { href: "/contrats",     label: "Mes Contrats",      icon: "📄" },
+  { href: "/dashboard",    label: "Dashboard",         icon: <IconDashboardGrid className={ICON_CLS} /> },
+  { href: "/opportunites", label: "Mes Opportunités",  icon: <IconDocList className={ICON_CLS} /> },
+  { href: "/contrats",     label: "Mes Contrats",      icon: <IconFileContract className={ICON_CLS} /> },
 ];
 
 const NAV_COMMUN_BAS = [
-  { href: "/notifications", label: "Notifications", icon: "🔔" },
+  { href: "/notifications", label: "Notifications", icon: <IconBell className={ICON_CLS} /> },
 ];
 
 export async function Sidebar() {
@@ -62,7 +71,7 @@ export async function Sidebar() {
             href={item.href}
             className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[#374151] hover:bg-[#F3F4F6] transition-colors font-medium"
           >
-            <span className="text-base">{item.icon}</span>
+            {item.icon}
             {item.label}
           </Link>
         ))}
@@ -74,7 +83,7 @@ export async function Sidebar() {
               href={item.href}
               className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[#374151] hover:bg-[#F3F4F6] transition-colors font-medium"
             >
-              <span className="text-base">{item.icon}</span>
+              {item.icon}
               {item.label}
             </Link>
           ))}

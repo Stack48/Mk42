@@ -4,11 +4,16 @@ import { ActionsRapides } from "./ActionsRapides";
 import { ActionsRecentes } from "./ActionsRecentes";
 import { DernieresTransactions } from "./DernieresTransactions";
 import { AffairesRecentesTable } from "./AffairesRecentesTable";
+import IconPlus from "@/components/icons/IconPlus";
+import IconFileContract from "@/components/icons/IconFileContract";
+import IconChartLine from "@/components/icons/IconChartLine";
+
+const ICON_CLS = "w-4 h-4 shrink-0";
 
 const ACTIONS_APPORTEUR = [
-  { label: "Soumettre une opportunité", href: "/opportunites/nouvelle", icon: "➕" },
-  { label: "Voir mes contrats",         href: "/contrats",              icon: "📄" },
-  { label: "Mes relevés",               href: "/commissions",           icon: "💰" },
+  { label: "Soumettre une opportunité", href: "/opportunites/nouvelle", icon: <IconPlus className={ICON_CLS} /> },
+  { label: "Voir mes contrats",         href: "/contrats",              icon: <IconFileContract className={ICON_CLS} /> },
+  { label: "Mes relevés",               href: "/commissions",           icon: <IconChartLine className={ICON_CLS} /> },
 ];
 
 export async function DashboardApporteur({ apporteurId }: { apporteurId: string }) {
