@@ -28,7 +28,7 @@ export async function createOpportunite(
   if (!userId) return { success: false, error: 'Non authentifié' }
 
   // 2. Retrouver l'apporteur via clerkId
-  const user = await prisma.user.findUnique({
+  const user = await prisma.utilisateur.findUnique({
     where: { clerkId: userId },
   })
   if (!user) {
@@ -36,7 +36,7 @@ export async function createOpportunite(
   }
 
   const apporteur = await prisma.apporteur.findUnique({
-    where: { userId: user.id },
+    where: { utilisateurId: user.id },
   })
   if (!apporteur) {
     return { success: false, error: 'Profil apporteur incomplet — veuillez finaliser votre inscription' }
@@ -73,10 +73,13 @@ export async function createOpportunite(
   })
 
   // 5. Créer l'Opportunite en base
+  // MVP mono-entreprise : une seule Entreprise existe, les apporteurs lui soumettent
+  // toutes leurs opportunités (pas encore de sélection d'entreprise au formulaire).
+  const entreprise = await prisma.entreprise.findFirstOrThrow()
   const opportunite = await prisma.opportunite.create({
     data: {
       apporteurId:   apporteur.id,
-      entrepriseId:  undefined,
+      entrepriseId:  entreprise.id,
       clientId:      client.id,
       statut:        'SOUMISE',
       typeTravaux:   formData.typesTravaux,

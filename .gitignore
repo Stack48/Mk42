@@ -45,6 +45,11 @@ next-env.d.ts
 
 # clerk configuration (can include secrets)
 /.clerk/
+.gstack/
 
 # omc tool state
 .omc/
+
+# Local test artifacts
+test-facture.pdf
+test-recu.pdf

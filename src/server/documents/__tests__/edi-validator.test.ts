@@ -33,6 +33,7 @@ describe("validateDAS2EDI — fichier valide", () => {
     const result = validateDAS2EDI(edi, [validPro]);
     expect(result.isValid).toBe(true);
     expect(result.errors).toHaveLength(0);
+    expect(result.warnings).toHaveLength(0);
   });
 
   it("valide un fichier correct (particulier)", () => {
@@ -40,6 +41,13 @@ describe("validateDAS2EDI — fichier valide", () => {
     const result = validateDAS2EDI(edi, [validParticulier]);
     expect(result.isValid).toBe(true);
     expect(result.errors).toHaveLength(0);
+    expect(result.warnings).toHaveLength(0);
+  });
+
+  it("le compteur UNT correspond exactement au nombre de segments UNH..UNT", () => {
+    const edi = generateDAS2EDI([validPro, validParticulier], 2025, opts);
+    const result = validateDAS2EDI(edi, [validPro, validParticulier]);
+    expect(result.warnings.some((w) => w.includes("UNT segment count"))).toBe(false);
   });
 });
 

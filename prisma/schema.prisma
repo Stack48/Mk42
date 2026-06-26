@@ -1,7 +1,7 @@
 // PRISMA SCHEMA — CommissionPro BTP
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
   output   = "../src/generated/prisma/client"
 }
 
@@ -62,18 +62,28 @@ enum TypeDocument {
   DAS2_EXPORT
 }
 
-// ─── Utilisateurs & Auth ──────────────────────────────────────────────────────
+// ─── Utilisateurs ─────────────────────────────────────────────────────────────
+
+enum ProfilUtilisateur {
+  particulier
+  professionnel
+  entreprise
+}
 
 model Utilisateur {
-  id        String   @id @default(cuid())
-  clerkId   String   @unique
-  email     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String              @id @default(cuid())
+  clerkId        String              @unique
+  email          String              @unique
+  profil         ProfilUtilisateur?
+  emailVerified  Boolean             @default(false)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
 
   entreprise Entreprise?
   apporteur  Apporteur?
 }
+
+// ─── Entreprise ──────────────────────────────────────────────────────────────
 
 model Entreprise {
   id            String      @id @default(cuid())
@@ -83,9 +93,11 @@ model Entreprise {
   raisonSociale        String
   siret                String    @unique
   adresseSiege         String
-  codeApe              String?
-  representantLegal    String
+  email                String
   telephone            String
+  codeApe              String?
+  representantLegal    String?
+  numeroTVA            String?
   iban                 String?
   bic                  String?
   nomTitulaireIban     String?
@@ -100,16 +112,21 @@ model Entreprise {
   chantiers    Chantier[]
   contrats     Contrat[]
   factures     Facture[]
+  recus        Recu[]
   das2         DAS2[]
   documents    Document[]
+
+  @@map("entreprises")
 }
 
-model Apporteur {
-  id            String        @id @default(cuid())
-  utilisateurId String        @unique
-  utilisateur   Utilisateur   @relation(fields: [utilisateurId], references: [id])
+// ─── Apporteur ──────────────────────────────────────────────────────────────
 
-  type      TypeApporteur
+model Apporteur {
+  id            String      @id @default(cuid())
+  utilisateurId String      @unique
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id])
+
+  type      TypeApporteur @default(PARTICULIER)
   nom       String
   prenom    String
   telephone String
@@ -117,12 +134,10 @@ model Apporteur {
   iban      String?
   bic       String?
 
-  // Pro uniquement
   raisonSociale String?
-  siret         String?  @unique
+  siret         String?   @unique
   numeroTva     String?
 
-  // Particulier uniquement (requis DAS2)
   dateNaissance DateTime?
   lieuNaissance String?
 
@@ -131,28 +146,197 @@ model Apporteur {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  opportunites Opportunite[]
-  contrats     Contrat[]
-  factures     Facture[]
-  recus        Recu[]
-  documents    Document[]
+  opportunites  Opportunite[]
+  contrats      Contrat[]
+  commissions   Commission[]
+  kanbanDeals   KanbanDeal[]
+  factures      Facture[]
+  recus         Recu[]
+  documents     Document[]
+  notifications Notification[]
+  trackingLinks TrackingLink[]
+
+  @@map("apporteurs")
 }
 
-// ─── Clients & Opportunités ───────────────────────────────────────────────────
+// ─── Deal ────────────────────────────────────────────────────────────────────
+
+model Deal {
+  id      String @id @default(cuid())
+  titre   String
+  montant Float
+  statut  String @default("DRAFT")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  commission  Commission?
+  contrats    Contrat[]
+  invitations ClientInvitation[]
+
+  @@map("deals")
+}
+
+// ─── Commission ──────────────────────────────────────────────────────────────
+
+model Commission {
+  id           String    @id @default(cuid())
+  montant      Float
+  taux         Float
+  statut       String    @default("PENDING")
+  entrepriseId String
+  paidAt       DateTime?
+  auditTrail   Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dealId      String    @unique
+  deal        Deal      @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  apporteurId String
+  apporteur   Apporteur @relation(fields: [apporteurId], references: [id])
+
+  @@map("commissions")
+}
+
+// ─── Contrat ─────────────────────────────────────────────────────────────────
+
+model Contrat {
+  id           String        @id @default(cuid())
+  statut       StatutContrat @default(GENERE)
+
+  entrepriseId String
+  entreprise   Entreprise @relation(fields: [entrepriseId], references: [id])
+  apporteurId  String
+  apporteur    Apporteur  @relation(fields: [apporteurId], references: [id])
+
+  dealId     String?
+  deal       Deal?     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  chantierId String?   @unique
+  chantier   Chantier? @relation(fields: [chantierId], references: [id], onDelete: SetNull)
+
+  token            String?   @unique
+  tokenExpiresAt   DateTime?
+  templateData     Json?
+  fileOriginalPath String?
+  fileSignedPath   String?
+  validatedAt      DateTime?
+  validatedBy      String?
+  rejectedReason   String?
+
+  numero                String?   @unique
+  urlDocument           String?
+  signatureEntrepriseAt DateTime?
+  signatureApporteurAt  DateTime?
+  horodatage            String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accessLogs ContratAccessLog[]
+
+  @@map("contrats")
+}
+
+model ContratAccessLog {
+  id        String   @id @default(cuid())
+  action    String
+  userId    String?
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  contratId String
+  contrat   Contrat @relation(fields: [contratId], references: [id], onDelete: Cascade)
+
+  @@map("contrat_access_logs")
+}
+
+// ─── Pipeline Kanban ─────────────────────────────────────────────────────────
+
+model KanbanDeal {
+  id               String  @id @default(cuid())
+  titre            String
+  montant          Float
+  mission          String?
+  clientNom        String
+  clientEmail      String?
+  clientTel        String?
+  statut           String  @default("PROSPECT")
+  commissionGelee  Boolean @default(false)
+  position         Int     @default(0)
+  commissionDealId String? @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  apporteurId String
+  apporteur   Apporteur      @relation(fields: [apporteurId], references: [id])
+  documents   DealDocument[]
+  messages    DealMessage[]
+
+  @@map("kanban_deals")
+}
+
+model DealDocument {
+  id         String   @id @default(cuid())
+  nom        String
+  type       String   @default("AUTRE")
+  filePath   String
+  fileSize   Int
+  mimeType   String
+  uploadedBy String
+  createdAt  DateTime @default(now())
+
+  dealId String
+  deal   KanbanDeal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@map("deal_documents")
+}
+
+model DealMessage {
+  id         String  @id @default(cuid())
+  contenu    String
+  auteurId   String
+  auteurType String
+  lu         Boolean @default(false)
+  createdAt  DateTime @default(now())
+
+  dealId String
+  deal   KanbanDeal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@map("deal_messages")
+}
+
+// ─── Notifications ───────────────────────────────────────────────────────────
+
+model Notification {
+  id        String  @id @default(cuid())
+  type      String
+  titre     String
+  message   String
+  lu        Boolean @default(false)
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  userId    String
+  apporteur Apporteur @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+// ─── Client ──────────────────────────────────────────────────────────────────
 
 model Client {
   id               String  @id @default(cuid())
   estProfessionnel Boolean @default(false)
 
-  // Particulier
   nom    String?
   prenom String?
 
-  // Professionnel
   raisonSociale String?
   siret         String?
 
-  // Commun
   telephone       String
   email           String
   adresseSiege    String?
@@ -162,7 +346,81 @@ model Client {
   updatedAt DateTime @updatedAt
 
   opportunites Opportunite[]
+  history      ClientHistory[]
 }
+
+model ClientHistory {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id])
+  action    String
+  createdAt DateTime @default(now())
+
+  @@map("client_history")
+}
+
+// ─── Espace Client ────────────────────────────────────────────────────────────
+
+model ClientInvitation {
+  id             String   @id @default(cuid())
+  email          String
+  nom            String
+  token          String   @unique
+  tokenExpiresAt DateTime
+  statut         String   @default("PENDING")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  dealId     String
+  deal       Deal              @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  evenements ClientEvenement[]
+
+  @@map("client_invitations")
+}
+
+model ClientEvenement {
+  id        String  @id @default(cuid())
+  type      String
+  metadata  Json?
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  invitationId String
+  invitation   ClientInvitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+
+  @@map("client_evenements")
+}
+
+// ─── Tracking ────────────────────────────────────────────────────────────────
+
+model TrackingLink {
+  id          String    @id @default(cuid())
+  token       String    @unique @default(uuid())
+  apporteurId String
+  apporteur   Apporteur @relation(fields: [apporteurId], references: [id])
+  missionId   String
+  statut      String    @default("ACTIF")
+  createdAt   DateTime  @default(now())
+
+  logs TrackingLog[]
+
+  @@map("tracking_links")
+}
+
+model TrackingLog {
+  id             String       @id @default(cuid())
+  trackingLinkId String
+  trackingLink   TrackingLink @relation(fields: [trackingLinkId], references: [id])
+  ipHash         String
+  userAgent      String
+  rfc3161Hash    String?
+  createdAt      DateTime     @default(now())
+
+  @@map("tracking_logs")
+}
+
+// ─── Opportunités ─────────────────────────────────────────────────────────────
 
 model Opportunite {
   id           String            @id @default(cuid())
@@ -182,16 +440,18 @@ model Opportunite {
   updatedAt DateTime @updatedAt
 
   chantier Chantier?
+
+  @@map("opportunites")
 }
 
-// ─── Chantiers & Contrats ─────────────────────────────────────────────────────
+// ─── Chantiers ───────────────────────────────────────────────────────────────
 
 model Chantier {
-  id            String         @id @default(cuid())
-  opportuniteId String         @unique
-  opportunite   Opportunite    @relation(fields: [opportuniteId], references: [id])
+  id            String      @id @default(cuid())
+  opportuniteId String      @unique
+  opportunite   Opportunite @relation(fields: [opportuniteId], references: [id])
   entrepriseId  String
-  entreprise    Entreprise     @relation(fields: [entrepriseId], references: [id])
+  entreprise    Entreprise  @relation(fields: [entrepriseId], references: [id])
 
   reference         String         @unique
   statut            StatutChantier @default(PROSPECTION)
@@ -207,6 +467,8 @@ model Chantier {
   contrat Contrat?
   facture Facture?
   recu    Recu?
+
+  @@map("chantiers")
 }
 
 model Contrat {
@@ -232,13 +494,14 @@ model Contrat {
 // ─── Factures, Reçus & DAS2 ───────────────────────────────────────────────────
 
 model Facture {
-  id           String        @id @default(cuid())
-  chantierId   String        @unique
-  chantier     Chantier      @relation(fields: [chantierId], references: [id])
-  entrepriseId String
-  entreprise   Entreprise    @relation(fields: [entrepriseId], references: [id])
+  id           String     @id @default(cuid())
   apporteurId  String
-  apporteur    Apporteur     @relation(fields: [apporteurId], references: [id])
+  apporteur    Apporteur  @relation(fields: [apporteurId], references: [id])
+  entrepriseId String
+  entreprise   Entreprise @relation(fields: [entrepriseId], references: [id])
+  chantierId   String?    @unique
+  chantier     Chantier?  @relation(fields: [chantierId], references: [id], onDelete: SetNull)
+  commissionId String?
 
   numero         String        @unique
   statut         StatutFacture @default(GENEREE)
@@ -254,14 +517,19 @@ model Facture {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("factures")
 }
 
 model Recu {
-  id          String    @id @default(cuid())
-  chantierId  String    @unique
-  chantier    Chantier  @relation(fields: [chantierId], references: [id])
-  apporteurId String
-  apporteur   Apporteur @relation(fields: [apporteurId], references: [id])
+  id           String     @id @default(cuid())
+  apporteurId  String
+  apporteur    Apporteur  @relation(fields: [apporteurId], references: [id])
+  entrepriseId String
+  entreprise   Entreprise @relation(fields: [entrepriseId], references: [id])
+  chantierId   String?    @unique
+  chantier     Chantier?  @relation(fields: [chantierId], references: [id], onDelete: SetNull)
+  commissionId String?
 
   numero        String    @unique
   montant       Float
@@ -270,6 +538,8 @@ model Recu {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("recus")
 }
 
 model DAS2 {
@@ -278,21 +548,22 @@ model DAS2 {
   entreprise   Entreprise @relation(fields: [entrepriseId], references: [id])
 
   annee                     Int
+  statut                    String    @default("NON_GENERE")
   nomBeneficiaire           String
   adresseBeneficiaire       String
   siretBeneficiaire         String?
   dateNaissanceBeneficiaire DateTime?
   lieuNaissanceBeneficiaire String?
   montantTotal              Float
+  s3Key                     String?
   urlExport                 String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([entrepriseId, annee, nomBeneficiaire])
+  @@map("das2")
 }
-
-// ─── Documents (Coffre-fort) ──────────────────────────────────────────────────
 
 model Document {
   id         String       @id @default(cuid())
@@ -300,6 +571,7 @@ model Document {
   s3Key      String?
   nomFichier String
   horodatage String?
+  metadata   Json?
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
 
@@ -307,4 +579,7 @@ model Document {
   entreprise   Entreprise? @relation(fields: [entrepriseId], references: [id])
   apporteurId  String?
   apporteur    Apporteur?  @relation(fields: [apporteurId], references: [id])
+
+  @@map("documents")
 }
+
