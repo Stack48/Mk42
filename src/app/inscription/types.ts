@@ -17,6 +17,7 @@ export type Step3Data = {
   codeApe: string
   representantLegal: string
   telephone: string
+  tvaIntra: string
 }
 
 export type Step4Data = {

@@ -58,6 +58,10 @@ export async function createOpportunite(
     return { success: false, error: chantierResult.error.issues[0]?.message ?? 'Données chantier invalides' }
   }
 
+  if (!formData.entrepriseId) {
+    return { success: false, error: 'Veuillez sélectionner une entreprise' }
+  }
+
   // 4. Créer le Client en base
   const client = await prisma.client.create({
     data: {
@@ -76,7 +80,7 @@ export async function createOpportunite(
   const opportunite = await prisma.opportunite.create({
     data: {
       apporteurId:   apporteur.id,
-      entrepriseId:  undefined,
+      entrepriseId:  formData.entrepriseId,
       clientId:      client.id,
       statut:        'SOUMISE',
       typeTravaux:   formData.typesTravaux,
@@ -145,6 +149,50 @@ async function sendNotificationEntreprise({
     // Erreur Resend non bloquante — l'opportunite est déjà créée en base
     console.error('[Resend] Échec envoi notification:', err)
   }
+}
+
+// ── Actions entreprise ───────────────────────────────────────────────────────
+
+export async function accepterOpportunite(
+  id: string
+): Promise<{ success: true } | { success: false; error: string }> {
+  const { userId } = await auth()
+  if (!userId) return { success: false, error: 'Non authentifié' }
+
+  const user = await prisma.utilisateur.findUnique({
+    where: { clerkId: userId },
+    include: { entreprise: { select: { id: true } } },
+  })
+  if (!user?.entreprise) return { success: false, error: 'Profil entreprise introuvable' }
+
+  const opportunite = await prisma.opportunite.findUnique({ where: { id } })
+  if (!opportunite) return { success: false, error: 'Opportunité introuvable' }
+  if (opportunite.entrepriseId !== user.entreprise.id) return { success: false, error: 'Non autorisé' }
+  if (opportunite.statut !== 'SOUMISE') return { success: false, error: 'Cette opportunité a déjà été traitée' }
+
+  await prisma.opportunite.update({ where: { id }, data: { statut: 'ACCEPTEE' } })
+  return { success: true }
+}
+
+export async function refuserOpportunite(
+  id: string
+): Promise<{ success: true } | { success: false; error: string }> {
+  const { userId } = await auth()
+  if (!userId) return { success: false, error: 'Non authentifié' }
+
+  const user = await prisma.utilisateur.findUnique({
+    where: { clerkId: userId },
+    include: { entreprise: { select: { id: true } } },
+  })
+  if (!user?.entreprise) return { success: false, error: 'Profil entreprise introuvable' }
+
+  const opportunite = await prisma.opportunite.findUnique({ where: { id } })
+  if (!opportunite) return { success: false, error: 'Opportunité introuvable' }
+  if (opportunite.entrepriseId !== user.entreprise.id) return { success: false, error: 'Non autorisé' }
+  if (opportunite.statut !== 'SOUMISE') return { success: false, error: 'Cette opportunité a déjà été traitée' }
+
+  await prisma.opportunite.update({ where: { id }, data: { statut: 'REFUSEE' } })
+  return { success: true }
 }
 
 function buildEmailHtml(p: {

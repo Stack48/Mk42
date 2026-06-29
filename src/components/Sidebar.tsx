@@ -16,6 +16,7 @@ const ICON_CLS = "w-4 h-4 shrink-0";
 
 const NAV_ENTREPRISE = [
   { href: "/dashboard",    label: "Dashboard",         icon: <IconDashboardGrid className={ICON_CLS} /> },
+  { href: "/opportunites", label: "Mes Opportunités",  icon: <IconDocList className={ICON_CLS} /> },
   { href: "/clients",      label: "Mes Clients",       icon: <IconBuilding className={ICON_CLS} /> },
   { href: "/deals",        label: "Deals",             icon: <IconBriefClip className={ICON_CLS} /> },
   { href: "/comptabilite", label: "Comptabilité",      icon: <IconChartLine className={ICON_CLS} /> },

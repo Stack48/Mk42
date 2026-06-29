@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import type { Step2Data } from '../types'
+import type { Step2Data, ProfilId } from '../types'
 import IconCheck from '@/components/icons/IconCheck'
 import IconChevronLeft from '@/components/icons/IconChevronLeft'
 import IconArrowRight from '@/components/icons/IconArrowRight'
@@ -44,11 +44,12 @@ function EyeIcon({ visible }: { visible: boolean }) {
 
 interface Props {
   initialValues?: Partial<Step2Data>
+  profil?: ProfilId | null
   onNext: (data: Step2Data) => void
   onPrev: () => void
 }
 
-export default function InformationsPersonnelles({ initialValues = {}, onNext, onPrev }: Props) {
+export default function InformationsPersonnelles({ initialValues = {}, profil, onNext, onPrev }: Props) {
   const [form, setForm] = useState<Step2Data>({
     nom:          initialValues.nom          ?? '',
     prenom:       initialValues.prenom       ?? '',
@@ -149,6 +150,7 @@ export default function InformationsPersonnelles({ initialValues = {}, onNext, o
                 />
               </div>
 
+              {profil !== 'entreprise' && (
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="fonction" className={labelCls}>Fonction (Optionnel)</label>
                 <select
@@ -162,24 +164,27 @@ export default function InformationsPersonnelles({ initialValues = {}, onNext, o
                   {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
               </div>
+              )}
 
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="motDePasse" className={labelCls}>Mot de passe <span className="text-[#4648D4] ml-0.5">*</span></label>
-                <div className="relative flex items-center">
-                  <input id="motDePasse" type={showPassword ? 'text' : 'password'} className={`${inputCls} pr-11`} value={form.motDePasse} onChange={set('motDePasse')} required autoComplete="new-password" />
-                  <button type="button" className="absolute right-3 text-[#64748B] hover:text-[#0F172A] p-1 transition-colors" onClick={() => setShowPassword(v => !v)} aria-label={showPassword ? 'Masquer' : 'Afficher'}>
-                    <EyeIcon visible={showPassword} />
-                  </button>
+              <div className="col-span-2 max-md:col-span-1 grid grid-cols-2 gap-x-6 max-md:grid-cols-1">
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="motDePasse" className={labelCls}>Mot de passe <span className="text-[#4648D4] ml-0.5">*</span></label>
+                  <div className="relative flex items-center">
+                    <input id="motDePasse" type={showPassword ? 'text' : 'password'} className={`${inputCls} pr-11`} value={form.motDePasse} onChange={set('motDePasse')} required autoComplete="new-password" />
+                    <button type="button" className="absolute right-3 text-[#64748B] hover:text-[#0F172A] p-1 transition-colors" onClick={() => setShowPassword(v => !v)} aria-label={showPassword ? 'Masquer' : 'Afficher'}>
+                      <EyeIcon visible={showPassword} />
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="confirmation" className={labelCls}>Confirmation Mot de passe <span className="text-[#4648D4] ml-0.5">*</span></label>
-                <div className="relative flex items-center">
-                  <input id="confirmation" type={showConfirm ? 'text' : 'password'} className={`${inputCls} pr-11`} value={form.confirmation} onChange={set('confirmation')} required autoComplete="new-password" />
-                  <button type="button" className="absolute right-3 text-[#64748B] hover:text-[#0F172A] p-1 transition-colors" onClick={() => setShowConfirm(v => !v)} aria-label={showConfirm ? 'Masquer' : 'Afficher'}>
-                    <EyeIcon visible={showConfirm} />
-                  </button>
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="confirmation" className={labelCls}>Confirmation Mot de passe <span className="text-[#4648D4] ml-0.5">*</span></label>
+                  <div className="relative flex items-center">
+                    <input id="confirmation" type={showConfirm ? 'text' : 'password'} className={`${inputCls} pr-11`} value={form.confirmation} onChange={set('confirmation')} required autoComplete="new-password" />
+                    <button type="button" className="absolute right-3 text-[#64748B] hover:text-[#0F172A] p-1 transition-colors" onClick={() => setShowConfirm(v => !v)} aria-label={showConfirm ? 'Masquer' : 'Afficher'}>
+                      <EyeIcon visible={showConfirm} />
+                    </button>
+                  </div>
                 </div>
               </div>
 

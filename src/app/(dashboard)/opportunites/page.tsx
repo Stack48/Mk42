@@ -7,6 +7,7 @@ import styles from './page.module.css'
 import IconPlus from '@/components/icons/IconPlus'
 import IconFile from '@/components/icons/IconFile'
 import IconChevronRight from '@/components/icons/IconChevronRight'
+import OpportunitesEntreprise, { type OppEntrepriseItem } from './_components/OpportunitesEntreprise'
 
 export const metadata: Metadata = {
   title: 'Opus — Mes opportunités',
@@ -42,6 +43,42 @@ export default async function OpportunitesPage() {
   const user = await prisma.utilisateur.findUnique({
     where: { clerkId: userId },
   })
+
+  const entreprise = user
+    ? await prisma.entreprise.findUnique({ where: { utilisateurId: user.id } })
+    : null
+
+  if (entreprise) {
+    const opps = await prisma.opportunite.findMany({
+      where: { entrepriseId: entreprise.id },
+      include: {
+        client: {
+          select: {
+            nom: true,
+            prenom: true,
+            raisonSociale: true,
+            estProfessionnel: true,
+            adresseChantier: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    const items: OppEntrepriseItem[] = opps.map(o => ({
+      id: o.id,
+      statut: o.statut,
+      typeTravaux: o.typeTravaux,
+      createdAt: o.createdAt,
+      client: o.client,
+    }))
+
+    return (
+      <div className="flex-1 p-12">
+        <OpportunitesEntreprise opportunites={items} />
+      </div>
+    )
+  }
 
   const apporteur = user
     ? await prisma.apporteur.findUnique({ where: { utilisateurId: user.id } })
