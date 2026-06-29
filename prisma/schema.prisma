@@ -471,26 +471,6 @@ model Chantier {
   @@map("chantiers")
 }
 
-model Contrat {
-  id           String        @id @default(cuid())
-  chantierId   String        @unique
-  chantier     Chantier      @relation(fields: [chantierId], references: [id])
-  entrepriseId String
-  entreprise   Entreprise    @relation(fields: [entrepriseId], references: [id])
-  apporteurId  String
-  apporteur    Apporteur     @relation(fields: [apporteurId], references: [id])
-
-  numero                String        @unique
-  statut                StatutContrat @default(GENERE)
-  urlDocument           String?
-  signatureEntrepriseAt DateTime?
-  signatureApporteurAt  DateTime?
-  horodatage            String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 // ─── Factures, Reçus & DAS2 ───────────────────────────────────────────────────
 
 model Facture {
