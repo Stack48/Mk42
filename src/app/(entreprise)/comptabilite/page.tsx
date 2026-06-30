@@ -17,7 +17,7 @@ export default async function ComptabilitePage() {
     prisma.recu.findMany({
       where: { entrepriseId },
       include: { apporteur: true },
-      orderBy: { dateEmission: "desc" },
+      orderBy: { dateVersement: "desc" },
     }),
     prisma.dAS2.findMany({
       where: { entrepriseId },
@@ -33,8 +33,8 @@ export default async function ComptabilitePage() {
       .filter((f) => f.dateEmission.getFullYear() === anneeActuelle && f.statut === "PAYEE")
       .reduce((s, f) => s + f.montantHT, 0) +
     recus
-      .filter((r) => r.dateEmission.getFullYear() === anneeActuelle && r.statut === "PAYE")
-      .reduce((s, r) => s + r.montantBrut, 0);
+      .filter((r) => r.dateVersement && r.dateVersement.getFullYear() === anneeActuelle)
+      .reduce((s, r) => s + r.montant, 0);
 
   return (
     <main className={styles.container}>
@@ -51,7 +51,7 @@ export default async function ComptabilitePage() {
           type="facture"
           items={factures.map((f) => ({
             id: f.id,
-            reference: f.numFacture,
+            reference: f.numero,
             apporteur: f.apporteur.nom,
             montant: f.montantTTC,
             date: f.dateEmission.toISOString(),
@@ -68,11 +68,11 @@ export default async function ComptabilitePage() {
           type="recu"
           items={recus.map((r) => ({
             id: r.id,
-            reference: r.numRecu,
+            reference: r.numero,
             apporteur: r.apporteur.nom,
-            montant: r.montantBrut,
-            date: r.dateEmission.toISOString(),
-            statut: r.statut,
+            montant: r.montant,
+            date: (r.dateVersement ?? r.createdAt).toISOString(),
+            statut: r.dateVersement ? "PAYE" : "EN_ATTENTE",
           }))}
         />
       </section>

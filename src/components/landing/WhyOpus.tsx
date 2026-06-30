@@ -1,26 +1,44 @@
 'use client'
+import { motion } from 'framer-motion'
+import {
+  clipRevealVariants,
+  fadeUpVariants,
+  staggerContainerVariants,
+  staggerItemVariants,
+  EASE_POWER3,
+  VIEWPORT,
+} from '@/lib/motion'
 
 function MiniDash({ title, stats }: { title: string, stats: { label: string, value: string }[] }) {
   return (
-    <div className="bg-white rounded-[10px] border border-[#E5E7EB] p-3.5 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-      <p className="text-[11px] font-semibold text-[#111111] mb-2.5">{title}</p>
-      <div className="flex gap-2">
+    <motion.div
+      variants={staggerItemVariants}
+      whileHover={{
+        y: -5,
+        boxShadow: '0 16px 40px rgba(70,72,212,0.12)',
+        borderColor: '#4648D4',
+        transition: { duration: 0.28, ease: EASE_POWER3 },
+      }}
+      className="bg-white rounded-[10px] border border-gray-200 p-3.5 shadow-[0_2px_8px_rgba(0,0,0,0.05)] will-change-transform h-full min-h-[180px] flex flex-col"
+    >
+      <p className="text-[11px] font-semibold text-opus-ink mb-2.5 break-words">{title}</p>
+      <div className="flex gap-2 flex-wrap">
         {stats.map(s => (
-          <div key={s.label} className="flex-1 bg-[#F9FAFB] rounded-[6px] px-2.5 py-2 border border-[#E5E7EB]">
-            <p className="text-[15px] font-extrabold text-[#4648D4]">{s.value}</p>
-            <p className="text-[9px] text-[#6B7280] mt-0.5 leading-[1.3]">{s.label}</p>
+          <div key={s.label} className="flex-1 min-w-[80px] bg-gray-50 rounded-md px-2.5 py-2 border border-gray-200">
+            <p className="text-[15px] font-extrabold text-opus-primary break-words">{s.value}</p>
+            <p className="text-[9px] text-gray-500 mt-0.5 leading-snug break-words">{s.label}</p>
           </div>
         ))}
       </div>
       <div className="mt-2.5">
         {['Dashboard', 'Mes Opportunités', 'Factures'].map((item, i) => (
-          <div key={item} className={`flex items-center gap-1.5 py-[5px] ${i < 2 ? 'border-b border-[#F3F4F6]' : ''}`}>
-            <span className={`w-[5px] h-[5px] rounded-full shrink-0 ${i === 0 ? 'bg-[#4648D4]' : 'bg-[#D1D5DB]'}`} />
-            <span className={`text-[10px] ${i === 0 ? 'text-[#111111]' : 'text-[#6B7280]'}`}>{item}</span>
+          <div key={item} className={`flex items-center gap-1.5 py-[5px] ${i < 2 ? 'border-b border-gray-100' : ''}`}>
+            <span className={`w-[5px] h-[5px] rounded-full shrink-0 ${i === 0 ? 'bg-opus-primary' : 'bg-gray-300'}`} />
+            <span className={`text-[10px] ${i === 0 ? 'text-opus-ink' : 'text-gray-500'}`}>{item}</span>
           </div>
         ))}
       </div>
-    </div>
+    </motion.div>
   )
 }
 
@@ -34,29 +52,57 @@ const DASHBOARDS = [
 
 export default function WhyOpus() {
   return (
-    <section id="temoignages" className="bg-white py-[clamp(60px,7vw,90px)] px-6">
+    <section id="temoignages" className="bg-white py-[clamp(60px,7vw,90px)] px-4 sm:px-6 overflow-x-hidden">
       <div className="max-w-[1100px] mx-auto">
 
         <div className="text-center mb-12">
-          <h2 className="text-[clamp(24px,3.5vw,38px)] font-extrabold text-[#111111] tracking-[-0.02em] mb-3">
-            Pourquoi vous allez adorer utiliser OPUS
-          </h2>
-          <p className="text-[15px] text-[#6B7280] max-w-[520px] mx-auto leading-[1.6]">
-            Parce que gérer son entreprise ne devrait pas ressembler à un contrôle fiscal. Parce que votre entreprise ne devrait pas se limiter à un contrôle fiscal.
-          </p>
+          <div className="overflow-hidden mb-3">
+            <motion.h2
+              variants={clipRevealVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={VIEWPORT}
+              className="text-[clamp(24px,3.5vw,38px)] font-extrabold text-opus-ink tracking-[-0.02em] m-0"
+            >
+              Pourquoi vous allez adorer utiliser OPUS
+            </motion.h2>
+          </div>
+          <motion.p
+            variants={fadeUpVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={VIEWPORT}
+            transition={{ delay: 0.15 }}
+            className="text-[15px] text-gray-500 max-w-[520px] mx-auto leading-relaxed"
+          >
+            Parce que gérer son entreprise ne devrait pas ressembler à un contrôle fiscal.
+            Parce que votre entreprise ne devrait pas se limiter à un contrôle fiscal.
+          </motion.p>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mb-4 max-md:grid-cols-1">
+        <motion.div
+          variants={staggerContainerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={VIEWPORT}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4 items-stretch"
+        >
           {DASHBOARDS.slice(0, 3).map((d, i) => (
             <MiniDash key={i} title={d.title} stats={d.stats} />
           ))}
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-2 gap-4 max-md:grid-cols-1">
+        <motion.div
+          variants={staggerContainerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={VIEWPORT}
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch"
+        >
           {DASHBOARDS.slice(3).map((d, i) => (
             <MiniDash key={i} title={d.title} stats={d.stats} />
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   )

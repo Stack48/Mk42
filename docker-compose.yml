@@ -33,7 +33,7 @@ services:
 
         # Configurer le rôle et les droits sur la base (connexion via postgres)
         psql -v ON_ERROR_STOP=1 -U "$${POSTGRES_USER:-postgres}" -d postgres \
-          -c "ALTER ROLE mk42 WITH LOGIN CREATEDB;" \
+          -c "ALTER ROLE mk42 WITH LOGIN CREATEDB PASSWORD 'mk42password';" \
           -c "ALTER DATABASE mk42 OWNER TO mk42;" \
           -c "GRANT ALL PRIVILEGES ON DATABASE mk42 TO mk42;"
 
@@ -48,7 +48,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'psql -U postgres -d mk42 -tAc "SELECT 1 FROM pg_roles WHERE rolname=''mk42''" | grep -q 1']
+      test:
+        [
+          'CMD-SHELL',
+          'psql -U postgres -d mk42 -tAc "SELECT 1 FROM pg_roles WHERE rolname=''mk42''" | grep -q 1',
+        ]
       interval: 5s
       timeout: 5s
       retries: 15
@@ -69,9 +73,49 @@ services:
     environment:
       # Écrase .env.local pour utiliser le hostname du container postgres
       DATABASE_URL: 'postgresql://mk42:mk42password@postgres:5432/mk42?schema=public'
+      # MinIO local en remplacement d'AWS S3 (credentials .env.local sont des
+      # placeholders) : endpoint interne pour les PUT (réseau Docker), endpoint
+      # public pour les liens signés ouverts par le navigateur sur l'hôte.
+      S3_ENDPOINT_INTERNAL: 'http://minio:9000'
+      S3_ENDPOINT_PUBLIC: 'http://localhost:9000'
+      S3_ACCESS_KEY_ID: 'mk42minio'
+      S3_SECRET_ACCESS_KEY: 'mk42miniosecret'
     depends_on:
       postgres:
         condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+
+  minio:
+    image: minio/minio:latest
+    container_name: mk42_minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: mk42minio
+      MINIO_ROOT_PASSWORD: mk42miniosecret
+    command: server /data --console-address ":9001"
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: mk42_minio_init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 mk42minio mk42miniosecret &&
+      mc mb --ignore-existing local/opus-btp-documents
+      "
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -92,3 +136,4 @@ services:
 volumes:
   postgres_data:
   mk42_node_modules:
+  minio_data:

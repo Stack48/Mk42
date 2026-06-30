@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { exportDAS2Action } from "../_actions";
+import { exportDocumentAction } from "../_actions";
 import styles from "./DAS2ExportButton.module.css";
 
 interface Props {
@@ -24,11 +24,11 @@ export function DAS2ExportButton({ annee }: Props) {
     setResult(null);
 
     try {
-      const res = await exportDAS2Action(annee);
+      const res = await exportDocumentAction({ type: "DAS2", annee });
       setResult({
         lienSigne: res.lienSigne,
         dateExpiration: res.dateExpiration,
-        warnings: res.warnings,
+        warnings: res.warnings ?? [],
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur lors de la génération");
