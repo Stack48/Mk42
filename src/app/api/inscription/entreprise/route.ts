@@ -12,6 +12,7 @@ const schema = z.object({
   codeApe: z.string().optional(),
   representantLegal: z.string().min(1),
   telephone: z.string().min(1),
+  tvaIntra: z.string().optional(),
 });
 
 export async function POST(req: Request) {
@@ -25,7 +26,7 @@ export async function POST(req: Request) {
       return Response.json({ error: parsed.error.flatten() }, { status: 422 });
     }
 
-    const { raisonSociale, siret, adresseSiege, codeApe, representantLegal, telephone } = parsed.data;
+    const { raisonSociale, siret, adresseSiege, codeApe, representantLegal, telephone, tvaIntra } = parsed.data;
 
     let utilisateur = await prisma.utilisateur.findUnique({ where: { clerkId: userId } });
 
@@ -52,6 +53,8 @@ export async function POST(req: Request) {
         codeApe,
         representantLegal,
         telephone,
+        numeroTVA: tvaIntra || undefined,
+        email: utilisateur.email,
       },
     });
 

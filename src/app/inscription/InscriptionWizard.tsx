@@ -65,6 +65,7 @@ export default function InscriptionWizard() {
       return (
         <InformationsPersonnelles
           initialValues={formData.step2}
+          profil={formData.profil}
           onNext={(data: Step2Data) => { updateStep('step2', data); goNext() }}
           onPrev={goPrev}
         />
@@ -93,6 +94,7 @@ export default function InscriptionWizard() {
       return (
         <VerificationIdentite
           initialValues={formData.step5}
+          profil={formData.profil}
           onNext={(data: Step5Data) => { updateStep('step5', data); goNext() }}
           onPrev={goPrev}
         />

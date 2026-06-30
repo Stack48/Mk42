@@ -33,44 +33,44 @@ export default function ConnexionPage() {
     <div className="flex min-h-screen">
 
       {/* ── GAUCHE — Formulaire Clerk ── */}
-      <div className="flex-none w-full lg:max-w-[520px] flex flex-col justify-center px-10 py-12 bg-[var(--opus-bg)]">
+      <div className="flex-none w-full lg:max-w-130 flex flex-col justify-center px-10 py-12 bg-opus-bg">
         <div className="mb-10">
           <Link href="/" className="inline-flex items-center gap-2 no-underline">
-            <span className="w-[30px] h-[30px] rounded-[7px] bg-[var(--opus-primary)] flex items-center justify-center">
+            <span className="w-7.5 h-7.5 rounded-[7px] bg-opus-primary flex items-center justify-center">
               <IconLogo />
             </span>
-            <span className="font-bold text-[17px] text-[var(--opus-ink)] tracking-[0.01em]">
+            <span className="font-bold text-[17px] text-opus-ink tracking-[0.01em]">
               OPUS
             </span>
           </Link>
         </div>
 
         <div className="mb-7">
-          <h1 className="text-[26px] font-bold text-[var(--opus-ink)] tracking-[-0.3px] mb-2">
+          <h1 className="text-[26px] font-bold text-opus-ink tracking-[-0.3px] mb-2">
             Connexion
           </h1>
-          <p className="text-[15px] text-[var(--opus-muted)] leading-relaxed">
+          <p className="text-[15px] text-opus-muted leading-relaxed">
             Pas encore de compte ?{' '}
-            <Link href="/inscription" className="text-[var(--opus-primary)] font-medium no-underline">
+            <Link href="/inscription" className="text-opus-primary font-medium no-underline">
               S&apos;inscrire
             </Link>
           </p>
         </div>
 
-        <SignIn />
+        <SignIn fallbackRedirectUrl="/dashboard" />
       </div>
 
       {/* ── DROITE — Panneau marketing ── */}
       <div className="hidden lg:flex flex-1 flex-col justify-center px-14 py-16 bg-[linear-gradient(145deg,#3533B0_0%,#4648D4_45%,#6669E0_100%)] relative overflow-hidden">
         <span
           aria-hidden="true"
-          className="absolute bottom-[-40px] right-[-20px] text-[220px] font-black text-white/5 tracking-[-8px] leading-none pointer-events-none select-none"
+          className="absolute -bottom-10 -right-5 text-[220px] font-black text-white/5 tracking-[-8px] leading-none pointer-events-none select-none"
         >
           OPUS
         </span>
 
-        <div className="relative z-10 max-w-[440px]">
-          <span className="inline-flex items-center gap-1.5 px-3 py-[5px] rounded-full bg-white/10 border border-white/20 text-xs font-medium text-white/85 tracking-[0.04em] mb-8">
+        <div className="relative z-10 max-w-110">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.25 rounded-full bg-white/10 border border-white/20 text-xs font-medium text-white/85 tracking-[0.04em] mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-[#7DD3FC] shrink-0" />
             Essai gratuit · Sans carte bancaire
           </span>

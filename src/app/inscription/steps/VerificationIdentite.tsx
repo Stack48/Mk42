@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import Link from 'next/link'
-import type { Step5Data } from '../types'
+import type { Step5Data, ProfilId } from '../types'
 import IconCheck from '@/components/icons/IconCheck'
 import IconChevronLeft from '@/components/icons/IconChevronLeft'
 import IconArrowRight from '@/components/icons/IconArrowRight'
@@ -86,11 +86,12 @@ function StepSidebar({ steps }: { steps: readonly SidebarStep[] }) {
 
 interface Props {
   initialValues?: Partial<Step5Data>
+  profil?: ProfilId | null
   onNext: (data: Step5Data) => void
   onPrev: () => void
 }
 
-export default function VerificationIdentite({ initialValues = {}, onNext, onPrev }: Props) {
+export default function VerificationIdentite({ initialValues = {}, profil, onNext, onPrev }: Props) {
   const [docType,    setDocType]    = useState(initialValues.docType  ?? DOC_TYPES[0])
   const [docNum,     setDocNum]     = useState(initialValues.docNum   ?? '')
   const [kbisFile,   setKbisFile]   = useState<File | null>(initialValues.kbisFile ?? null)
@@ -172,6 +173,7 @@ export default function VerificationIdentite({ initialValues = {}, onNext, onPre
                 </div>
               </div>
 
+              {profil !== 'entreprise' && (<>
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="docType" className={labelCls}>Type de document d&apos;identité <span className="text-[#4648D4] ml-0.5">*</span></label>
                 <select id="docType"
@@ -208,6 +210,7 @@ export default function VerificationIdentite({ initialValues = {}, onNext, onPre
                   {idError && <p className="text-xs text-red-600 font-medium mt-1">{idError}</p>}
                 </div>
               </div>
+              </>)}
 
             </div>
 

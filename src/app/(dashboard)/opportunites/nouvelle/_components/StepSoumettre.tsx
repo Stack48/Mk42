@@ -45,6 +45,21 @@ export default function StepSoumettre({ formData, onPrev }: Props) {
 
   return (
     <div className={styles.wrap}>
+      {/* Card entreprise */}
+      <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 mb-5">
+        <p className="text-[11px] font-bold text-[#64748B] uppercase tracking-widest mb-4">L'entreprise</p>
+        <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[11px] font-medium text-[#64748B] uppercase tracking-wide">Raison sociale</span>
+            <span className="text-sm font-medium text-[#0F172A]">{formData.entrepriseNom || '—'}</span>
+          </div>
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[11px] font-medium text-[#64748B] uppercase tracking-wide">SIRET</span>
+            <span className="text-sm font-medium text-[#0F172A] font-mono">{formData.entrepriseSiret || '—'}</span>
+          </div>
+        </div>
+      </div>
+
       {/* Recap */}
       <div className={styles.recapGrid}>
         {/* Card client */}

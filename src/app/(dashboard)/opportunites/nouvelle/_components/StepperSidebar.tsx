@@ -4,8 +4,9 @@ import IconCheck from '@/components/icons/IconCheck'
 const STEPS = [
   { num: 1, label: 'Vos informations',          hint: '(pré-rempli)' },
   { num: 2, label: 'Informations du client',     hint: null },
-  { num: 3, label: 'Détails du chantier',        hint: null },
-  { num: 4, label: "Soumettre l'opportunité",    hint: null },
+  { num: 3, label: "Choisir l'entreprise",       hint: null },
+  { num: 4, label: 'Détails du chantier',        hint: null },
+  { num: 5, label: "Soumettre l'opportunité",    hint: null },
 ]
 
 interface Props {

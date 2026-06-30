@@ -127,6 +127,7 @@ export default function VerificationSiret({ initialValues = {}, onNext, onPrev }
     codeApe:           initialValues.codeApe           ?? '',
     representantLegal: initialValues.representantLegal ?? '',
     telephone:         initialValues.telephone         ?? '',
+    tvaIntra:          initialValues.tvaIntra          ?? '',
   })
 
   const set = (key: keyof typeof form) =>
@@ -152,6 +153,7 @@ export default function VerificationSiret({ initialValues = {}, onNext, onPrev }
       codeApe:           form.codeApe,
       representantLegal: form.representantLegal,
       telephone:         form.telephone,
+      tvaIntra:          form.tvaIntra,
     })
   }
 
@@ -182,7 +184,7 @@ export default function VerificationSiret({ initialValues = {}, onNext, onPrev }
 
           <div className="bg-white border-[1.5px] border-[#E2E8F0] rounded-[14px] p-8 anim-fade-up anim-d200">
 
-            <div className="flex gap-3 items-end mb-3.5 max-md:flex-col max-md:items-stretch">
+            <div className="flex gap-3 items-end mb-4 max-md:flex-col max-md:items-stretch">
               <div className="flex-1 flex flex-col gap-1.5">
                 <label htmlFor="siret" className={labelCls}>Numéro SIRET <span className="text-[#4648D4] ml-0.5">*</span></label>
                 <input id="siret" type="text" className={inputCls} value={siret}
@@ -195,6 +197,11 @@ export default function VerificationSiret({ initialValues = {}, onNext, onPrev }
                 {loading && <span className="w-3.5 h-3.5 rounded-full border-2 border-white/40 border-t-white anim-spin-slow" />}
                 {loading ? 'Vérification…' : 'Vérifier'}
               </button>
+            </div>
+
+            <div className="flex flex-col gap-1.5 mb-3.5">
+              <label htmlFor="tvaIntra" className={labelCls}>N° TVA Intracommunautaire</label>
+              <input id="tvaIntra" type="text" className={inputCls} value={form.tvaIntra} onChange={set('tvaIntra')} placeholder="Ex : FR12345678901" autoComplete="off" />
             </div>
 
             {erreur && <p className="text-[13px] text-red-600 mb-3.5">{erreur}</p>}

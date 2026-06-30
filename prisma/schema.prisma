@@ -426,8 +426,8 @@ model Opportunite {
   id           String            @id @default(cuid())
   apporteurId  String
   apporteur    Apporteur         @relation(fields: [apporteurId], references: [id])
-  entrepriseId String
-  entreprise   Entreprise        @relation(fields: [entrepriseId], references: [id])
+  entrepriseId String?
+  entreprise   Entreprise?       @relation(fields: [entrepriseId], references: [id])
   clientId     String
   client       Client            @relation(fields: [clientId], references: [id])
 
