@@ -1,38 +1,35 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { motion } from 'framer-motion'
+import { fadeUpVariants, VIEWPORT } from '@/lib/motion'
 
 interface Props {
   children: React.ReactNode
   className?: string
-  delay?: 0 | 1 | 2 | 3
+  delay?: number
+  amount?: number
 }
 
-export default function ScrollReveal({ children, className = '', delay = 0 }: Props) {
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.classList.add('revealed')
-          observer.unobserve(el)
-        }
+export default function ScrollReveal({ children, className = '', delay = 0, amount = 0.08 }: Props) {
+  const variants = {
+    hidden: fadeUpVariants.hidden,
+    visible: {
+      ...fadeUpVariants.visible,
+      transition: {
+        ...(fadeUpVariants.visible as { transition: object }).transition,
+        delay,
       },
-      { threshold: 0.08 }
-    )
-
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
-
-  const delayClass = delay > 0 ? ` scroll-reveal-delay-${delay}` : ''
+    },
+  }
 
   return (
-    <div ref={ref} className={`scroll-reveal${delayClass} ${className}`}>
+    <motion.div
+      className={className}
+      variants={variants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ ...VIEWPORT, amount }}
+    >
       {children}
-    </div>
+    </motion.div>
   )
 }
