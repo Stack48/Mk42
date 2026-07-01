@@ -42,30 +42,27 @@ type InvitationEmailPayload = {
 export async function sendInvitationEmail(payload: InvitationEmailPayload): Promise<void> {
   const { email, nom, lienInvitation, dealTitre } = payload;
 
-  // L'objet "emailData" représente ce qu'on enverrait à l'API Resend.
-  // On le logge ici pour pouvoir tester sans service réel.
-  const emailData = {
-    from: "OPUS BTP <noreply@opus-btp.fr>",   // expéditeur (doit être vérifié sur Resend)
+  const resendKey = process.env.RESEND_API_KEY;
+
+  if (!resendKey || resendKey.startsWith("re_...")) {
+    // Pas de clé configurée → simulation console
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("[SIMULATION EMAIL] Invitation client");
+    console.log(`   À    : ${email}`);
+    console.log(`   Lien : ${lienInvitation}`);
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    return;
+  }
+
+  const { Resend } = await import("resend");
+  const resend = new Resend(resendKey);
+
+  await resend.emails.send({
+    from: process.env.EMAIL_FROM ?? "OPUS BTP <onboarding@resend.dev>",
     to: email,
     subject: `Votre dossier ${dealTitre} — Accès à votre espace client`,
     html: buildInvitationHtml({ nom, lienInvitation, dealTitre }),
-  };
-
-  // ── SIMULATION (remplacer par resend.emails.send(emailData) en production) ──
-  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-  console.log("📧 [SIMULATION EMAIL] Invitation client");
-  console.log(`   De      : ${emailData.from}`);
-  console.log(`   À       : ${emailData.to}`);
-  console.log(`   Sujet   : ${emailData.subject}`);
-  console.log(`   Lien    : ${lienInvitation}`);
-  console.log("   Corps   :");
-  console.log(`   Bonjour ${nom},`);
-  console.log(`   Votre dossier "${dealTitre}" est disponible.`);
-  console.log(`   Accédez à votre espace : ${lienInvitation}`);
-  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
-  // Simuler une latence réseau réaliste (comme le ferait un vrai appel API)
-  await Promise.resolve();
+  });
 }
 
 // ─── TEMPLATE HTML ────────────────────────────────────────────────────────────
