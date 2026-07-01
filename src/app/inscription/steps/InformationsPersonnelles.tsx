@@ -45,11 +45,12 @@ function EyeIcon({ visible }: { visible: boolean }) {
 interface Props {
   initialValues?: Partial<Step2Data>
   profil?: ProfilId | null
+  isSignedIn?: boolean
   onNext: (data: Step2Data) => void
   onPrev: () => void
 }
 
-export default function InformationsPersonnelles({ initialValues = {}, profil, onNext, onPrev }: Props) {
+export default function InformationsPersonnelles({ initialValues = {}, profil, isSignedIn = false, onNext, onPrev }: Props) {
   const [form, setForm] = useState<Step2Data>({
     nom:          initialValues.nom          ?? '',
     prenom:       initialValues.prenom       ?? '',
@@ -69,17 +70,19 @@ export default function InformationsPersonnelles({ initialValues = {}, profil, o
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!EMAIL_REGEX.test(form.email)) {
-      setErreur('Veuillez entrer une adresse email valide (ex : nom@domaine.com).')
-      return
-    }
-    if (form.motDePasse !== form.confirmation) {
-      setErreur('Les mots de passe ne correspondent pas.')
-      return
-    }
-    if (!PASSWORD_REGEX.test(form.motDePasse)) {
-      setErreur('Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.')
-      return
+    if (!isSignedIn) {
+      if (!EMAIL_REGEX.test(form.email)) {
+        setErreur('Veuillez entrer une adresse email valide (ex : nom@domaine.com).')
+        return
+      }
+      if (form.motDePasse !== form.confirmation) {
+        setErreur('Les mots de passe ne correspondent pas.')
+        return
+      }
+      if (!PASSWORD_REGEX.test(form.motDePasse)) {
+        setErreur('Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.')
+        return
+      }
     }
     setErreur('')
     onNext(form)
@@ -127,10 +130,12 @@ export default function InformationsPersonnelles({ initialValues = {}, profil, o
                 <input id="prenom" type="text" className={inputCls} value={form.prenom} onChange={set('prenom')} required autoComplete="given-name" />
               </div>
 
+              {!isSignedIn && (
               <div className="flex flex-col gap-1.5 col-span-2 max-md:col-span-1">
                 <label htmlFor="email" className={labelCls}>Email professionnel <span className="text-[#4648D4] ml-0.5">*</span></label>
                 <input id="email" type="email" className={inputCls} value={form.email} onChange={set('email')} required autoComplete="email" />
               </div>
+              )}
 
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="telephone" className={labelCls}>Numéro de téléphone <span className="text-[#4648D4] ml-0.5">*</span></label>
@@ -166,6 +171,7 @@ export default function InformationsPersonnelles({ initialValues = {}, profil, o
               </div>
               )}
 
+              {!isSignedIn && (
               <div className="col-span-2 max-md:col-span-1 grid grid-cols-2 gap-x-6 max-md:grid-cols-1">
                 <div className="flex flex-col gap-1.5">
                   <label htmlFor="motDePasse" className={labelCls}>Mot de passe <span className="text-[#4648D4] ml-0.5">*</span></label>
@@ -187,6 +193,7 @@ export default function InformationsPersonnelles({ initialValues = {}, profil, o
                   </div>
                 </div>
               </div>
+              )}
 
             </div>
 

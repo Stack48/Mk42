@@ -22,3 +22,20 @@ export async function updateEntrepriseProfile(
 
   return { success: true };
 }
+
+export async function updateEntrepriseImages(
+  entrepriseId: string,
+  data: { logoUrl?: string; bannerUrl?: string }
+): Promise<{ success?: boolean; error?: string }> {
+  if (!data.logoUrl && !data.bannerUrl) return { error: "Aucune image fournie" };
+
+  await prisma.entreprise.update({
+    where: { id: entrepriseId },
+    data: {
+      ...(data.logoUrl !== undefined ? { logoUrl: data.logoUrl } : {}),
+      ...(data.bannerUrl !== undefined ? { bannerUrl: data.bannerUrl } : {}),
+    },
+  });
+
+  return { success: true };
+}

@@ -19,7 +19,7 @@ export default async function DashboardPage() {
     },
   });
 
-  if (!utilisateur) redirect("/connexion");
+  if (!utilisateur) redirect("/inscription");
 
   if (utilisateur.profil === "entreprise" && utilisateur.entreprise) {
     return <DashboardEntreprise entrepriseId={utilisateur.entreprise.id} />;

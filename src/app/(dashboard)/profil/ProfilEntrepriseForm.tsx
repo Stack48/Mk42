@@ -1,9 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState, useRef, useTransition } from "react";
 import { useClerk } from "@clerk/nextjs";
 import { Lock } from "lucide-react";
-import { updateEntrepriseProfile, type ActionState } from "./_actions";
+import { updateEntrepriseProfile, updateEntrepriseImages, type ActionState } from "./_actions";
 import KycBadge from "./KycBadge";
 
 export type ProfilEntrepriseFormProps = {
@@ -16,7 +16,103 @@ export type ProfilEntrepriseFormProps = {
   bic: string | null;
   nomTitulaireIban: string | null;
   statutKyc: "EN_ATTENTE" | "VALIDE" | "REFUSE";
+  logoUrl: string | null;
+  bannerUrl: string | null;
 };
+
+async function uploadImage(file: File, kind: "logo" | "banner"): Promise<string> {
+  const res = await fetch("/api/entreprise/images/presigned-url", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ contentType: file.type, kind }),
+  });
+  if (!res.ok) throw new Error("Impossible d'obtenir l'URL d'upload");
+  const { presignedUrl, publicUrl } = await res.json();
+
+  const upload = await fetch(presignedUrl, {
+    method: "PUT",
+    body: file,
+    headers: { "Content-Type": file.type },
+  });
+  if (!upload.ok) throw new Error("Échec de l'upload");
+
+  return publicUrl as string;
+}
+
+function ImageUploadField({
+  label,
+  kind,
+  currentUrl,
+  onUploaded,
+}: {
+  label: string;
+  kind: "logo" | "banner";
+  currentUrl: string | null;
+  onUploaded: (url: string) => void;
+}) {
+  const [preview, setPreview] = useState<string | null>(currentUrl);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setError("Format non supporté (JPEG, PNG ou WebP uniquement)");
+      return;
+    }
+
+    setError(null);
+    setUploading(true);
+    try {
+      const url = await uploadImage(file, kind);
+      setPreview(url);
+      onUploaded(url);
+    } catch {
+      setError("Échec de l'upload, veuillez réessayer.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <div className="space-y-2">
+      <label className="text-sm font-medium text-[#374151]">{label}</label>
+      <div
+        className="relative flex items-center justify-center border-2 border-dashed border-[#E5E7EB] rounded-lg cursor-pointer hover:border-[#4648D4] transition-colors overflow-hidden"
+        style={{ height: kind === "banner" ? 100 : 72 }}
+        onClick={() => inputRef.current?.click()}
+      >
+        {preview ? (
+          <img
+            src={preview}
+            alt={label}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <span className="text-xs text-[#9CA3AF]">
+            {uploading ? "Upload en cours…" : "Cliquer pour choisir une image"}
+          </span>
+        )}
+        {uploading && (
+          <div className="absolute inset-0 bg-white/70 flex items-center justify-center text-xs text-[#6B7280]">
+            Upload en cours…
+          </div>
+        )}
+      </div>
+      {error && <p className="text-xs text-red-600">{error}</p>}
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        onChange={handleChange}
+      />
+    </div>
+  );
+}
 
 export default function ProfilEntrepriseForm({
   email,
@@ -28,12 +124,29 @@ export default function ProfilEntrepriseForm({
   bic,
   nomTitulaireIban,
   statutKyc,
+  logoUrl,
+  bannerUrl,
 }: ProfilEntrepriseFormProps) {
   const [state, formAction, isPending] = useActionState(
     updateEntrepriseProfile,
     {} as ActionState
   );
   const { openUserProfile } = useClerk();
+  const [imageState, setImageState] = useState<{ logoUrl?: string; bannerUrl?: string }>({});
+  const [imageSaving, startImageSave] = useTransition();
+  const [imageSaved, setImageSaved] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
+
+  function handleImageUploaded(kind: "logo" | "banner", url: string) {
+    const updated = { ...imageState, [`${kind}Url`]: url };
+    setImageState(updated);
+    setImageSaved(false);
+    startImageSave(async () => {
+      const res = await updateEntrepriseImages(updated);
+      if (res.success) setImageSaved(true);
+      else setImageError(res.error ?? "Erreur lors de la sauvegarde");
+    });
+  }
 
   return (
     <form action={formAction} className="space-y-6 max-w-2xl">
@@ -164,6 +277,41 @@ export default function ProfilEntrepriseForm({
           <Lock className="w-3.5 h-3.5 mt-0.5 shrink-0 text-blue-500" />
           Vos données sont chiffrées selon les standards bancaires les plus élevés pour garantir la sécurité de vos transactions.
         </div>
+      </section>
+
+      {/* Visuels Discovery */}
+      <section className="bg-white rounded-xl border border-[#E5E7EB] p-6 space-y-4">
+        <div>
+          <h2 className="text-base font-semibold text-[#0F1117]">Visuels Discovery</h2>
+          <p className="text-xs text-[#6B7280] mt-0.5">
+            Ces images apparaissent sur votre fiche dans la page Discovery des rapporteurs d&apos;affaires.
+          </p>
+        </div>
+        {imageError && (
+          <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+            {imageError}
+          </div>
+        )}
+        {imageSaved && (
+          <div className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+            Images mises à jour.
+          </div>
+        )}
+        {imageSaving && (
+          <p className="text-xs text-[#6B7280]">Sauvegarde en cours…</p>
+        )}
+        <ImageUploadField
+          label="Bannière (image de couverture)"
+          kind="banner"
+          currentUrl={bannerUrl}
+          onUploaded={(url) => handleImageUploaded("banner", url)}
+        />
+        <ImageUploadField
+          label="Logo (affiché en rond sur la carte)"
+          kind="logo"
+          currentUrl={logoUrl}
+          onUploaded={(url) => handleImageUploaded("logo", url)}
+        />
       </section>
 
       {/* Sécurité */}

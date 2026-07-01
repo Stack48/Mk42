@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useSignIn } from '@clerk/nextjs'
+import { useRouter } from 'next/navigation'
+import { useAuth, useSignIn } from '@clerk/nextjs'
 import type { WizardFormData } from '../types'
 import IconCheck from '@/components/icons/IconCheck'
 import IconChevronLeft from '@/components/icons/IconChevronLeft'
@@ -218,7 +219,9 @@ interface Props {
 }
 
 export default function ValidationEmailCGU({ formData, onPrev }: Props) {
+  const { isSignedIn } = useAuth()
   const { signIn } = useSignIn()
+  const router = useRouter()
 
   const [checks, setChecks] = useState<Record<string, boolean>>({
     cgu: false, privacy: false, cookies: false, newsletter: false,
@@ -236,11 +239,70 @@ export default function ValidationEmailCGU({ formData, onPrev }: Props) {
   const [openModal,     setOpenModal]     = useState<string | null>(null)
 
   const handleSubmit = async () => {
-    if (!signIn) return
     setSubmitStatus('loading')
     setErreur('')
 
     try {
+      // isSignedIn peut être undefined pendant le chargement de Clerk — on vérifie côté serveur
+      const authCheck = await fetch('/api/auth/me').then(r => r.json()).catch(() => ({ isAuthenticated: false }))
+      const alreadySignedIn = authCheck.isAuthenticated === true
+
+      if (alreadySignedIn) {
+        // ── Flow pour utilisateur déjà authentifié Clerk ──────────────────────
+        setLoadingStep('Liaison du compte…')
+        const linkRes = await fetch('/api/inscription/link-compte', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ profil: formData.profil }),
+        })
+        const linkData = await linkRes.json()
+        if (!linkRes.ok) throw new Error(linkData.error ?? 'Erreur liaison du compte')
+
+        if (formData.profil !== 'particulier' && formData.step3.siret) {
+          setLoadingStep("Enregistrement de l'entreprise…")
+          const endpoint = formData.profil === 'professionnel'
+            ? '/api/inscription/apporteur'
+            : '/api/inscription/entreprise'
+          const companyRes = await fetch(endpoint, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ siret: formData.step3.siret, ...formData.step3 }),
+          })
+          if (!companyRes.ok) {
+            const d = await companyRes.json()
+            const msg = d.error?.fieldErrors
+              ? Object.values(d.error.fieldErrors).flat().join(', ')
+              : (d.error ?? 'Erreur enregistrement')
+            throw new Error(msg)
+          }
+        }
+
+        if (formData.step4.iban) {
+          setLoadingStep('Enregistrement des coordonnées bancaires…')
+          const bankRes = await fetch('/api/inscription/banque', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              nomTitulaireIban: formData.step4.titulaire,
+              iban:             formData.step4.iban,
+              bic:              formData.step4.bic,
+            }),
+          })
+          if (!bankRes.ok) {
+            const d = await bankRes.json()
+            throw new Error(d.error ?? 'Erreur enregistrement bancaire')
+          }
+        }
+
+        setSubmitStatus('success')
+        setLoadingStep('Redirection…')
+        router.push('/dashboard')
+        return
+      }
+
+      // ── Flow standard (nouvel utilisateur) ───────────────────────────────────
+      if (!signIn) return
+
       setLoadingStep('Création du compte…')
       const accountRes = await fetch('/api/inscription/compte', {
         method:  'POST',
@@ -459,7 +521,7 @@ export default function ValidationEmailCGU({ formData, onPrev }: Props) {
                     onClick={handleSubmit}
                     disabled={!requiredChecked || isLoading}
                   >
-                    {isLoading ? 'Finalisation en cours…' : 'Envoyer le lien de vérification'}
+                    {isLoading ? 'Finalisation en cours…' : (isSignedIn === true) ? 'Finaliser mon profil' : 'Envoyer le lien de vérification'}
                   </button>
 
                   {!requiredChecked && !isLoading && (

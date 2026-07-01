@@ -11,6 +11,7 @@ import IconChartLine from "@/components/icons/IconChartLine";
 import IconDocList from "@/components/icons/IconDocList";
 import IconFileContract from "@/components/icons/IconFileContract";
 import IconBell from "@/components/icons/IconBell";
+import IconGridOutline from "@/components/icons/IconGridOutline";
 
 const ICON_CLS = "w-4 h-4 shrink-0";
 
@@ -24,6 +25,7 @@ const NAV_ENTREPRISE = [
 
 const NAV_APPORTEUR = [
   { href: "/dashboard",    label: "Dashboard",         icon: <IconDashboardGrid className={ICON_CLS} /> },
+  { href: "/discovery",    label: "Discovery",         icon: <IconGridOutline className={ICON_CLS} /> },
   { href: "/opportunites", label: "Mes Opportunités",  icon: <IconDocList className={ICON_CLS} /> },
   { href: "/contrats",     label: "Mes Contrats",      icon: <IconFileContract className={ICON_CLS} /> },
 ];
