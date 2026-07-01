@@ -172,7 +172,6 @@ model Deal {
 
   commission  Commission?
   contrats    Contrat[]
-  invitations ClientInvitation[]
 
   @@map("deals")
 }
@@ -274,6 +273,7 @@ model KanbanDeal {
   apporteur   Apporteur      @relation(fields: [apporteurId], references: [id])
   documents   DealDocument[]
   messages    DealMessage[]
+  invitations ClientInvitation[]
 
   @@map("kanban_deals")
 }
@@ -372,7 +372,7 @@ model ClientInvitation {
   updatedAt      DateTime @updatedAt
 
   dealId     String
-  deal       Deal              @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  deal       KanbanDeal        @relation(fields: [dealId], references: [id], onDelete: Cascade)
   evenements ClientEvenement[]
 
   @@map("client_invitations")
