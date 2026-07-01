@@ -104,19 +104,35 @@ model Entreprise {
   tauxCommissionDefaut Float?
   montantFixeDefaut    Float?
   statutKyc            StatutKYC @default(EN_ATTENTE)
+  logoUrl              String?
+  bannerUrl            String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  opportunites Opportunite[]
-  chantiers    Chantier[]
-  contrats     Contrat[]
-  factures     Facture[]
-  recus        Recu[]
-  das2         DAS2[]
-  documents    Document[]
+  opportunites    Opportunite[]
+  chantiers       Chantier[]
+  contrats        Contrat[]
+  factures        Facture[]
+  recus           Recu[]
+  das2            DAS2[]
+  documents       Document[]
+  entrepriseViews EntrepriseView[]
 
   @@map("entreprises")
+}
+
+model EntrepriseView {
+  id           String     @id @default(cuid())
+  apporteurId  String
+  apporteur    Apporteur  @relation(fields: [apporteurId], references: [id], onDelete: Cascade)
+  entrepriseId String
+  entreprise   Entreprise @relation(fields: [entrepriseId], references: [id], onDelete: Cascade)
+  viewedAt     DateTime   @default(now())
+
+  @@unique([apporteurId, entrepriseId])
+  @@index([apporteurId, viewedAt])
+  @@map("entreprise_views")
 }
 
 // ─── Apporteur ──────────────────────────────────────────────────────────────
@@ -146,15 +162,16 @@ model Apporteur {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  opportunites  Opportunite[]
-  contrats      Contrat[]
-  commissions   Commission[]
-  kanbanDeals   KanbanDeal[]
-  factures      Facture[]
-  recus         Recu[]
-  documents     Document[]
-  notifications Notification[]
-  trackingLinks TrackingLink[]
+  opportunites    Opportunite[]
+  contrats        Contrat[]
+  commissions     Commission[]
+  kanbanDeals     KanbanDeal[]
+  factures        Facture[]
+  recus           Recu[]
+  documents       Document[]
+  notifications   Notification[]
+  trackingLinks   TrackingLink[]
+  entrepriseViews EntrepriseView[]
 
   @@map("apporteurs")
 }
