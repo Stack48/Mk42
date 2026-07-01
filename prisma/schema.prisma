@@ -265,12 +265,14 @@ model KanbanDeal {
   commissionGelee  Boolean @default(false)
   position         Int     @default(0)
   commissionDealId String? @unique
+  opportuniteId    String? @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   apporteurId String
-  apporteur   Apporteur      @relation(fields: [apporteurId], references: [id])
+  apporteur   Apporteur          @relation(fields: [apporteurId], references: [id])
+  opportunite Opportunite?       @relation(fields: [opportuniteId], references: [id])
   documents   DealDocument[]
   messages    DealMessage[]
   invitations ClientInvitation[]
@@ -439,7 +441,8 @@ model Opportunite {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  chantier Chantier?
+  chantier   Chantier?
+  kanbanDeal KanbanDeal?
 
   @@map("opportunites")
 }

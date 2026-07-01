@@ -8,7 +8,7 @@ import { isTransitionDealValide } from "@/lib/deal.utils";
 import type { KanbanDealStatut } from "@/types/deal.types";
 
 // ─── MOCKS ────────────────────────────────────────────────────────────────────
-vi.mock("@/lib/prisma/client", () => ({
+vi.mock("@/lib/prisma", () => ({
   prisma: {
     apporteur:   { findUnique: vi.fn() },
     kanbanDeal:  {
@@ -44,8 +44,14 @@ vi.mock("@/lib/actions/commission.actions", () => ({
   signerDealEtCreerCommission: vi.fn().mockResolvedValue({ success: true }),
 }));
 
-import { prisma } from "@/lib/prisma/client";
+vi.mock("@/lib/auth", () => ({
+  getCurrentEntrepriseId: vi.fn(),
+}));
+
+import { prisma } from "@/lib/prisma";
 import { getStorage } from "@/lib/storage/storage.factory";
+import { getCurrentEntrepriseId } from "@/lib/auth";
+import { signerDealEtCreerCommission } from "@/lib/actions/commission.actions";
 import {
   createDeal,
   updateDealStatut,
@@ -117,6 +123,74 @@ describe("updateDealStatut — ANNULE", () => {
 
     expect(res.success).toBe(false);
     expect(res.error).toContain("Transition interdite");
+    expect(prisma.kanbanDeal.update).not.toHaveBeenCalled();
+  });
+});
+
+// ─── 2b. PASSAGE À SIGNE → création Deal + Commission ────────────────────────
+
+describe("updateDealStatut — SIGNE", () => {
+  it("crée un Deal et une Commission, puis enregistre commissionDealId", async () => {
+    vi.mocked(prisma.kanbanDeal.findUniqueOrThrow).mockResolvedValue({
+      id: "deal-1", statut: "CONTACTE", commissionDealId: null,
+      apporteurId: "ap-1", titre: "Deal Test", montant: 100000,
+      apporteur: { id: "ap-1", nom: "Jean", email: "jean@test.fr" },
+    } as never);
+    vi.mocked(prisma.deal.create).mockResolvedValue({ id: "new-deal-id" } as never);
+    vi.mocked(prisma.kanbanDeal.update).mockResolvedValue({} as never);
+    vi.mocked(getCurrentEntrepriseId).mockResolvedValue("ent-1");
+    vi.mocked(signerDealEtCreerCommission).mockResolvedValue({ success: true, commissionId: "com-1" });
+
+    const res = await updateDealStatut("deal-1", "SIGNE");
+
+    expect(res.success).toBe(true);
+    expect(prisma.deal.create).toHaveBeenCalledWith({
+      data: { titre: "Deal Test", montant: 100000 },
+    });
+    expect(signerDealEtCreerCommission).toHaveBeenCalledWith({
+      dealId: "new-deal-id",
+      apporteurId: "ap-1",
+      entrepriseId: "ent-1",
+    });
+    expect(prisma.kanbanDeal.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ statut: "SIGNE", commissionDealId: "new-deal-id" }),
+      })
+    );
+  });
+
+  it("ne recrée pas de commission si commissionDealId est déjà renseigné", async () => {
+    vi.mocked(prisma.kanbanDeal.findUniqueOrThrow).mockResolvedValue({
+      id: "deal-1", statut: "CONTACTE", commissionDealId: "existing-deal-id",
+      apporteurId: "ap-1", titre: "Deal Test", montant: 100000,
+      apporteur: { id: "ap-1", nom: "Jean", email: "jean@test.fr" },
+    } as never);
+    vi.mocked(prisma.kanbanDeal.update).mockResolvedValue({} as never);
+
+    const res = await updateDealStatut("deal-1", "SIGNE");
+
+    expect(res.success).toBe(true);
+    expect(prisma.deal.create).not.toHaveBeenCalled();
+    expect(signerDealEtCreerCommission).not.toHaveBeenCalled();
+    expect(prisma.kanbanDeal.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ statut: "SIGNE" }) })
+    );
+  });
+
+  it("n'écrit pas le nouveau statut si signerDealEtCreerCommission échoue", async () => {
+    vi.mocked(prisma.kanbanDeal.findUniqueOrThrow).mockResolvedValue({
+      id: "deal-1", statut: "CONTACTE", commissionDealId: null,
+      apporteurId: "ap-1", titre: "Deal Test", montant: 100000,
+      apporteur: { id: "ap-1", nom: "Jean", email: "jean@test.fr" },
+    } as never);
+    vi.mocked(prisma.deal.create).mockResolvedValue({ id: "new-deal-id" } as never);
+    vi.mocked(getCurrentEntrepriseId).mockResolvedValue("ent-1");
+    vi.mocked(signerDealEtCreerCommission).mockResolvedValue({ success: false, error: "Ce deal est déjà signé." });
+
+    const res = await updateDealStatut("deal-1", "SIGNE");
+
+    expect(res.success).toBe(false);
+    expect(res.error).toBe("Ce deal est déjà signé.");
     expect(prisma.kanbanDeal.update).not.toHaveBeenCalled();
   });
 });

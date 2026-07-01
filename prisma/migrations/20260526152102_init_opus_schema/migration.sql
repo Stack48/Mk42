@@ -1,9 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-
-*/
 -- CreateEnum
 CREATE TYPE "TypeApporteur" AS ENUM ('PARTICULIER', 'PROFESSIONNEL');
 
@@ -24,9 +18,6 @@ CREATE TYPE "StatutFacture" AS ENUM ('GENEREE', 'ENVOYEE', 'PAYEE', 'ANNULEE');
 
 -- CreateEnum
 CREATE TYPE "TypeDocument" AS ENUM ('CONTRAT', 'FACTURE', 'RECU', 'KYC_IDENTITE', 'KYC_KBIS', 'KYC_DOMICILE', 'RIB', 'DAS2_EXPORT');
-
--- DropTable
-DROP TABLE "User";
 
 -- CreateTable
 CREATE TABLE "Utilisateur" (
