@@ -12,6 +12,7 @@ interface Props {
 
 export function NotificationItem({ notification, onClick = () => {} }: Props) {
   const config = NOTIFICATION_CONFIG[notification.type];
+  const Icon = config.icon;
 
   return (
     <button
@@ -26,7 +27,7 @@ export function NotificationItem({ notification, onClick = () => {} }: Props) {
     >
       <div className="flex items-start gap-3">
         {/* Icône du type d'événement */}
-        <span className="text-base mt-0.5 shrink-0">{config.icon}</span>
+        <Icon className={`mt-0.5 shrink-0 ${config.color}`} size={18} />
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">

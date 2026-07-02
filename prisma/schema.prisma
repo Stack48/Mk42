@@ -172,7 +172,6 @@ model Deal {
 
   commission  Commission?
   contrats    Contrat[]
-  invitations ClientInvitation[]
 
   @@map("deals")
 }
@@ -266,14 +265,17 @@ model KanbanDeal {
   commissionGelee  Boolean @default(false)
   position         Int     @default(0)
   commissionDealId String? @unique
+  opportuniteId    String? @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   apporteurId String
-  apporteur   Apporteur      @relation(fields: [apporteurId], references: [id])
+  apporteur   Apporteur          @relation(fields: [apporteurId], references: [id])
+  opportunite Opportunite?       @relation(fields: [opportuniteId], references: [id])
   documents   DealDocument[]
   messages    DealMessage[]
+  invitations ClientInvitation[]
 
   @@map("kanban_deals")
 }
@@ -372,7 +374,7 @@ model ClientInvitation {
   updatedAt      DateTime @updatedAt
 
   dealId     String
-  deal       Deal              @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  deal       KanbanDeal        @relation(fields: [dealId], references: [id], onDelete: Cascade)
   evenements ClientEvenement[]
 
   @@map("client_invitations")
@@ -439,7 +441,8 @@ model Opportunite {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  chantier Chantier?
+  chantier   Chantier?
+  kanbanDeal KanbanDeal?
 
   @@map("opportunites")
 }

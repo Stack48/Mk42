@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import IconLogo from "@/components/icons/IconLogo";
 import IconDashboardGrid from "@/components/icons/IconDashboardGrid";
 import IconBuilding from "@/components/icons/IconBuilding";
+import IconUsers from "@/components/icons/IconUsers";
 import IconBriefClip from "@/components/icons/IconBriefClip";
 import IconChartLine from "@/components/icons/IconChartLine";
 import IconDocList from "@/components/icons/IconDocList";
@@ -18,6 +19,7 @@ const NAV_ENTREPRISE = [
   { href: "/dashboard",    label: "Dashboard",         icon: <IconDashboardGrid className={ICON_CLS} /> },
   { href: "/opportunites", label: "Mes Opportunités",  icon: <IconDocList className={ICON_CLS} /> },
   { href: "/clients",      label: "Mes Clients",       icon: <IconBuilding className={ICON_CLS} /> },
+  { href: "/apporteurs",   label: "Apporteurs",        icon: <IconUsers className={ICON_CLS} /> },
   { href: "/deals",        label: "Deals",             icon: <IconBriefClip className={ICON_CLS} /> },
   { href: "/comptabilite", label: "Comptabilité",      icon: <IconChartLine className={ICON_CLS} /> },
 ];
