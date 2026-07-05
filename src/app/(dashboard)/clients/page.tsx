@@ -15,7 +15,7 @@ export default async function ClientsPage() {
   // Promise.all = équivalent de deux requêtes SQL lancées en même temps (plus rapide que séquentiel).
   const [invitations, deals] = await Promise.all([
     getInvitations(),
-    prisma.deal.findMany({
+    prisma.kanbanDeal.findMany({
       select: { id: true, titre: true },
       orderBy: { createdAt: "desc" },
     }),

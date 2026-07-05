@@ -19,7 +19,7 @@ export async function createNotification(
     // Vérifier que l'apporteur existe avant de créer la notification
     const apporteur = await prisma.apporteur.findUnique({
       where: { id: userId },
-      select: { id: true, email: true, nom: true },
+      select: { id: true, nom: true, utilisateur: { select: { email: true } } },
     });
     if (!apporteur) return { success: false, error: "Apporteur introuvable." };
 
@@ -29,14 +29,14 @@ export async function createNotification(
         titre,
         message,
         lu: false,
-        metadata: metadata ?? null,
+        metadata: metadata,
         apporteur: { connect: { id: userId } },
       },
     });
 
     // Simuler l'envoi email (console.log en dev, Resend en prod)
     await sendNotificationEmail({
-      email:     apporteur.email,
+      email:     apporteur.utilisateur?.email ?? "",
       nom:       apporteur.nom,
       type,
       titre,

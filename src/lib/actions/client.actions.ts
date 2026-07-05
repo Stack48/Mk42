@@ -29,10 +29,9 @@ export async function inviterClient(
   nom: string
 ): Promise<{ success: boolean; invitationId?: string; token?: string; error?: string }> {
   try {
-    // Vérifier que le deal existe avant de créer l'invitation
-    const deal = await prisma.deal.findUnique({ where: { id: dealId } });
+    const deal = await prisma.kanbanDeal.findUnique({ where: { id: dealId } });
     if (!deal) {
-      return { success: false, error: "Deal introuvable." };
+      return { success: false, error: "Dossier introuvable." };
     }
 
     // Générer un token unique : 32 octets → 64 caractères hex
@@ -76,13 +75,8 @@ export async function inviterClient(
     // Simuler l'envoi email (console.log en dev, Resend en prod)
     await sendInvitationEmail({ email, nom, lienInvitation, dealTitre: deal.titre });
 
-    // [18-FE] Notifier l'apporteur du deal qu'un client a été invité (NOUVEAU_DEAL)
-    // On cherche l'apporteur via la commission liée au deal (relation Deal→Commission→Apporteur).
-    const dealAvecApporteur = await prisma.deal.findUnique({
-      where: { id: dealId },
-      include: { commission: { select: { apporteurId: true } } },
-    });
-    const apporteurId = dealAvecApporteur?.commission?.apporteurId;
+    // Notifier l'apporteur du deal qu'un client a été invité
+    const apporteurId = deal.apporteurId;
     if (apporteurId) {
       void createNotification(
         apporteurId,

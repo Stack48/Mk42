@@ -10,27 +10,30 @@
 import { headers } from "next/headers";
 import { getEspaceClient } from "@/lib/actions/client.actions";
 import { EspaceClientView } from "@/components/clients/EspaceClientView";
+import IconLock from "@/components/icons/IconLock";
+import IconClock from "@/components/icons/IconClock";
+import IconAlertTriangle from "@/components/icons/IconAlertTriangle";
 import type { InvitationWithDeal } from "@/types/client.types";
 
 interface Props {
-  params: { token: string };
+  params: Promise<{ token: string }>;
 }
 
 export default async function EspaceClientPage({ params }: Props) {
-  // Récupérer l'IP et le User-Agent depuis les headers HTTP pour le journal d'audit.
-  // headers() est une fonction Next.js qui donne accès aux en-têtes de la requête entrante.
+  const { token } = await params;
+
   const headersList = await headers();
   const ip        = headersList.get("x-forwarded-for")?.split(",")[0] ?? undefined;
   const userAgent = headersList.get("user-agent") ?? undefined;
 
-  const result = await getEspaceClient(params.token, ip, userAgent);
+  const result = await getEspaceClient(token, ip, userAgent);
 
   // ── Cas d'erreur : token inconnu ─────────────────────────────────────────
   if (!result.success && result.error === "TOKEN_INVALIDE") {
     return (
       <div className="min-h-screen bg-[#F8F9FF] flex items-center justify-center px-4">
         <div className="bg-white rounded-[12px] p-8 border border-gray-200 text-center max-w-sm">
-          <p className="text-4xl mb-4">🔒</p>
+          <IconLock className="w-10 h-10 text-[#6B7280] mx-auto mb-4" />
           <h1 className="text-lg font-semibold text-[#0F1117] mb-2">Lien invalide</h1>
           <p className="text-sm text-[#6B7280]">
             Ce lien d'accès n'existe pas ou a été révoqué.
@@ -46,7 +49,7 @@ export default async function EspaceClientPage({ params }: Props) {
     return (
       <div className="min-h-screen bg-[#F8F9FF] flex items-center justify-center px-4">
         <div className="bg-white rounded-[12px] p-8 border border-gray-200 text-center max-w-sm">
-          <p className="text-4xl mb-4">⏰</p>
+          <IconClock className="w-10 h-10 text-[#6B7280] mx-auto mb-4" />
           <h1 className="text-lg font-semibold text-[#0F1117] mb-2">Lien expiré</h1>
           <p className="text-sm text-[#6B7280]">
             Ce lien d'accès a expiré. Contactez l'équipe OPUS pour
@@ -62,7 +65,7 @@ export default async function EspaceClientPage({ params }: Props) {
     return (
       <div className="min-h-screen bg-[#F8F9FF] flex items-center justify-center px-4">
         <div className="bg-white rounded-[12px] p-8 border border-gray-200 text-center max-w-sm">
-          <p className="text-4xl mb-4">⚠️</p>
+          <IconAlertTriangle className="w-10 h-10 text-[#6B7280] mx-auto mb-4" />
           <h1 className="text-lg font-semibold text-[#0F1117] mb-2">Une erreur est survenue</h1>
           <p className="text-sm text-[#6B7280]">
             Impossible de charger votre espace. Réessayez dans quelques instants.
