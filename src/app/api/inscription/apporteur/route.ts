@@ -48,6 +48,7 @@ export async function POST(req: Request) {
         raisonSociale: parsed.data.raisonSociale,
         siret: parsed.data.siret,
         adresse: parsed.data.adresseSiege,
+        ville: (clerkUser.unsafeMetadata?.ville as string) || null,
       },
     });
 

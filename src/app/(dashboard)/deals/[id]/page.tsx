@@ -10,11 +10,12 @@ import { DealDetail } from "@/components/deals/DealDetail";
 import type { KanbanDeal } from "@/types/deal.types";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function DealDetailPage({ params }: Props) {
-  const deal = await getDeal(params.id);
+  const { id } = await params;
+  const deal = await getDeal(id);
 
   if (!deal) notFound();
 

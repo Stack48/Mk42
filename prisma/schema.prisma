@@ -131,6 +131,7 @@ model Apporteur {
   prenom    String
   telephone String
   adresse   String?
+  ville     String?
   iban      String?
   bic       String?
 

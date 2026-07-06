@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { prenom, nom, email, motDePasse, profil, telephone, fonction } = await req.json();
+    const { prenom, nom, email, motDePasse, profil, telephone, adresse, ville, fonction } = await req.json();
 
     if (!prenom || !nom || !email || !motDePasse) {
       return Response.json({ error: 'Tous les champs sont obligatoires.' }, { status: 400 });
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
       lastName: nom,
       emailAddress: [email],
       password: motDePasse,
-      unsafeMetadata: { telephone, fonction },
+      unsafeMetadata: { telephone, adresse, ville, fonction },
     });
 
     try {

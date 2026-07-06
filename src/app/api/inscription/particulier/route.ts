@@ -18,6 +18,8 @@ export async function POST(req: Request) {
     if (existant) return Response.json({ apporteurId: existant.id }, { status: 200 });
 
     const telephone = (clerkUser.unsafeMetadata?.telephone as string) ?? '';
+    const adresse   = (clerkUser.unsafeMetadata?.adresse as string) || null;
+    const ville     = (clerkUser.unsafeMetadata?.ville as string) || null;
 
     const apporteur = await prisma.apporteur.create({
       data: {
@@ -26,6 +28,8 @@ export async function POST(req: Request) {
         nom:           clerkUser.lastName  ?? '',
         prenom:        clerkUser.firstName ?? '',
         telephone,
+        adresse,
+        ville,
       },
     });
 

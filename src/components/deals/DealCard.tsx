@@ -45,25 +45,22 @@ export function DealCard({ deal }: Props) {
   const docsCount   = deal.documents?.length ?? 0;
 
   return (
-    <div
+    <Link
+      href={`/deals/${deal.id}`}
       ref={setNodeRef}
       style={style}
       {...listeners}
       {...attributes}
-      className={`bg-white rounded-[12px] border border-gray-200 p-3 shadow-sm
+      className={`block bg-white rounded-[12px] border border-gray-200 p-3 shadow-sm
         ${isDragging ? "opacity-50 shadow-lg ring-2 ring-[#4F6EF7]" : "hover:shadow-md"}
         ${deal.statut === "ANNULE" ? "opacity-60" : "cursor-grab active:cursor-grabbing"}
         transition-shadow`}
     >
       {/* Titre + badge statut */}
       <div className="flex items-start justify-between gap-2 mb-2">
-        <Link
-          href={`/deals/${deal.id}`}
-          onClick={(e) => e.stopPropagation()} // évite de déclencher le drag au clic
-          className="text-sm font-medium text-[#0F1117] hover:text-[#4F6EF7] line-clamp-2"
-        >
+        <span className="text-sm font-medium text-[#0F1117] hover:text-[#4F6EF7] line-clamp-2">
           {deal.titre}
-        </Link>
+        </span>
         {deal.commissionGelee && (
           <span title="Commission gelée" className="text-xs">🔒</span>
         )}
@@ -93,6 +90,6 @@ export function DealCard({ deal }: Props) {
           )}
         </div>
       )}
-    </div>
+    </Link>
   );
 }

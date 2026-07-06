@@ -7,6 +7,7 @@ export type ApporteurRow = {
   id: string;
   nom: string;
   email: string;
+  ville: string | null;
   nombreCommissions: number;
   montantApporte: number;
 };
@@ -75,37 +76,35 @@ export function ApporteurTable({ apporteurs }: { apporteurs: ApporteurRow[] }) {
       )}
 
       {filtres.length > 0 && (
-        <div className="divide-y divide-gray-100">
-          {filtres.map((a) => {
-            const couleur = getAvatarColor(a.nom);
-            return (
-              <div
-                key={a.id}
-                className="flex items-center gap-4 py-4 px-2 hover:bg-[#F9FAFB] transition-colors"
-              >
+        <div>
+          <div className="divide-y divide-gray-100">
+            {filtres.map((a) => {
+              const couleur = getAvatarColor(a.nom);
+              return (
                 <div
-                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${couleur.bg} ${couleur.text}`}
+                  key={a.id}
+                  className="grid grid-cols-[40px_180px_240px_160px_220px_220px] items-center gap-6 py-4 px-2 hover:bg-[#F9FAFB] transition-colors"
                 >
-                  {getInitials(a.nom)}
-                </div>
+                  <div
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${couleur.bg} ${couleur.text}`}
+                  >
+                    {getInitials(a.nom)}
+                  </div>
 
-                <div className="min-w-0 flex-1">
                   <p className="truncate font-medium text-[#0F1117]">{a.nom}</p>
-                  <p className="truncate text-sm text-[#6B7280]">{a.email}</p>
-                </div>
+                  <p className="truncate text-sm text-[#0F1117]">{a.email}</p>
+                  <p className="truncate text-sm text-[#0F1117]">{a.ville ?? "—"}</p>
 
-                <div className="text-right shrink-0">
-                  <p className="text-xs text-[#6B7280]">Commissions</p>
-                  <p className="font-medium text-[#0F1117]">{a.nombreCommissions}</p>
+                  <p className="text-sm text-[#0F1117]">
+                    <span className="font-semibold text-sm tracking-wide">Commissions</span> : {a.nombreCommissions}
+                  </p>
+                  <p className="whitespace-nowrap text-sm text-[#0F1117]">
+                    <span className="font-semibold text-sm tracking-wide">Montant apporté</span> : {formatEur(a.montantApporte)}
+                  </p>
                 </div>
-
-                <div className="text-right shrink-0 min-w-[110px]">
-                  <p className="text-xs text-[#6B7280]">Montant apporté</p>
-                  <p className="font-semibold text-[#0F1117]">{formatEur(a.montantApporte)}</p>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
