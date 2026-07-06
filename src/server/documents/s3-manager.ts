@@ -47,20 +47,24 @@ function getPublicS3Client(): S3Client {
   return new S3Client(s3Config(S3_ENDPOINT_PUBLIC ?? S3_ENDPOINT_INTERNAL));
 }
 
-export type DocumentType = "FACTURE" | "RECU" | "DAS2" | "CSV";
+export type DocumentType = "FACTURE" | "RECU" | "DAS2" | "DAS2_RECAP" | "CSV";
 
 // Mapping vers l'enum Prisma TypeDocument — le CSV est un export ponctuel,
 // non centralisé dans le coffre-fort documentaire (pas d'équivalent dans l'enum).
+// DAS2_RECAP partage la même catégorie que DAS2 (DAS2_EXPORT) : même déclaration,
+// juste un rendu PDF lisible en plus du fichier EDI télédéclaré.
 const PRISMA_DOCUMENT_TYPE: Partial<Record<DocumentType, "FACTURE" | "RECU" | "DAS2_EXPORT">> = {
   FACTURE: "FACTURE",
   RECU: "RECU",
   DAS2: "DAS2_EXPORT",
+  DAS2_RECAP: "DAS2_EXPORT",
 };
 
 const EXT: Record<DocumentType, string> = {
   FACTURE: "pdf",
   RECU: "pdf",
   DAS2: "edi",
+  DAS2_RECAP: "pdf",
   CSV: "csv",
 };
 
@@ -68,6 +72,7 @@ const MIME: Record<DocumentType, string> = {
   FACTURE: "application/pdf",
   RECU: "application/pdf",
   DAS2: "text/plain; charset=utf-8",
+  DAS2_RECAP: "application/pdf",
   CSV: "text/csv; charset=utf-8",
 };
 

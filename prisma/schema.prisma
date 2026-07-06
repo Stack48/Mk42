@@ -1,8 +1,9 @@
 // PRISMA SCHEMA — CommissionPro BTP
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma/client"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma/client"
+  moduleFormat = "cjs"
 }
 
 datasource db {

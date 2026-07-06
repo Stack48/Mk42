@@ -7,15 +7,13 @@ import styles from "./DAS2ExportButton.module.css";
 interface Props {
   entrepriseId: string;
   annee: number;
-  onExported?: () => void;
 }
 
-export function DAS2ExportButton({ annee, onExported }: Props) {
+export function DAS2RecapPdfButton({ annee }: Props) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{
     lienSigne: string;
     dateExpiration: Date;
-    warnings: string[];
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,13 +23,11 @@ export function DAS2ExportButton({ annee, onExported }: Props) {
     setResult(null);
 
     try {
-      const res = await exportDocumentAction({ type: "DAS2", annee });
+      const res = await exportDocumentAction({ type: "DAS2_RECAP_PDF", annee });
       setResult({
         lienSigne: res.lienSigne,
         dateExpiration: res.dateExpiration,
-        warnings: res.warnings ?? [],
       });
-      onExported?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur lors de la génération");
     } finally {
@@ -54,7 +50,7 @@ export function DAS2ExportButton({ annee, onExported }: Props) {
           disabled={loading}
           className={styles.button}
         >
-          {loading ? "Génération EDI…" : `Exporter DAS2 ${annee}`}
+          {loading ? "Génération PDF…" : `Récap PDF ${annee}`}
         </button>
       )}
 
@@ -66,19 +62,12 @@ export function DAS2ExportButton({ annee, onExported }: Props) {
 
       {result && (
         <div className={styles.success}>
-          {result.warnings.length > 0 && (
-            <ul className={styles.warnings}>
-              {result.warnings.map((w, i) => (
-                <li key={i}>{w}</li>
-              ))}
-            </ul>
-          )}
           <a
             href={result.lienSigne}
-            download={`DAS2_${annee}.edi`}
+            download={`DAS2_recap_${annee}.pdf`}
             className={styles.downloadLink}
           >
-            Télécharger DAS2_{annee}.edi
+            Télécharger DAS2_recap_{annee}.pdf
           </a>
           {expiration && (
             <span className={styles.expiration}>

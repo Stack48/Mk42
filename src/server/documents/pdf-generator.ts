@@ -50,7 +50,21 @@ export interface RecuInput {
   periodeFin?: Date;
 }
 
-export type PDFInput = FactureInput | RecuInput;
+export interface DAS2RecapBeneficiaire {
+  nom: string;
+  type: "pro" | "particulier";
+  siret?: string;
+  montant: number;
+}
+
+export interface DAS2RecapInput {
+  type: "das2-recap";
+  annee: number;
+  entreprise: EntrepriseInfo;
+  beneficiaires: DAS2RecapBeneficiaire[];
+}
+
+export type PDFInput = FactureInput | RecuInput | DAS2RecapInput;
 
 const styles = StyleSheet.create({
   page: {
@@ -414,11 +428,102 @@ function RecuPDF({ input }: { input: RecuInput }) {
   );
 }
 
+function DAS2RecapPDF({ input }: { input: DAS2RecapInput }) {
+  const montantTotal = input.beneficiaires.reduce((s, b) => s + b.montant, 0);
+
+  return React.createElement(
+    Document,
+    null,
+    React.createElement(
+      Page,
+      { size: "A4", style: styles.page },
+      React.createElement(
+        View,
+        { style: styles.header },
+        React.createElement(Text, { style: styles.headerTitle }, "RÉCAPITULATIF DAS2"),
+        React.createElement(
+          Text,
+          { style: styles.headerSubtitle },
+          `Déclaration annuelle des commissions — Année ${input.annee}`
+        )
+      ),
+      React.createElement(
+        View,
+        { style: styles.section },
+        React.createElement(Text, { style: styles.sectionTitle }, "Déclarant"),
+        React.createElement(
+          View,
+          { style: styles.row },
+          React.createElement(Text, { style: styles.label }, "Raison sociale :"),
+          React.createElement(Text, { style: styles.value }, input.entreprise.raisonSociale)
+        ),
+        React.createElement(
+          View,
+          { style: styles.row },
+          React.createElement(Text, { style: styles.label }, "SIRET :"),
+          React.createElement(Text, { style: styles.value }, input.entreprise.siret)
+        )
+      ),
+      React.createElement(
+        View,
+        { style: styles.table },
+        React.createElement(
+          View,
+          { style: styles.tableHeader },
+          React.createElement(Text, { style: [styles.colLibelle, styles.bold] }, "Bénéficiaire"),
+          React.createElement(Text, { style: [styles.colMontant, styles.bold] }, "Montant")
+        ),
+        ...input.beneficiaires.map((b, i) =>
+          React.createElement(
+            View,
+            {
+              key: i,
+              style: i === input.beneficiaires.length - 1 ? styles.tableRowLast : styles.tableRow,
+            },
+            React.createElement(
+              Text,
+              { style: styles.colLibelle },
+              `${b.nom} (${b.type === "pro" ? "Professionnel" : "Particulier"}${b.siret ? ` — SIRET ${b.siret}` : ""})`
+            ),
+            React.createElement(Text, { style: styles.colMontant }, formatMontant(b.montant))
+          )
+        ),
+        React.createElement(
+          View,
+          { style: styles.totalRow },
+          React.createElement(Text, { style: styles.totalLabel }, "TOTAL DÉCLARÉ"),
+          React.createElement(Text, { style: styles.totalValue }, formatMontant(montantTotal))
+        )
+      ),
+      React.createElement(
+        View,
+        { style: styles.mention },
+        React.createElement(
+          Text,
+          null,
+          "Document récapitulatif interne — ne remplace pas la déclaration EDI télédéclarée auprès de la DGFiP."
+        )
+      ),
+      React.createElement(
+        View,
+        { style: styles.footer },
+        React.createElement(
+          Text,
+          null,
+          `${input.entreprise.raisonSociale} — SIRET ${input.entreprise.siret} — ${input.entreprise.email}`
+        )
+      )
+    )
+  );
+}
+
 export async function generatePDF(input: PDFInput): Promise<Buffer> {
   const element =
     input.type === "facture"
       ? React.createElement(FacturePDF, { input })
-      : React.createElement(RecuPDF, { input });
+      : input.type === "recu"
+        ? React.createElement(RecuPDF, { input })
+        : React.createElement(DAS2RecapPDF, { input });
 
   // renderToBuffer works in Node.js (Server Action context), never in browser SSR
   return renderToBuffer(element as Parameters<typeof renderToBuffer>[0]);

@@ -8,11 +8,13 @@ import { generatePDF } from "@/server/documents/pdf-generator";
 import { generateCommissionsCSV } from "@/server/documents/csv-generator";
 import { uploadDocumentS3 } from "@/server/documents/s3-manager";
 import type { BeneficiaireDAS2 } from "@/server/documents/edi-generator";
+import { getTotauxDAS2ParAnnee, apporteurNomOuRS } from "@/server/documents/das2-aggregation";
 
 // ── Public surface : 1 seul Server Action, dispatch interne via switch ──────
 
 export type ExportDocumentInput =
   | { type: "DAS2"; annee: number }
+  | { type: "DAS2_RECAP_PDF"; annee: number }
   | { type: "FACTURE_PDF"; factureId: string }
   | { type: "RECU_PDF"; recuId: string }
   | { type: "CSV"; dateDebutISO: string; dateFinISO: string };
@@ -30,6 +32,8 @@ export async function exportDocumentAction(
   switch (input.type) {
     case "DAS2":
       return exportDAS2(input.annee);
+    case "DAS2_RECAP_PDF":
+      return exportDAS2RecapPDF(input.annee);
     case "FACTURE_PDF":
       return exportFacturePDF(input.factureId);
     case "RECU_PDF":
@@ -41,16 +45,8 @@ export async function exportDocumentAction(
 
 // ── Apporteur — conversions vers le format DAS2 / PDF ───────────────────────
 
-type ApporteurNomInfo = { type: string; nom: string; prenom: string; raisonSociale: string | null };
-
 function apporteurTypeDAS2(type: string): "pro" | "particulier" {
   return type === "PROFESSIONNEL" ? "pro" : "particulier";
-}
-
-function apporteurNomOuRS(apporteur: ApporteurNomInfo): string {
-  return apporteur.type === "PROFESSIONNEL" && apporteur.raisonSociale
-    ? apporteur.raisonSociale
-    : `${apporteur.prenom} ${apporteur.nom}`.trim();
 }
 
 // Date JS → format JJMMAAAA attendu par l'EDI DAS2 (DGFiP)
@@ -73,59 +69,24 @@ async function exportDAS2(annee: number): Promise<ExportDocumentResult> {
     where: { id: entrepriseId },
   });
 
-  const debut = new Date(`${annee}-01-01T00:00:00.000Z`);
-  const fin = new Date(`${annee}-12-31T23:59:59.999Z`);
+  const totauxParAnnee = await getTotauxDAS2ParAnnee(entrepriseId);
+  const totaux = totauxParAnnee.get(annee) ?? [];
 
-  const [factures, recus] = await Promise.all([
-    prisma.facture.findMany({
-      where: {
-        entrepriseId,
-        dateEmission: { gte: debut, lte: fin },
-        statut: "PAYEE",
-      },
-      include: { apporteur: true },
-    }),
-    // Le Recu n'a pas de statut : sa date de versement fait foi du paiement.
-    prisma.recu.findMany({
-      where: {
-        entrepriseId,
-        dateVersement: { gte: debut, lte: fin },
-      },
-      include: { apporteur: true },
-    }),
-  ]);
-
-  const totauxMap = new Map<string, { apporteur: typeof factures[0]["apporteur"]; total: number }>();
-
-  for (const f of factures) {
-    const entry = totauxMap.get(f.apporteurId) ?? { apporteur: f.apporteur, total: 0 };
-    entry.total += f.montantHT;
-    totauxMap.set(f.apporteurId, entry);
-  }
-
-  for (const r of recus) {
-    const entry = totauxMap.get(r.apporteurId) ?? { apporteur: r.apporteur, total: 0 };
-    entry.total += r.montant;
-    totauxMap.set(r.apporteurId, entry);
-  }
-
-  const beneficiaires: BeneficiaireDAS2[] = Array.from(totauxMap.values()).map(
-    ({ apporteur, total }) => ({
-      id: apporteur.id,
-      type: apporteurTypeDAS2(apporteur.type),
-      nomOuRS: apporteurNomOuRS(apporteur),
-      siret: apporteur.siret ?? undefined,
-      dateNaissance: apporteur.dateNaissance ? formatDateNaissanceEDI(apporteur.dateNaissance) : undefined,
-      lieuNaissance: apporteur.lieuNaissance ?? undefined,
-      adresse: apporteur.adresse ?? undefined,
-      montantBrutAnnuel: total,
-      reference: entreprise.siret,
-    })
-  );
-
-  if (beneficiaires.length === 0) {
+  if (totaux.length === 0) {
     throw new Error(`Aucune commission payée trouvée pour l'année ${annee}`);
   }
+
+  const beneficiaires: BeneficiaireDAS2[] = totaux.map(({ apporteur, total }) => ({
+    id: apporteur.id,
+    type: apporteurTypeDAS2(apporteur.type),
+    nomOuRS: apporteurNomOuRS(apporteur),
+    siret: apporteur.siret ?? undefined,
+    dateNaissance: apporteur.dateNaissance ? formatDateNaissanceEDI(apporteur.dateNaissance) : undefined,
+    lieuNaissance: apporteur.lieuNaissance ?? undefined,
+    adresse: apporteur.adresse ?? undefined,
+    montantBrutAnnuel: total,
+    reference: entreprise.siret,
+  }));
 
   const ediContent = generateDAS2EDI(beneficiaires, annee, {
     expediteurSiret: entreprise.siret,
@@ -153,7 +114,7 @@ async function exportDAS2(annee: number): Promise<ExportDocumentResult> {
   // Une ligne DAS2 par bénéficiaire — contrainte d'unicité [entrepriseId, annee, nomBeneficiaire].
   // Le fichier EDI exporté couvre tous les bénéficiaires de l'année : même s3Key/lien sur chaque ligne.
   await Promise.all(
-    Array.from(totauxMap.values()).map(({ apporteur, total }) => {
+    totaux.map(({ apporteur, total }) => {
       const nomBeneficiaire = apporteurNomOuRS(apporteur);
       return prisma.dAS2.upsert({
         where: {
@@ -190,6 +151,57 @@ async function exportDAS2(annee: number): Promise<ExportDocumentResult> {
     dateExpiration: result.dateExpiration,
     warnings: validation.warnings,
   };
+}
+
+// ── DAS2 — récapitulatif PDF (lecture humaine, en plus de l'EDI) ─────────────
+
+async function exportDAS2RecapPDF(annee: number): Promise<ExportDocumentResult> {
+  if (!Number.isInteger(annee) || annee < 2000 || annee > 2100) {
+    throw new Error("Année invalide");
+  }
+
+  const entrepriseId = await getCurrentEntrepriseId();
+
+  const entreprise = await prisma.entreprise.findUniqueOrThrow({
+    where: { id: entrepriseId },
+  });
+
+  const totauxParAnnee = await getTotauxDAS2ParAnnee(entrepriseId);
+  const totaux = totauxParAnnee.get(annee) ?? [];
+
+  if (totaux.length === 0) {
+    throw new Error(`Aucune commission payée trouvée pour l'année ${annee}`);
+  }
+
+  const pdfBuffer = await generatePDF({
+    type: "das2-recap",
+    annee,
+    entreprise: {
+      raisonSociale: entreprise.raisonSociale,
+      siret: entreprise.siret,
+      adresse: entreprise.adresseSiege,
+      email: entreprise.email,
+      telephone: entreprise.telephone ?? undefined,
+      numeroTVA: entreprise.numeroTVA ?? undefined,
+    },
+    beneficiaires: totaux.map(({ apporteur, total }) => ({
+      nom: apporteurNomOuRS(apporteur),
+      type: apporteurTypeDAS2(apporteur.type),
+      siret: apporteur.siret ?? undefined,
+      montant: total,
+    })),
+  });
+
+  return uploadDocumentS3({
+    type: "DAS2_RECAP",
+    contenu: pdfBuffer,
+    entrepriseId,
+    metadata: {
+      annee,
+      montantTotal: totaux.reduce((s, t) => s + t.total, 0),
+      nombreBeneficiaires: totaux.length,
+    },
+  });
 }
 
 // ── FACTURE PDF ───────────────────────────────────────────────────────────────
