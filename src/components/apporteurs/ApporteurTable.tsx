@@ -54,14 +54,18 @@ export function ApporteurTable({ apporteurs }: { apporteurs: ApporteurRow[] }) {
       )
     : apporteurs;
 
+  // Grille partagée par l'en-tête et les lignes pour aligner les colonnes.
+  const COLS =
+    "grid grid-cols-[minmax(180px,1.6fr)_minmax(200px,1.8fr)_minmax(90px,0.8fr)_minmax(110px,0.9fr)_minmax(120px,1fr)] items-center gap-6";
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <input
         type="text"
         value={recherche}
         onChange={(e) => setRecherche(e.target.value)}
         placeholder="Rechercher un apporteur (nom ou email)"
-        className="w-full max-w-sm px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-[#4F6EF7]"
+        className="w-full max-w-md px-4 py-2.5 text-sm border border-gray-200 rounded-xl outline-none focus:border-[#4F6EF7] focus:ring-2 focus:ring-[#4F6EF7]/15 transition"
       />
 
       {apporteurs.length === 0 && (
@@ -76,34 +80,50 @@ export function ApporteurTable({ apporteurs }: { apporteurs: ApporteurRow[] }) {
       )}
 
       {filtres.length > 0 && (
-        <div>
-          <div className="divide-y divide-gray-100">
-            {filtres.map((a) => {
-              const couleur = getAvatarColor(a.nom);
-              return (
-                <div
-                  key={a.id}
-                  className="grid grid-cols-[40px_180px_240px_160px_220px_220px] items-center gap-6 py-4 px-2 hover:bg-[#F9FAFB] transition-colors"
-                >
+        <div className="overflow-x-auto">
+          <div className="min-w-190">
+            {/* En-tête de colonnes */}
+            <div
+              className={`${COLS} px-4 pb-3 text-xs font-semibold uppercase tracking-wide text-[#6B7280]`}
+            >
+              <span>Nom</span>
+              <span>Email</span>
+              <span>Ville</span>
+              <span className="text-center">Commissions</span>
+              <span className="text-right">Montant</span>
+            </div>
+
+            {/* Lignes */}
+            <div className="divide-y divide-gray-100 border-t border-gray-100">
+              {filtres.map((a) => {
+                const couleur = getAvatarColor(a.nom);
+                return (
                   <div
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${couleur.bg} ${couleur.text}`}
+                    key={a.id}
+                    className={`${COLS} px-4 py-4 hover:bg-[#F9FAFB] transition-colors`}
                   >
-                    {getInitials(a.nom)}
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${couleur.bg} ${couleur.text}`}
+                      >
+                        {getInitials(a.nom)}
+                      </div>
+                      <p className="truncate font-semibold text-[#0F1117]">{a.nom}</p>
+                    </div>
+
+                    <p className="truncate text-sm text-[#6B7280]">{a.email}</p>
+                    <p className="truncate text-sm text-[#6B7280]">{a.ville ?? "—"}</p>
+
+                    <p className="text-center text-sm font-medium text-[#0F1117]">
+                      {a.nombreCommissions}
+                    </p>
+                    <p className="whitespace-nowrap text-right text-sm font-semibold text-[#0F1117]">
+                      {formatEur(a.montantApporte)}
+                    </p>
                   </div>
-
-                  <p className="truncate font-medium text-[#0F1117]">{a.nom}</p>
-                  <p className="truncate text-sm text-[#0F1117]">{a.email}</p>
-                  <p className="truncate text-sm text-[#0F1117]">{a.ville ?? "—"}</p>
-
-                  <p className="text-sm text-[#0F1117]">
-                    <span className="font-semibold text-sm tracking-wide">Commissions</span> : {a.nombreCommissions}
-                  </p>
-                  <p className="whitespace-nowrap text-sm text-[#0F1117]">
-                    <span className="font-semibold text-sm tracking-wide">Montant apporté</span> : {formatEur(a.montantApporte)}
-                  </p>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
