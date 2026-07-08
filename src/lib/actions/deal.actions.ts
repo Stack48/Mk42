@@ -7,6 +7,7 @@ import { getStorage } from "@/lib/storage/storage.factory";
 import { createNotification } from "@/lib/actions/notification.actions";
 import { isTransitionDealValide } from "@/lib/deal.utils";
 import { getCurrentEntrepriseId } from "@/lib/auth";
+import { dealsEntrepriseWhere } from "@/lib/deal-scope";
 import { signerDealEtCreerCommission } from "@/lib/actions/commission.actions";
 import type {
   KanbanDeal,
@@ -225,7 +226,11 @@ export async function deleteDealDocument(
 
 /** Tous les deals groupés par statut, ordonnés par position, pour le kanban. */
 export async function getDealsByStatut(): Promise<Record<KanbanDealStatut, KanbanDeal[]>> {
+  const entrepriseId = await getCurrentEntrepriseId();
   const deals = await prisma.kanbanDeal.findMany({
+    // Isolation : uniquement les deals liés à l'entreprise connectée
+    // (opportunité rattachée OU commission détenue).
+    where: await dealsEntrepriseWhere(entrepriseId),
     include: {
       apporteur: { select: { id: true, nom: true, utilisateur: { select: { email: true } } } },
       documents: true,
@@ -249,8 +254,10 @@ export async function getDealsByStatut(): Promise<Record<KanbanDealStatut, Kanba
 
 /** Un deal complet avec documents et messages (page détail). */
 export async function getDeal(dealId: string): Promise<KanbanDeal | null> {
-  const deal = await prisma.kanbanDeal.findUnique({
-    where: { id: dealId },
+  const entrepriseId = await getCurrentEntrepriseId();
+  const deal = await prisma.kanbanDeal.findFirst({
+    // Isolation : le deal doit être lié à l'entreprise connectée.
+    where: { id: dealId, ...(await dealsEntrepriseWhere(entrepriseId)) },
     include: {
       apporteur: { select: { id: true, nom: true, utilisateur: { select: { email: true } } } },
       documents: { orderBy: { createdAt: "desc" } },

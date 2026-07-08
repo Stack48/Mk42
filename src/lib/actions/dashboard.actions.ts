@@ -2,6 +2,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { dealsEntrepriseWhere } from "@/lib/deal-scope";
 
 export type ActionRecente = {
   id: string;
@@ -78,6 +79,9 @@ export async function getDashboardEntreprise(entrepriseId: string): Promise<Dash
   const debutMois = new Date(now.getFullYear(), now.getMonth(), 1);
   const debutAnnee = new Date(now.getFullYear(), 0, 1);
 
+  // Isolation deals : opportunité rattachée à l'entreprise OU commission détenue.
+  const dealWhere = await dealsEntrepriseWhere(entrepriseId);
+
   const [commissionsMois, commissionsAnnuel, dealsEnAttente, opportunitesAcceptees, derniersDeals, dernieresOpportunites] = await Promise.all([
     prisma.commission.aggregate({
       where: { entrepriseId, createdAt: { gte: debutMois } },
@@ -88,13 +92,13 @@ export async function getDashboardEntreprise(entrepriseId: string): Promise<Dash
       _sum: { montant: true },
     }),
     prisma.kanbanDeal.count({
-      where: { apporteur: { opportunites: { some: { entrepriseId } } }, statut: { in: ["PROSPECT", "CONTACTE", "NEGOCIE"] } },
+      where: { ...dealWhere, statut: { in: ["PROSPECT", "CONTACTE", "NEGOCIE"] } },
     }),
     prisma.opportunite.count({
       where: { entrepriseId, statut: "ACCEPTEE" },
     }),
     prisma.kanbanDeal.findMany({
-      where: { apporteur: { opportunites: { some: { entrepriseId } } } },
+      where: dealWhere,
       orderBy: { createdAt: "desc" },
       take: 3,
       include: { apporteur: { select: { nom: true, prenom: true } } },

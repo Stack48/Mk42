@@ -32,6 +32,13 @@ export default async function ComptabilitePage() {
 
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
+          <h2 className={styles.sectionTitle}>DAS2 — Déclaration annuelle</h2>
+        </div>
+        <DAS2YearGrid entrepriseId={entrepriseId} annees={das2Overview} />
+      </section>
+
+      <section className={styles.section}>
+        <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Factures</h2>
         </div>
         <DocumentList
@@ -62,13 +69,6 @@ export default async function ComptabilitePage() {
             statut: r.dateVersement ? "PAYE" : "EN_ATTENTE",
           }))}
         />
-      </section>
-
-      <section className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>DAS2 — Déclaration annuelle</h2>
-        </div>
-        <DAS2YearGrid entrepriseId={entrepriseId} annees={das2Overview} />
       </section>
     </main>
   );

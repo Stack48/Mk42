@@ -5,6 +5,8 @@
 
 import { getInvitations } from "@/lib/actions/client.actions";
 import { prisma } from "@/lib/prisma";
+import { getCurrentEntrepriseId } from "@/lib/auth";
+import { dealsEntrepriseWhere } from "@/lib/deal-scope";
 import { ClientTable } from "@/components/clients/ClientTable";
 import type { InvitationWithDeal } from "@/types/client.types";
 
@@ -13,9 +15,12 @@ export const metadata = { title: "Espace Client — OPUS" };
 export default async function ClientsPage() {
   // Charger les invitations et la liste des deals en parallèle.
   // Promise.all = équivalent de deux requêtes SQL lancées en même temps (plus rapide que séquentiel).
+  const entrepriseId = await getCurrentEntrepriseId();
+  const dealWhere = await dealsEntrepriseWhere(entrepriseId);
   const [invitations, deals] = await Promise.all([
     getInvitations(),
     prisma.kanbanDeal.findMany({
+      where: dealWhere,
       select: { id: true, titre: true },
       orderBy: { createdAt: "desc" },
     }),
