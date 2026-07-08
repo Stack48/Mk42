@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { exportDocumentAction } from "../_actions";
-import styles from "./DAS2ExportButton.module.css";
 
 interface Props {
   entrepriseId: string;
@@ -43,40 +42,40 @@ export function DAS2RecapPdfButton({ annee }: Props) {
     : null;
 
   return (
-    <div className={styles.wrapper}>
+    <div className="flex flex-col items-start gap-3">
       {!result && (
         <button
           onClick={handleExport}
           disabled={loading}
-          className={styles.button}
+          className="px-[1.4rem] py-[0.65rem] rounded-[8px] bg-[#4648D4] text-white text-[0.9rem] font-semibold cursor-pointer transition-colors whitespace-nowrap enabled:hover:bg-[#3335b0] disabled:bg-[#b0b0e0] disabled:cursor-not-allowed"
         >
           {loading ? "Génération PDF…" : `Récap PDF ${annee}`}
         </button>
       )}
 
       {error && (
-        <div className={styles.error}>
+        <div className="px-4 py-3 bg-[#fff0f0] border border-[#fcc] rounded-[8px] text-[0.85rem] text-[#c0392b] max-w-105">
           <strong>Erreur :</strong> {error}
         </div>
       )}
 
       {result && (
-        <div className={styles.success}>
+        <div className="flex flex-col gap-2">
           <a
             href={result.lienSigne}
             download={`DAS2_recap_${annee}.pdf`}
-            className={styles.downloadLink}
+            className="inline-flex items-center gap-[0.4rem] px-[1.4rem] py-[0.65rem] rounded-[8px] bg-[#eef0ff] text-[#4648D4] text-[0.9rem] font-semibold no-underline transition-colors hover:bg-[#4648D4] hover:text-white"
           >
             Télécharger DAS2_recap_{annee}.pdf
           </a>
           {expiration && (
-            <span className={styles.expiration}>
+            <span className="text-[0.78rem] text-[#aaa]">
               Lien valide jusqu'à {expiration} (15 min)
             </span>
           )}
           <button
             onClick={() => { setResult(null); }}
-            className={styles.resetButton}
+            className="bg-transparent border-0 text-[0.78rem] text-[#aaa] cursor-pointer p-0 underline hover:text-[#4648D4]"
           >
             Régénérer
           </button>

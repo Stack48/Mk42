@@ -3,7 +3,6 @@ import { getCurrentEntrepriseId } from "@/lib/auth";
 import { DocumentList } from "./_components/DocumentList";
 import { DAS2YearGrid } from "./_components/DAS2YearGrid";
 import { getDAS2Overview } from "@/server/documents/das2-aggregation";
-import styles from "./page.module.css";
 
 export default async function ComptabilitePage() {
   const entrepriseId = await getCurrentEntrepriseId();
@@ -24,22 +23,22 @@ export default async function ComptabilitePage() {
   ]);
 
   return (
-    <main className={styles.container}>
-      <header className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Comptabilité</h1>
-        <p className={styles.pageSubtitle}>{entreprise.raisonSociale}</p>
+    <main className="max-w-275 mx-auto px-6 py-8 flex flex-col gap-10">
+      <header className="flex flex-col gap-1">
+        <h1 className="text-[1.75rem] font-bold text-[#1a1a2e]">Comptabilité</h1>
+        <p className="text-[0.9rem] text-[#888]">{entreprise.raisonSociale}</p>
       </header>
 
-      <section className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>DAS2 — Déclaration annuelle</h2>
+      <section className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-[1.1rem] font-semibold text-[#1a1a2e]">DAS2 — Déclaration annuelle</h2>
         </div>
         <DAS2YearGrid entrepriseId={entrepriseId} annees={das2Overview} />
       </section>
 
-      <section className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Factures</h2>
+      <section className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-[1.1rem] font-semibold text-[#1a1a2e]">Factures</h2>
         </div>
         <DocumentList
           type="facture"
@@ -54,9 +53,9 @@ export default async function ComptabilitePage() {
         />
       </section>
 
-      <section className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Reçus de commission</h2>
+      <section className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-[1.1rem] font-semibold text-[#1a1a2e]">Reçus de commission</h2>
         </div>
         <DocumentList
           type="recu"
