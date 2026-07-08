@@ -6,11 +6,25 @@ import { Lock } from "lucide-react";
 import { updateApporteurProfile, type ActionState } from "./_actions";
 import KycBadge from "./KycBadge";
 
+const ROLES = [
+  "Apporteur d'affaires",
+  "Agent immobilier",
+  "Courtier",
+  "Indépendant",
+  "Gérant BTP",
+  "Autre",
+]
+
 export type ProfilApporteurFormProps = {
   email: string;
   prenom: string;
   nom: string;
   telephone: string;
+  adresse: string | null;
+  ville: string | null;
+  codePostal: string | null;
+  pays: string | null;
+  profession: string | null;
   iban: string | null;
   bic: string | null;
   isProfessionnel: boolean;
@@ -24,6 +38,11 @@ export default function ProfilApporteurForm({
   prenom,
   nom,
   telephone,
+  adresse,
+  ville,
+  codePostal,
+  pays,
+  profession,
   iban,
   bic,
   isProfessionnel,
@@ -100,6 +119,63 @@ export default function ProfilApporteurForm({
               className="w-full px-3 py-2 text-sm border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-opus-primary focus:border-transparent"
             />
           </div>
+        </div>
+        <div className="space-y-1">
+          <label htmlFor="adresse" className="text-sm font-medium text-[#374151]">Adresse</label>
+          <input
+            id="adresse"
+            name="adresse"
+            type="text"
+            defaultValue={adresse ?? ""}
+            required
+            className="w-full px-3 py-2 text-sm border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-opus-primary focus:border-transparent"
+          />
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="space-y-1">
+            <label htmlFor="ville" className="text-sm font-medium text-[#374151]">Ville</label>
+            <input
+              id="ville"
+              name="ville"
+              type="text"
+              defaultValue={ville ?? ""}
+              required
+              className="w-full px-3 py-2 text-sm border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-opus-primary focus:border-transparent"
+            />
+          </div>
+          <div className="space-y-1">
+            <label htmlFor="codePostal" className="text-sm font-medium text-[#374151]">Code postal</label>
+            <input
+              id="codePostal"
+              name="codePostal"
+              type="text"
+              defaultValue={codePostal ?? ""}
+              required
+              className="w-full px-3 py-2 text-sm border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-opus-primary focus:border-transparent"
+            />
+          </div>
+          <div className="space-y-1">
+            <label htmlFor="pays" className="text-sm font-medium text-[#374151]">Pays</label>
+            <input
+              id="pays"
+              name="pays"
+              type="text"
+              defaultValue={pays ?? "France"}
+              className="w-full px-3 py-2 text-sm border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-opus-primary focus:border-transparent"
+            />
+          </div>
+        </div>
+        <div className="space-y-1">
+          <label htmlFor="profession" className="text-sm font-medium text-[#374151]">Profession</label>
+          <select
+            id="profession"
+            name="profession"
+            defaultValue={profession ?? ""}
+            className="w-full px-3 py-2 text-sm border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-opus-primary focus:border-transparent"
+          >
+            <option value="" disabled>Sélectionnez un rôle</option>
+            {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+          </select>
         </div>
       </section>
 

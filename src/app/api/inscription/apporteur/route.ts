@@ -9,6 +9,9 @@ const schema = z.object({
   siret: siretSchema,
   raisonSociale: z.string().min(1),
   adresseSiege: z.string().min(1),
+  villeSiege: z.string().min(1),
+  codePostalSiege: z.string().min(1),
+  paysSiege: z.string().optional(),
   representantLegal: z.string().min(1),
   telephone: z.string().min(1),
   codeApe: z.string().optional(),
@@ -48,7 +51,10 @@ export async function POST(req: Request) {
         raisonSociale: parsed.data.raisonSociale,
         siret: parsed.data.siret,
         adresse: parsed.data.adresseSiege,
-        ville: (clerkUser.unsafeMetadata?.ville as string) || null,
+        ville: parsed.data.villeSiege,
+        codePostal: parsed.data.codePostalSiege,
+        pays: parsed.data.paysSiege || null,
+        profession: (clerkUser.unsafeMetadata?.fonction as string) || null,
       },
     });
 

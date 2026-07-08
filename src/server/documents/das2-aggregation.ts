@@ -9,9 +9,29 @@ export function apporteurNomOuRS(
     : `${apporteur.prenom} ${apporteur.nom}`.trim();
 }
 
+export function formatAdresseComplete(parts: {
+  adresse?: string | null;
+  ville?: string | null;
+  codePostal?: string | null;
+  pays?: string | null;
+}): string {
+  const ligneVille = [parts.codePostal, parts.ville].filter(Boolean).join(" ");
+  return [parts.adresse, ligneVille, parts.pays].filter(Boolean).join(", ");
+}
+
 export interface TotalApporteurAnnee {
   apporteur: Apporteur;
   total: number;
+}
+
+// Seuil légal DAS2 (BOFiP du 12 février 2025) : en dessous, aucune obligation
+// de déclaration pour ce bénéficiaire, même en cumulant sur l'année civile.
+export const SEUIL_DAS2_TTC = 2400;
+
+export function filtrerEligiblesDAS2(
+  totaux: TotalApporteurAnnee[]
+): TotalApporteurAnnee[] {
+  return totaux.filter((t) => t.total >= SEUIL_DAS2_TTC);
 }
 
 export async function getTotauxDAS2ParAnnee(
@@ -19,7 +39,7 @@ export async function getTotauxDAS2ParAnnee(
 ): Promise<Map<number, TotalApporteurAnnee[]>> {
   const [factures, recus] = await Promise.all([
     prisma.facture.findMany({
-      where: { entrepriseId, statut: "PAYEE" },
+      where: { entrepriseId, statut: "PAYEE", datePaiement: { not: null } },
       include: { apporteur: true },
     }),
     prisma.recu.findMany({
@@ -38,10 +58,13 @@ export async function getTotauxDAS2ParAnnee(
     parAnnee.set(annee, parApporteur);
   }
 
-  // getUTCFullYear (pas getFullYear) : même bucketing par année que l'ancien
-  // filtre exportDAS2 en bornes UTC explicites, indépendant du fuseau serveur.
+  // getUTCFullYear (pas getFullYear) : bornes UTC explicites, indépendant du
+  // fuseau serveur. Bucketing sur la date de versement (datePaiement), pas la
+  // date d'émission : seule la date à laquelle la commission est
+  // effectivement payée compte pour la DAS2, pas celle du chantier/contrat.
+  // Montant TTC (pas HT) : la DAS2 déclare les sommes réellement versées.
   for (const f of factures) {
-    addMontant(f.dateEmission.getUTCFullYear(), f.apporteur, f.montantHT);
+    addMontant(f.datePaiement!.getUTCFullYear(), f.apporteur, f.montantTTC);
   }
   // dateVersement filtré non-null côté requête, mais TS le voit encore comme nullable
   for (const r of recus) {
@@ -87,7 +110,7 @@ export async function getDAS2Overview(entrepriseId: string): Promise<DAS2AnneeSt
 
   return Array.from(annees)
     .map((annee) => {
-      const totaux = totauxParAnnee.get(annee) ?? [];
+      const totaux = filtrerEligiblesDAS2(totauxParAnnee.get(annee) ?? []);
       const das2DeLAnnee = das2Rows.filter((d) => d.annee === annee);
 
       const das2GenereDeLAnnee = das2DeLAnnee.filter((d) => d.statut === "GENERE");

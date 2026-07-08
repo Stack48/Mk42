@@ -8,7 +8,13 @@ import { generatePDF } from "@/server/documents/pdf-generator";
 import { generateCommissionsCSV } from "@/server/documents/csv-generator";
 import { uploadDocumentS3 } from "@/server/documents/s3-manager";
 import type { BeneficiaireDAS2 } from "@/server/documents/edi-generator";
-import { getTotauxDAS2ParAnnee, apporteurNomOuRS } from "@/server/documents/das2-aggregation";
+import {
+  getTotauxDAS2ParAnnee,
+  apporteurNomOuRS,
+  filtrerEligiblesDAS2,
+  formatAdresseComplete,
+  SEUIL_DAS2_TTC,
+} from "@/server/documents/das2-aggregation";
 
 // ── Public surface : 1 seul Server Action, dispatch interne via switch ──────
 
@@ -70,10 +76,18 @@ async function exportDAS2(annee: number): Promise<ExportDocumentResult> {
   });
 
   const totauxParAnnee = await getTotauxDAS2ParAnnee(entrepriseId);
-  const totaux = totauxParAnnee.get(annee) ?? [];
+  const totauxBruts = totauxParAnnee.get(annee) ?? [];
+
+  if (totauxBruts.length === 0) {
+    throw new Error(`Aucune commission payée trouvée pour l'année ${annee}`);
+  }
+
+  const totaux = filtrerEligiblesDAS2(totauxBruts);
 
   if (totaux.length === 0) {
-    throw new Error(`Aucune commission payée trouvée pour l'année ${annee}`);
+    throw new Error(
+      `Aucun apporteur ne dépasse le seuil DAS2 de ${SEUIL_DAS2_TTC}€ TTC pour l'année ${annee} — aucune déclaration requise`
+    );
   }
 
   const beneficiaires: BeneficiaireDAS2[] = totaux.map(({ apporteur, total }) => ({
@@ -84,6 +98,10 @@ async function exportDAS2(annee: number): Promise<ExportDocumentResult> {
     dateNaissance: apporteur.dateNaissance ? formatDateNaissanceEDI(apporteur.dateNaissance) : undefined,
     lieuNaissance: apporteur.lieuNaissance ?? undefined,
     adresse: apporteur.adresse ?? undefined,
+    ville: apporteur.ville ?? undefined,
+    codePostal: apporteur.codePostal ?? undefined,
+    pays: apporteur.pays ?? undefined,
+    profession: apporteur.profession ?? undefined,
     montantBrutAnnuel: total,
     reference: entreprise.siret,
   }));
@@ -91,6 +109,10 @@ async function exportDAS2(annee: number): Promise<ExportDocumentResult> {
   const ediContent = generateDAS2EDI(beneficiaires, annee, {
     expediteurSiret: entreprise.siret,
     expediteurNom: entreprise.raisonSociale,
+    expediteurAdresse: entreprise.adresseSiege,
+    expediteurVille: entreprise.villeSiege ?? undefined,
+    expediteurCodePostal: entreprise.codePostalSiege ?? undefined,
+    expediteurPays: entreprise.paysSiege ?? undefined,
   });
 
   const validation = validateDAS2EDI(ediContent, beneficiaires);
@@ -125,18 +147,20 @@ async function exportDAS2(annee: number): Promise<ExportDocumentResult> {
           annee,
           statut: "GENERE",
           nomBeneficiaire,
-          adresseBeneficiaire: apporteur.adresse ?? "",
+          adresseBeneficiaire: formatAdresseComplete(apporteur),
           siretBeneficiaire: apporteur.siret,
           dateNaissanceBeneficiaire: apporteur.dateNaissance,
           lieuNaissanceBeneficiaire: apporteur.lieuNaissance,
+          professionBeneficiaire: apporteur.profession,
           montantTotal: total,
           s3Key: result.s3Key,
           urlExport: result.lienSigne,
         },
         update: {
           statut: "GENERE",
-          adresseBeneficiaire: apporteur.adresse ?? "",
+          adresseBeneficiaire: formatAdresseComplete(apporteur),
           siretBeneficiaire: apporteur.siret,
+          professionBeneficiaire: apporteur.profession,
           montantTotal: total,
           s3Key: result.s3Key,
           urlExport: result.lienSigne,
@@ -167,10 +191,18 @@ async function exportDAS2RecapPDF(annee: number): Promise<ExportDocumentResult> 
   });
 
   const totauxParAnnee = await getTotauxDAS2ParAnnee(entrepriseId);
-  const totaux = totauxParAnnee.get(annee) ?? [];
+  const totauxBruts = totauxParAnnee.get(annee) ?? [];
+
+  if (totauxBruts.length === 0) {
+    throw new Error(`Aucune commission payée trouvée pour l'année ${annee}`);
+  }
+
+  const totaux = filtrerEligiblesDAS2(totauxBruts);
 
   if (totaux.length === 0) {
-    throw new Error(`Aucune commission payée trouvée pour l'année ${annee}`);
+    throw new Error(
+      `Aucun apporteur ne dépasse le seuil DAS2 de ${SEUIL_DAS2_TTC}€ TTC pour l'année ${annee} — aucune déclaration requise`
+    );
   }
 
   const pdfBuffer = await generatePDF({
@@ -179,7 +211,12 @@ async function exportDAS2RecapPDF(annee: number): Promise<ExportDocumentResult> 
     entreprise: {
       raisonSociale: entreprise.raisonSociale,
       siret: entreprise.siret,
-      adresse: entreprise.adresseSiege,
+      adresse: formatAdresseComplete({
+        adresse: entreprise.adresseSiege,
+        ville: entreprise.villeSiege,
+        codePostal: entreprise.codePostalSiege,
+        pays: entreprise.paysSiege,
+      }),
       email: entreprise.email,
       telephone: entreprise.telephone ?? undefined,
       numeroTVA: entreprise.numeroTVA ?? undefined,
@@ -188,6 +225,8 @@ async function exportDAS2RecapPDF(annee: number): Promise<ExportDocumentResult> 
       nom: apporteurNomOuRS(apporteur),
       type: apporteurTypeDAS2(apporteur.type),
       siret: apporteur.siret ?? undefined,
+      adresse: formatAdresseComplete(apporteur) || undefined,
+      profession: apporteur.profession ?? undefined,
       montant: total,
     })),
   });
@@ -229,7 +268,12 @@ async function exportFacturePDF(factureId: string): Promise<ExportDocumentResult
     entreprise: {
       raisonSociale: facture.entreprise.raisonSociale,
       siret: facture.entreprise.siret,
-      adresse: facture.entreprise.adresseSiege,
+      adresse: formatAdresseComplete({
+        adresse: facture.entreprise.adresseSiege,
+        ville: facture.entreprise.villeSiege,
+        codePostal: facture.entreprise.codePostalSiege,
+        pays: facture.entreprise.paysSiege,
+      }),
       email: facture.entreprise.email,
       telephone: facture.entreprise.telephone ?? undefined,
       numeroTVA: facture.entreprise.numeroTVA ?? undefined,
@@ -239,7 +283,7 @@ async function exportFacturePDF(factureId: string): Promise<ExportDocumentResult
       email: facture.apporteur.utilisateur.email,
       type: apporteurTypeDAS2(facture.apporteur.type),
       siret: facture.apporteur.siret ?? undefined,
-      adresse: facture.apporteur.adresse ?? undefined,
+      adresse: formatAdresseComplete(facture.apporteur) || undefined,
     },
     montantHT: facture.montantHT,
     tauxTVA: facture.tauxTva,
@@ -281,13 +325,19 @@ async function exportRecuPDF(recuId: string): Promise<ExportDocumentResult> {
     entreprise: {
       raisonSociale: recu.entreprise.raisonSociale,
       siret: recu.entreprise.siret,
-      adresse: recu.entreprise.adresseSiege,
+      adresse: formatAdresseComplete({
+        adresse: recu.entreprise.adresseSiege,
+        ville: recu.entreprise.villeSiege,
+        codePostal: recu.entreprise.codePostalSiege,
+        pays: recu.entreprise.paysSiege,
+      }),
       email: recu.entreprise.email,
     },
     apporteur: {
       nom: apporteurNomOuRS(recu.apporteur),
       email: recu.apporteur.utilisateur.email,
       type: "particulier",
+      adresse: formatAdresseComplete(recu.apporteur) || undefined,
       dateNaissance: recu.apporteur.dateNaissance?.toLocaleDateString("fr-FR"),
     },
     montantBrut: recu.montant,

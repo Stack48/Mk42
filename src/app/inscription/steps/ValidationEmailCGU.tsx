@@ -254,6 +254,8 @@ export default function ValidationEmailCGU({ formData, onPrev }: Props) {
           telephone:  formData.step2.telephone,
           adresse:    formData.step2.adresse,
           ville:      formData.step2.ville,
+          codePostal: formData.step2.codePostal,
+          pays:       formData.step2.pays,
           fonction:   formData.step2.fonction || undefined,
         }),
       })

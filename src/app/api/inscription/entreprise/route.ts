@@ -9,6 +9,9 @@ const schema = z.object({
   raisonSociale: z.string().min(1),
   siret: siretSchema,
   adresseSiege: z.string().min(1),
+  villeSiege: z.string().min(1),
+  codePostalSiege: z.string().min(1),
+  paysSiege: z.string().optional(),
   codeApe: z.string().optional(),
   representantLegal: z.string().min(1),
   telephone: z.string().min(1),
@@ -26,7 +29,18 @@ export async function POST(req: Request) {
       return Response.json({ error: parsed.error.flatten() }, { status: 422 });
     }
 
-    const { raisonSociale, siret, adresseSiege, codeApe, representantLegal, telephone, tvaIntra } = parsed.data;
+    const {
+      raisonSociale,
+      siret,
+      adresseSiege,
+      villeSiege,
+      codePostalSiege,
+      paysSiege,
+      codeApe,
+      representantLegal,
+      telephone,
+      tvaIntra,
+    } = parsed.data;
 
     let utilisateur = await prisma.utilisateur.findUnique({ where: { clerkId: userId } });
 
@@ -50,6 +64,9 @@ export async function POST(req: Request) {
         raisonSociale,
         siret,
         adresseSiege,
+        villeSiege,
+        codePostalSiege,
+        paysSiege: paysSiege || undefined,
         codeApe,
         representantLegal,
         telephone,

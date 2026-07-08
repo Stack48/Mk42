@@ -10,6 +10,10 @@ export interface BeneficiaireDAS2 {
   dateNaissance?: string; // JJMMAAAA
   lieuNaissance?: string;
   adresse?: string;
+  ville?: string;
+  codePostal?: string;
+  pays?: string;
+  profession?: string;
   montantBrutAnnuel: number; // en euros, arrondi à l'entier
   reference: string;
 }
@@ -17,6 +21,10 @@ export interface BeneficiaireDAS2 {
 interface GenerateOptions {
   expediteurSiret: string;
   expediteurNom: string;
+  expediteurAdresse: string;
+  expediteurVille?: string;
+  expediteurCodePostal?: string;
+  expediteurPays?: string;
 }
 
 // EDIFACT segment separator and terminators
@@ -45,6 +53,9 @@ export function generateDAS2EDI(
 ): string {
   if (beneficiaires.length === 0) {
     throw new Error("Aucun bénéficiaire fourni pour la DAS2");
+  }
+  if (!opts.expediteurAdresse) {
+    throw new Error("Adresse du déclarant manquante — obligatoire pour la DAS2");
   }
 
   const dateGeneration = new Date();
@@ -104,7 +115,11 @@ export function generateDAS2EDI(
     "MS", // Message Sender
     `${opts.expediteurSiret}${COMP_SEP}${COMP_SEP}14`,
     "",
-    fixLen(opts.expediteurNom, 35).trimEnd()
+    fixLen(opts.expediteurNom, 35).trimEnd(),
+    fixLen(opts.expediteurAdresse, 35).trimEnd(),
+    opts.expediteurVille ? fixLen(opts.expediteurVille, 35).trimEnd() : "",
+    opts.expediteurCodePostal ?? "",
+    opts.expediteurPays ?? ""
   );
   segmentCount++;
 
@@ -118,7 +133,10 @@ export function generateDAS2EDI(
         `${b.siret}${COMP_SEP}${COMP_SEP}14`,
         "",
         fixLen(b.nomOuRS, 35).trimEnd(),
-        b.adresse ? fixLen(b.adresse, 35).trimEnd() : ""
+        b.adresse ? fixLen(b.adresse, 35).trimEnd() : "",
+        b.ville ? fixLen(b.ville, 35).trimEnd() : "",
+        b.codePostal ?? "",
+        b.pays ?? ""
       );
     } else {
       // Particulier — identified by name + date/lieu naissance
@@ -128,7 +146,10 @@ export function generateDAS2EDI(
         "",
         "",
         fixLen(b.nomOuRS, 35).trimEnd(),
-        b.adresse ? fixLen(b.adresse, 35).trimEnd() : ""
+        b.adresse ? fixLen(b.adresse, 35).trimEnd() : "",
+        b.ville ? fixLen(b.ville, 35).trimEnd() : "",
+        b.codePostal ?? "",
+        b.pays ?? ""
       );
       if (b.dateNaissance) {
         lines += seg("DTM", `329${COMP_SEP}${b.dateNaissance}${COMP_SEP}102`);
@@ -139,6 +160,11 @@ export function generateDAS2EDI(
         lines += seg("LOC", "178", b.lieuNaissance);
         segmentCount++;
       }
+    }
+    if (b.profession) {
+      // FTX — Free Text, qualifier AAI (informations générales) : profession du bénéficiaire
+      lines += seg("FTX", "AAI", "", "", fixLen(b.profession, 35).trimEnd());
+      segmentCount++;
     }
     segmentCount++;
 

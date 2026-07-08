@@ -21,6 +21,9 @@ export default async function ProfilPage() {
           raisonSociale: true,
           siret: true,
           adresseSiege: true,
+          villeSiege: true,
+          codePostalSiege: true,
+          paysSiege: true,
           iban: true,
           bic: true,
           nomTitulaireIban: true,
@@ -32,6 +35,11 @@ export default async function ProfilPage() {
           prenom: true,
           nom: true,
           telephone: true,
+          adresse: true,
+          ville: true,
+          codePostal: true,
+          pays: true,
+          profession: true,
           iban: true,
           bic: true,
           type: true,
@@ -61,6 +69,9 @@ export default async function ProfilPage() {
           raisonSociale={utilisateur.entreprise.raisonSociale}
           siret={utilisateur.entreprise.siret}
           adresseSiege={utilisateur.entreprise.adresseSiege}
+          villeSiege={utilisateur.entreprise.villeSiege}
+          codePostalSiege={utilisateur.entreprise.codePostalSiege}
+          paysSiege={utilisateur.entreprise.paysSiege}
           iban={utilisateur.entreprise.iban}
           bic={utilisateur.entreprise.bic}
           nomTitulaireIban={utilisateur.entreprise.nomTitulaireIban}
@@ -72,6 +83,11 @@ export default async function ProfilPage() {
           prenom={utilisateur.apporteur.prenom}
           nom={utilisateur.apporteur.nom}
           telephone={utilisateur.apporteur.telephone}
+          adresse={utilisateur.apporteur.adresse}
+          ville={utilisateur.apporteur.ville}
+          codePostal={utilisateur.apporteur.codePostal}
+          pays={utilisateur.apporteur.pays}
+          profession={utilisateur.apporteur.profession}
           iban={utilisateur.apporteur.iban}
           bic={utilisateur.apporteur.bic}
           isProfessionnel={utilisateur.apporteur.type === "PROFESSIONNEL"}

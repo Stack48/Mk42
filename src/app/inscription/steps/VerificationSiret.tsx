@@ -124,6 +124,9 @@ export default function VerificationSiret({ initialValues = {}, onNext, onPrev }
   const [form, setForm] = useState({
     raisonSociale:     initialValues.raisonSociale     ?? '',
     adresseSiege:      initialValues.adresseSiege      ?? '',
+    villeSiege:        initialValues.villeSiege        ?? '',
+    codePostalSiege:   initialValues.codePostalSiege   ?? '',
+    paysSiege:         initialValues.paysSiege         ?? 'France',
     codeApe:           initialValues.codeApe           ?? '',
     representantLegal: initialValues.representantLegal ?? '',
     telephone:         initialValues.telephone         ?? '',
@@ -150,6 +153,9 @@ export default function VerificationSiret({ initialValues = {}, onNext, onPrev }
       siret:             siret.replace(/\s/g, ''),
       raisonSociale:     form.raisonSociale,
       adresseSiege:      form.adresseSiege,
+      villeSiege:        form.villeSiege,
+      codePostalSiege:   form.codePostalSiege,
+      paysSiege:         form.paysSiege,
       codeApe:           form.codeApe,
       representantLegal: form.representantLegal,
       telephone:         form.telephone,
@@ -235,7 +241,22 @@ export default function VerificationSiret({ initialValues = {}, onNext, onPrev }
 
                 <div className="flex flex-col gap-1.5 col-span-2 max-md:col-span-1">
                   <label htmlFor="adresseSiege" className={labelCls}>Adresse du siège <span className="text-[#4648D4] ml-0.5">*</span></label>
-                  <input id="adresseSiege" type="text" className={inputCls} value={form.adresseSiege} onChange={set('adresseSiege')} placeholder="Ex : 12 Rue des Bâtisseurs, 75011 Paris" autoComplete="street-address" />
+                  <input id="adresseSiege" type="text" className={inputCls} value={form.adresseSiege} onChange={set('adresseSiege')} placeholder="Ex : 12 Rue des Bâtisseurs" autoComplete="street-address" />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="villeSiege" className={labelCls}>Ville <span className="text-[#4648D4] ml-0.5">*</span></label>
+                  <input id="villeSiege" type="text" className={inputCls} value={form.villeSiege} onChange={set('villeSiege')} placeholder="Ex : Paris" autoComplete="address-level2" />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="codePostalSiege" className={labelCls}>Code postal <span className="text-[#4648D4] ml-0.5">*</span></label>
+                  <input id="codePostalSiege" type="text" className={inputCls} value={form.codePostalSiege} onChange={set('codePostalSiege')} placeholder="Ex : 75011" autoComplete="postal-code" />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="paysSiege" className={labelCls}>Pays <span className="text-[#4648D4] ml-0.5">*</span></label>
+                  <input id="paysSiege" type="text" className={inputCls} value={form.paysSiege} onChange={set('paysSiege')} placeholder="Ex : France" autoComplete="country-name" />
                 </div>
 
                 <div className="flex flex-col gap-1.5">

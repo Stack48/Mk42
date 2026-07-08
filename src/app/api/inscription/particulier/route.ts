@@ -17,9 +17,12 @@ export async function POST(req: Request) {
     const existant = await prisma.apporteur.findUnique({ where: { utilisateurId: utilisateur.id } });
     if (existant) return Response.json({ apporteurId: existant.id }, { status: 200 });
 
-    const telephone = (clerkUser.unsafeMetadata?.telephone as string) ?? '';
-    const adresse   = (clerkUser.unsafeMetadata?.adresse as string) || null;
-    const ville     = (clerkUser.unsafeMetadata?.ville as string) || null;
+    const telephone  = (clerkUser.unsafeMetadata?.telephone as string) ?? '';
+    const adresse    = (clerkUser.unsafeMetadata?.adresse as string) || null;
+    const ville      = (clerkUser.unsafeMetadata?.ville as string) || null;
+    const codePostal = (clerkUser.unsafeMetadata?.codePostal as string) || null;
+    const pays       = (clerkUser.unsafeMetadata?.pays as string) || null;
+    const profession = (clerkUser.unsafeMetadata?.fonction as string) || null;
 
     const apporteur = await prisma.apporteur.create({
       data: {
@@ -30,6 +33,9 @@ export async function POST(req: Request) {
         telephone,
         adresse,
         ville,
+        codePostal,
+        pays,
+        profession,
       },
     });
 

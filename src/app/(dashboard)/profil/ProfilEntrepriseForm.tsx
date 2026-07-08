@@ -12,6 +12,9 @@ export type ProfilEntrepriseFormProps = {
   raisonSociale: string;
   siret: string;
   adresseSiege: string;
+  villeSiege: string | null;
+  codePostalSiege: string | null;
+  paysSiege: string | null;
   iban: string | null;
   bic: string | null;
   nomTitulaireIban: string | null;
@@ -24,6 +27,9 @@ export default function ProfilEntrepriseForm({
   raisonSociale,
   siret,
   adresseSiege,
+  villeSiege,
+  codePostalSiege,
+  paysSiege,
   iban,
   bic,
   nomTitulaireIban,
@@ -119,6 +125,40 @@ export default function ProfilEntrepriseForm({
             required
             className="w-full px-3 py-2 text-sm border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-opus-primary focus:border-transparent resize-none"
           />
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="space-y-1">
+            <label htmlFor="villeSiege" className="text-sm font-medium text-[#374151]">Ville</label>
+            <input
+              id="villeSiege"
+              name="villeSiege"
+              type="text"
+              defaultValue={villeSiege ?? ""}
+              required
+              className="w-full px-3 py-2 text-sm border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-opus-primary focus:border-transparent"
+            />
+          </div>
+          <div className="space-y-1">
+            <label htmlFor="codePostalSiege" className="text-sm font-medium text-[#374151]">Code postal</label>
+            <input
+              id="codePostalSiege"
+              name="codePostalSiege"
+              type="text"
+              defaultValue={codePostalSiege ?? ""}
+              required
+              className="w-full px-3 py-2 text-sm border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-opus-primary focus:border-transparent"
+            />
+          </div>
+          <div className="space-y-1">
+            <label htmlFor="paysSiege" className="text-sm font-medium text-[#374151]">Pays</label>
+            <input
+              id="paysSiege"
+              name="paysSiege"
+              type="text"
+              defaultValue={paysSiege ?? "France"}
+              className="w-full px-3 py-2 text-sm border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-opus-primary focus:border-transparent"
+            />
+          </div>
         </div>
       </section>
 

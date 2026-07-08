@@ -54,6 +54,8 @@ export interface DAS2RecapBeneficiaire {
   nom: string;
   type: "pro" | "particulier";
   siret?: string;
+  adresse?: string;
+  profession?: string;
   montant: number;
 }
 
@@ -133,6 +135,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   colLibelle: { flex: 3 },
+  colLibelleSub: { fontSize: 8, color: "#666", marginTop: 2 },
   colMontant: { flex: 1, textAlign: "right" },
   bold: { fontFamily: "Helvetica-Bold" },
   totalRow: {
@@ -462,6 +465,12 @@ function DAS2RecapPDF({ input }: { input: DAS2RecapInput }) {
           { style: styles.row },
           React.createElement(Text, { style: styles.label }, "SIRET :"),
           React.createElement(Text, { style: styles.value }, input.entreprise.siret)
+        ),
+        React.createElement(
+          View,
+          { style: styles.row },
+          React.createElement(Text, { style: styles.label }, "Adresse :"),
+          React.createElement(Text, { style: styles.value }, input.entreprise.adresse)
         )
       ),
       React.createElement(
@@ -481,9 +490,14 @@ function DAS2RecapPDF({ input }: { input: DAS2RecapInput }) {
               style: i === input.beneficiaires.length - 1 ? styles.tableRowLast : styles.tableRow,
             },
             React.createElement(
-              Text,
+              View,
               { style: styles.colLibelle },
-              `${b.nom} (${b.type === "pro" ? "Professionnel" : "Particulier"}${b.siret ? ` — SIRET ${b.siret}` : ""})`
+              React.createElement(
+                Text,
+                null,
+                `${b.nom} (${b.type === "pro" ? "Professionnel" : "Particulier"}${b.siret ? ` — SIRET ${b.siret}` : ""}${b.profession ? ` — ${b.profession}` : ""})`
+              ),
+              b.adresse && React.createElement(Text, { style: styles.colLibelleSub }, b.adresse)
             ),
             React.createElement(Text, { style: styles.colMontant }, formatMontant(b.montant))
           )
