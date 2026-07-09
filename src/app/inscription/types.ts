@@ -5,6 +5,8 @@ export type Step2Data = {
   prenom: string
   email: string
   telephone: string
+  adresse: string
+  ville: string
   fonction: string
   motDePasse: string
   confirmation: string

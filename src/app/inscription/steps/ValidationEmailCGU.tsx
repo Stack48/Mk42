@@ -252,6 +252,8 @@ export default function ValidationEmailCGU({ formData, onPrev }: Props) {
           motDePasse: formData.step2.motDePasse,
           profil:     formData.profil,
           telephone:  formData.step2.telephone,
+          adresse:    formData.step2.adresse,
+          ville:      formData.step2.ville,
           fonction:   formData.step2.fonction || undefined,
         }),
       })

@@ -6,6 +6,8 @@ import { prisma } from "@/lib/prisma";
 import { getStorage } from "@/lib/storage/storage.factory";
 import { createNotification } from "@/lib/actions/notification.actions";
 import { isTransitionDealValide } from "@/lib/deal.utils";
+import { getCurrentEntrepriseId } from "@/lib/auth";
+import { signerDealEtCreerCommission } from "@/lib/actions/commission.actions";
 import type {
   KanbanDeal,
   KanbanDealStatut,
@@ -89,9 +91,31 @@ export async function updateDealStatut(
       );
     }
 
+    // ── Cas SIGNE : créer le Deal + la Commission (une seule fois) ───────────
+    if (newStatut === "SIGNE" && !deal.commissionDealId) {
+      const entrepriseId = await getCurrentEntrepriseId();
+
+      const nouveauDeal = await prisma.deal.create({
+        data: { titre: deal.titre, montant: deal.montant },
+      });
+
+      const commissionResult = await signerDealEtCreerCommission({
+        dealId: nouveauDeal.id,
+        apporteurId: deal.apporteurId,
+        entrepriseId,
+      });
+
+      if (!commissionResult.success) {
+        return { success: false, error: commissionResult.error ?? "Échec de la création de la commission." };
+      }
+
+      updateData.commissionDealId = nouveauDeal.id;
+    }
+
     await prisma.kanbanDeal.update({ where: { id: dealId }, data: updateData });
     revalidatePath("/deals");
     revalidatePath(`/deals/${dealId}`);
+    revalidatePath("/apporteurs");
     return { success: true };
   } catch (error) {
     const msg = error instanceof Error ? error.message : "Erreur inconnue";

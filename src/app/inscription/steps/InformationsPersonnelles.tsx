@@ -55,6 +55,8 @@ export default function InformationsPersonnelles({ initialValues = {}, profil, o
     prenom:       initialValues.prenom       ?? '',
     email:        initialValues.email        ?? '',
     telephone:    initialValues.telephone    ?? '',
+    adresse:      initialValues.adresse      ?? '',
+    ville:        initialValues.ville        ?? '',
     fonction:     initialValues.fonction     ?? '',
     motDePasse:   initialValues.motDePasse   ?? '',
     confirmation: initialValues.confirmation ?? '',
@@ -148,6 +150,16 @@ export default function InformationsPersonnelles({ initialValues = {}, profil, o
                   autoComplete="tel"
                   placeholder="0612345678"
                 />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="adresse" className={labelCls}>Adresse <span className="text-[#4648D4] ml-0.5">*</span></label>
+                <input id="adresse" type="text" className={inputCls} value={form.adresse} onChange={set('adresse')} required autoComplete="address-line1" placeholder="12 Rue des Bâtisseurs" />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="ville" className={labelCls}>Ville <span className="text-[#4648D4] ml-0.5">*</span></label>
+                <input id="ville" type="text" className={inputCls} value={form.ville} onChange={set('ville')} required autoComplete="address-level2" placeholder="Paris" />
               </div>
 
               {profil !== 'entreprise' && (

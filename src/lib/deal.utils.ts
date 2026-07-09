@@ -7,5 +7,26 @@ export function isTransitionDealValide(
   from: KanbanDealStatut,
   to: KanbanDealStatut
 ): boolean {
-  return from !== to;
+  // Terminal states: no outgoing transitions allowed
+  if (from === "ANNULE" || from === "PAYE") {
+    return false;
+  }
+
+  // Cannot stay in the same state
+  if (from === to) {
+    return false;
+  }
+
+  // Forward sequence: PROSPECT → CONTACTE → SIGNE → PAYE
+  const sequence = ["PROSPECT", "CONTACTE", "SIGNE", "PAYE"];
+  const fromIndex = sequence.indexOf(from);
+  const toIndex = sequence.indexOf(to);
+
+  // Special case: ANNULE is reachable from PROSPECT, CONTACTE, SIGNE (but not PAYE)
+  if (to === "ANNULE") {
+    return fromIndex !== -1 && fromIndex < 3;
+  }
+
+  // For all other transitions: must move forward in the sequence
+  return fromIndex !== -1 && toIndex !== -1 && fromIndex < toIndex;
 }

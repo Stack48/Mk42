@@ -1,5 +1,7 @@
 // TYPES — Feature [18-FE] Notifications
 
+import { Handshake, Coins, CheckCircle2, type LucideIcon } from "lucide-react";
+
 export type NotificationType =
   | "NOUVEAU_DEAL"
   | "COMMISSION_CALCULEE"
@@ -19,9 +21,9 @@ export type Notification = {
 // Libellés et icônes par type
 export const NOTIFICATION_CONFIG: Record<
   NotificationType,
-  { label: string; icon: string; color: string }
+  { label: string; icon: LucideIcon; color: string }
 > = {
-  NOUVEAU_DEAL:        { label: "Nouveau deal",            icon: "🤝", color: "text-[#4F6EF7]" },
-  COMMISSION_CALCULEE: { label: "Commission calculée",     icon: "💰", color: "text-[#D97706]" },
-  COMMISSION_PAYEE:    { label: "Commission payée",        icon: "✅", color: "text-[#059669]" },
+  NOUVEAU_DEAL:        { label: "Nouveau deal",            icon: Handshake,    color: "text-[#4F6EF7]" },
+  COMMISSION_CALCULEE: { label: "Commission calculée",     icon: Coins,        color: "text-[#D97706]" },
+  COMMISSION_PAYEE:    { label: "Commission payée",        icon: CheckCircle2, color: "text-[#059669]" },
 };

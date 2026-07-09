@@ -9,6 +9,7 @@ import {
   stepDetailsChantierSchema,
 } from '@/lib/validations/opportunite'
 import type { OpportuniteFormData } from '@/app/(dashboard)/opportunites/nouvelle/page'
+import { formatClientLabel } from '@/lib/opportunite.utils'
 
 let _resend: Resend | null = null
 function getResend(): Resend | null {
@@ -156,10 +157,15 @@ async function sendNotificationEntreprise({
 // ── Actions entreprise ───────────────────────────────────────────────────────
 
 export async function accepterOpportunite(
-  id: string
+  id: string,
+  montant: number
 ): Promise<{ success: true } | { success: false; error: string }> {
   const { userId } = await auth()
   if (!userId) return { success: false, error: 'Non authentifié' }
+
+  if (!montant || montant <= 0) {
+    return { success: false, error: 'Le montant doit être positif.' }
+  }
 
   const user = await prisma.utilisateur.findUnique({
     where: { clerkId: userId },
@@ -167,12 +173,37 @@ export async function accepterOpportunite(
   })
   if (!user?.entreprise) return { success: false, error: 'Profil entreprise introuvable' }
 
-  const opportunite = await prisma.opportunite.findUnique({ where: { id } })
+  const opportunite = await prisma.opportunite.findUnique({
+    where: { id },
+    include: { client: true },
+  })
   if (!opportunite) return { success: false, error: 'Opportunité introuvable' }
   if (opportunite.entrepriseId !== user.entreprise.id) return { success: false, error: 'Non autorisé' }
   if (opportunite.statut !== 'SOUMISE') return { success: false, error: 'Cette opportunité a déjà été traitée' }
 
-  await prisma.opportunite.update({ where: { id }, data: { statut: 'ACCEPTEE' } })
+  const clientLabel = formatClientLabel(opportunite.client)
+  const titre = `${opportunite.typeTravaux} — ${clientLabel}`
+
+  await prisma.$transaction(async (tx) => {
+    await tx.opportunite.update({ where: { id }, data: { statut: 'ACCEPTEE' } })
+
+    const position = await tx.kanbanDeal.count({ where: { statut: 'PROSPECT' } })
+
+    await tx.kanbanDeal.create({
+      data: {
+        titre,
+        montant,
+        clientNom: clientLabel,
+        clientEmail: opportunite.client.email,
+        clientTel: opportunite.client.telephone,
+        statut: 'PROSPECT',
+        position,
+        apporteurId: opportunite.apporteurId,
+        opportuniteId: opportunite.id,
+      },
+    })
+  })
+
   return { success: true }
 }
 
