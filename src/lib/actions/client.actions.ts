@@ -10,6 +10,8 @@ import { randomBytes } from "crypto";
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { getCurrentEntrepriseId } from "@/lib/auth";
+import { dealsEntrepriseWhere } from "@/lib/deal-scope";
 import { sendInvitationEmail } from "@/lib/email/client.email";
 import { createNotification } from "@/lib/actions/notification.actions";
 import type { InvitationWithDeal, ClientEvenement } from "@/types/client.types";
@@ -252,7 +254,11 @@ export async function refuserEtape(
 
 /** Toutes les invitations avec leur deal (vue admin). */
 export async function getInvitations(): Promise<InvitationWithDeal[]> {
+  const entrepriseId = await getCurrentEntrepriseId();
   const invitations = await prisma.clientInvitation.findMany({
+    // Isolation : uniquement les clients invités par l'entreprise ou dont
+    // elle détient la commission (via le deal rattaché).
+    where: { deal: await dealsEntrepriseWhere(entrepriseId) },
     include: {
       deal: { select: { id: true, titre: true, montant: true, statut: true } },
       evenements: { orderBy: { createdAt: "asc" } },

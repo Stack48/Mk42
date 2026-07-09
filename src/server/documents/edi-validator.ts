@@ -130,6 +130,20 @@ export function validateDAS2EDI(
       );
     }
 
+    // Adresse complète obligatoire (domicile fiscal / siège social)
+    if (!b.adresse) {
+      errors.push({ type: "semantic", message: `${label} : adresse manquante` });
+    }
+    if (!b.codePostal) {
+      errors.push({ type: "semantic", message: `${label} : code postal manquant` });
+    }
+    if (!b.ville) {
+      warnings.push(`${label} : ville manquante`);
+    }
+    if (!b.profession) {
+      warnings.push(`${label} : profession manquante (ex. "Apporteur d'affaires")`);
+    }
+
     if (b.type === "pro") {
       // SIRET = exactement 14 chiffres
       if (!b.siret) {

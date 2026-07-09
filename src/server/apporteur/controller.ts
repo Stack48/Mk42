@@ -9,6 +9,11 @@ export async function updateApporteurProfile(
     prenom: formData.get("prenom"),
     nom: formData.get("nom"),
     telephone: formData.get("telephone"),
+    adresse: formData.get("adresse"),
+    ville: formData.get("ville"),
+    codePostal: formData.get("codePostal"),
+    pays: formData.get("pays"),
+    profession: (formData.get("profession") as string | null) || null,
     iban: formData.get("iban"),
     bic: formData.get("bic"),
     // Fix: `|| null` converts both null (absent field) and "" (cleared field)

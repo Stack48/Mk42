@@ -1,8 +1,9 @@
 // PRISMA SCHEMA — CommissionPro BTP
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma/client"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma/client"
+  moduleFormat = "cjs"
 }
 
 datasource db {
@@ -93,6 +94,9 @@ model Entreprise {
   raisonSociale        String
   siret                String    @unique
   adresseSiege         String
+  villeSiege           String?
+  codePostalSiege      String?
+  paysSiege            String?
   email                String
   telephone            String
   codeApe              String?
@@ -126,14 +130,17 @@ model Apporteur {
   utilisateurId String      @unique
   utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id])
 
-  type      TypeApporteur @default(PARTICULIER)
-  nom       String
-  prenom    String
-  telephone String
-  adresse   String?
-  ville     String?
-  iban      String?
-  bic       String?
+  type       TypeApporteur @default(PARTICULIER)
+  nom        String
+  prenom     String
+  telephone  String
+  adresse    String?
+  ville      String?
+  codePostal String?
+  pays       String?
+  profession String?
+  iban       String?
+  bic        String?
 
   raisonSociale String?
   siret         String?   @unique
@@ -538,6 +545,7 @@ model DAS2 {
   siretBeneficiaire         String?
   dateNaissanceBeneficiaire DateTime?
   lieuNaissanceBeneficiaire String?
+  professionBeneficiaire    String?
   montantTotal              Float
   s3Key                     String?
   urlExport                 String?

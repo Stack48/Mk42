@@ -44,6 +44,9 @@ describe("updateEntrepriseProfile", () => {
     fd.set("telephone", "0612345678");
     fd.set("raisonSociale", "");
     fd.set("adresseSiege", "12 rue de Paris");
+    fd.set("villeSiege", "Paris");
+    fd.set("codePostalSiege", "75008");
+    fd.set("paysSiege", "France");
     fd.set("iban", "");
     fd.set("bic", "");
     fd.set("nomTitulaireIban", "");
@@ -59,7 +62,10 @@ describe("updateEntrepriseProfile", () => {
     const fd = new FormData();
     fd.set("telephone", "0612345678");
     fd.set("raisonSociale", "Ma Société");
-    fd.set("adresseSiege", "12 rue de Paris, 75008 Paris");
+    fd.set("adresseSiege", "12 rue de Paris");
+    fd.set("villeSiege", "Paris");
+    fd.set("codePostalSiege", "75008");
+    fd.set("paysSiege", "France");
     fd.set("iban", "FR7630006000011234567890123");
     fd.set("bic", "BNPAFRPP");
     fd.set("nomTitulaireIban", "Ma Société");
@@ -70,7 +76,10 @@ describe("updateEntrepriseProfile", () => {
       data: {
         telephone: "0612345678",
         raisonSociale: "Ma Société",
-        adresseSiege: "12 rue de Paris, 75008 Paris",
+        adresseSiege: "12 rue de Paris",
+        villeSiege: "Paris",
+        codePostalSiege: "75008",
+        paysSiege: "France",
         iban: "FR7630006000011234567890123",
         bic: "BNPAFRPP",
         nomTitulaireIban: "Ma Société",
@@ -101,6 +110,10 @@ describe("updateApporteurProfile", () => {
     fd.set("prenom", "Jean");
     fd.set("nom", "Dupont");
     fd.set("telephone", "0612345678");
+    fd.set("adresse", "12 rue de Paris");
+    fd.set("ville", "Paris");
+    fd.set("codePostal", "75008");
+    fd.set("pays", "France");
     fd.set("iban", "");
     fd.set("bic", "");
     const result = await updateApporteurProfile({}, fd);

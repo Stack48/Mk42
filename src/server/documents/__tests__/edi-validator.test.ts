@@ -6,6 +6,10 @@ import type { BeneficiaireDAS2 } from "../edi-generator";
 const opts = {
   expediteurSiret: "12345678900010",
   expediteurNom: "OPUS BTP SAS",
+  expediteurAdresse: "1 rue de la République",
+  expediteurVille: "Lyon",
+  expediteurCodePostal: "69001",
+  expediteurPays: "France",
 };
 
 const validPro: BeneficiaireDAS2 = {
@@ -13,6 +17,11 @@ const validPro: BeneficiaireDAS2 = {
   type: "pro",
   nomOuRS: "Marc SARL",
   siret: "98765432100015",
+  adresse: "10 rue du Commerce",
+  ville: "Paris",
+  codePostal: "75001",
+  pays: "France",
+  profession: "Apporteur d'affaires",
   montantBrutAnnuel: 5000,
   reference: "ref",
 };
@@ -23,6 +32,11 @@ const validParticulier: BeneficiaireDAS2 = {
   nomOuRS: "Sarah Martin",
   dateNaissance: "15051985",
   lieuNaissance: "Lyon",
+  adresse: "5 allée des Roses",
+  ville: "Lyon",
+  codePostal: "69003",
+  pays: "France",
+  profession: "Apporteur d'affaires",
   montantBrutAnnuel: 2000,
   reference: "ref",
 };
@@ -119,5 +133,33 @@ describe("validateDAS2EDI — erreurs sémantiques", () => {
     const edi = generateDAS2EDI([bas], 2025, opts);
     const result = validateDAS2EDI(edi, [bas]);
     expect(result.warnings.some((w) => w.includes("600"))).toBe(true);
+  });
+
+  it("détecte adresse manquante", () => {
+    const bad: BeneficiaireDAS2 = { ...validPro, adresse: undefined };
+    const edi = generateDAS2EDI([validPro], 2025, opts);
+    const result = validateDAS2EDI(edi, [bad]);
+    expect(result.errors.some((e) => e.message.includes("adresse manquante"))).toBe(true);
+  });
+
+  it("détecte code postal manquant", () => {
+    const bad: BeneficiaireDAS2 = { ...validPro, codePostal: undefined };
+    const edi = generateDAS2EDI([validPro], 2025, opts);
+    const result = validateDAS2EDI(edi, [bad]);
+    expect(result.errors.some((e) => e.message.includes("code postal manquant"))).toBe(true);
+  });
+
+  it("avertit si ville manquante", () => {
+    const bad: BeneficiaireDAS2 = { ...validPro, ville: undefined };
+    const edi = generateDAS2EDI([validPro], 2025, opts);
+    const result = validateDAS2EDI(edi, [bad]);
+    expect(result.warnings.some((w) => w.includes("ville manquante"))).toBe(true);
+  });
+
+  it("avertit si profession manquante", () => {
+    const bad: BeneficiaireDAS2 = { ...validPro, profession: undefined };
+    const edi = generateDAS2EDI([validPro], 2025, opts);
+    const result = validateDAS2EDI(edi, [bad]);
+    expect(result.warnings.some((w) => w.includes("profession manquante"))).toBe(true);
   });
 });

@@ -57,6 +57,8 @@ export default function InformationsPersonnelles({ initialValues = {}, profil, o
     telephone:    initialValues.telephone    ?? '',
     adresse:      initialValues.adresse      ?? '',
     ville:        initialValues.ville        ?? '',
+    codePostal:   initialValues.codePostal   ?? '',
+    pays:         initialValues.pays         ?? 'France',
     fonction:     initialValues.fonction     ?? '',
     motDePasse:   initialValues.motDePasse   ?? '',
     confirmation: initialValues.confirmation ?? '',
@@ -160,6 +162,16 @@ export default function InformationsPersonnelles({ initialValues = {}, profil, o
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="ville" className={labelCls}>Ville <span className="text-[#4648D4] ml-0.5">*</span></label>
                 <input id="ville" type="text" className={inputCls} value={form.ville} onChange={set('ville')} required autoComplete="address-level2" placeholder="Paris" />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="codePostal" className={labelCls}>Code postal <span className="text-[#4648D4] ml-0.5">*</span></label>
+                <input id="codePostal" type="text" className={inputCls} value={form.codePostal} onChange={set('codePostal')} required autoComplete="postal-code" placeholder="75011" />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="pays" className={labelCls}>Pays <span className="text-[#4648D4] ml-0.5">*</span></label>
+                <input id="pays" type="text" className={inputCls} value={form.pays} onChange={set('pays')} required autoComplete="country-name" placeholder="France" />
               </div>
 
               {profil !== 'entreprise' && (

@@ -5,6 +5,10 @@ import type { BeneficiaireDAS2 } from "../edi-generator";
 const opts = {
   expediteurSiret: "12345678900010",
   expediteurNom: "OPUS BTP SAS",
+  expediteurAdresse: "1 rue de la République",
+  expediteurVille: "Lyon",
+  expediteurCodePostal: "69001",
+  expediteurPays: "France",
 };
 
 const benefPro: BeneficiaireDAS2 = {
@@ -12,7 +16,10 @@ const benefPro: BeneficiaireDAS2 = {
   type: "pro",
   nomOuRS: "Marc Leblanc SARL",
   siret: "98765432100015",
-  adresse: "10 rue du Commerce, 75001 Paris",
+  adresse: "10 rue du Commerce",
+  ville: "Paris",
+  codePostal: "75001",
+  pays: "France",
   montantBrutAnnuel: 48000,
   reference: "12345678900010",
 };
@@ -74,6 +81,18 @@ describe("generateDAS2EDI", () => {
 
   it("refuse une liste vide de bénéficiaires", () => {
     expect(() => generateDAS2EDI([], 2025, opts)).toThrow();
+  });
+
+  it("refuse une adresse de déclarant manquante", () => {
+    const optsSansAdresse = { ...opts, expediteurAdresse: "" };
+    expect(() => generateDAS2EDI([benefPro], 2025, optsSansAdresse)).toThrow();
+  });
+
+  it("inclut l'adresse complète du déclarant et du bénéficiaire", () => {
+    const result = generateDAS2EDI([benefPro], 2025, opts);
+    expect(result).toContain(opts.expediteurAdresse);
+    expect(result).toContain(opts.expediteurVille);
+    expect(result).toContain(opts.expediteurCodePostal);
   });
 
   it("gère plusieurs bénéficiaires simultanément", () => {

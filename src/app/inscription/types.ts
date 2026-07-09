@@ -7,6 +7,8 @@ export type Step2Data = {
   telephone: string
   adresse: string
   ville: string
+  codePostal: string
+  pays: string
   fonction: string
   motDePasse: string
   confirmation: string
@@ -16,6 +18,9 @@ export type Step3Data = {
   siret: string
   raisonSociale: string
   adresseSiege: string
+  villeSiege: string
+  codePostalSiege: string
+  paysSiege: string
   codeApe: string
   representantLegal: string
   telephone: string

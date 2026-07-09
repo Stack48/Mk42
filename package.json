@@ -11,6 +11,7 @@
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "ts-node --project tsconfig.seed.json prisma/seed.ts",
+    "db:seed:das2": "ts-node --project tsconfig.seed.json prisma/seed-das2.ts",
     "db:studio": "prisma studio --browser none",
     "test": "vitest",
     "test:ui": "vitest --ui"
