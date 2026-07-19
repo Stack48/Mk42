@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useAuth } from '@clerk/nextjs'
 import ProfileSelection from './ProfileSelection'
 import InformationsPersonnelles from './steps/InformationsPersonnelles'
 import VerificationSiret from './steps/VerificationSiret'
@@ -19,9 +20,10 @@ import {
 } from './types'
 
 export default function InscriptionWizard() {
-  const router       = useRouter()
-  const searchParams = useSearchParams()
-  const step         = Math.max(1, parseInt(searchParams.get('step') ?? '1', 10))
+  const router        = useRouter()
+  const searchParams  = useSearchParams()
+  const step          = Math.max(1, parseInt(searchParams.get('step') ?? '1', 10))
+  const { isSignedIn } = useAuth()
 
   const [formData, setFormData] = useState<WizardFormData>(() => ({
     ...EMPTY_WIZARD_DATA,
@@ -66,6 +68,7 @@ export default function InscriptionWizard() {
         <InformationsPersonnelles
           initialValues={formData.step2}
           profil={formData.profil}
+          isSignedIn={isSignedIn === true}
           onNext={(data: Step2Data) => { updateStep('step2', data); goNext() }}
           onPrev={goPrev}
         />

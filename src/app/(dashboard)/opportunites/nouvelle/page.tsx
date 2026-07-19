@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { getEntrepriseById } from '@/lib/actions/entreprise.actions'
 import ProgressBar from './_components/ProgressBar'
 import StepperSidebar from './_components/StepperSidebar'
 import StepVosInfos from './_components/StepVosInfos'
@@ -58,7 +59,16 @@ const STEP_TITLES: Record<number, { label: string; title: string; subtitle: stri
 }
 
 export default function NouvelleopportunitePage() {
+  return (
+    <Suspense>
+      <NouvelleopportuniteWizard />
+    </Suspense>
+  )
+}
+
+function NouvelleopportuniteWizard() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState<OpportuniteFormData>({
     clientType: 'PARTICULIER',
@@ -76,6 +86,22 @@ export default function NouvelleopportunitePage() {
     entrepriseNom: '',
     entrepriseSiret: '',
   })
+
+  // Pré-remplit l'étape "Choisir l'entreprise" quand on arrive depuis la
+  // fiche entreprise de Discovery (lien "Proposer une opportunité").
+  useEffect(() => {
+    const entrepriseId = searchParams.get('entrepriseId')
+    if (!entrepriseId) return
+    getEntrepriseById(entrepriseId).then(entreprise => {
+      if (!entreprise) return
+      setFormData(prev => ({
+        ...prev,
+        entrepriseId: entreprise.id,
+        entrepriseNom: entreprise.raisonSociale,
+        entrepriseSiret: entreprise.siret,
+      }))
+    })
+  }, [searchParams])
 
   const goNext = () => {
     setStep(s => {
