@@ -49,24 +49,51 @@ export default function StepChoixEntreprise({ formData, setFormData, onNext, onP
     }
   }
 
+  const handleClearSelection = () => {
+    setFormData({ ...formData, entrepriseId: '', entrepriseNom: '', entrepriseSiret: '' })
+    setQuery('')
+  }
+
+  const isPrefilled = Boolean(formData.entrepriseId) && query.length === 0
+
   return (
     <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6">
-      {/* Champ de recherche */}
-      <div className="flex flex-col gap-1.5 mb-4">
-        <label htmlFor="search-entreprise" className="text-[13px] font-medium text-[#1E293B]">
-          Rechercher une entreprise <span className="text-[#4648D4]">*</span>
-        </label>
-        <input
-          id="search-entreprise"
-          type="text"
-          className="h-9 px-3.5 bg-[#F3F4F6] border border-[#E2E8F0] rounded-lg font-inherit text-sm text-[#0F172A] outline-none w-full transition-[border-color,box-shadow] duration-150 placeholder:text-[#B0B8C1] focus:border-[#4648D4] focus:shadow-[0_0_0_3px_rgba(70,72,212,0.12)] focus:bg-white"
-          placeholder="Raison sociale ou numéro SIRET"
-          value={query}
-          onChange={handleQueryChange}
-          autoComplete="off"
-        />
-        <span className="text-xs text-[#64748B]">Saisissez au moins 2 caractères pour rechercher.</span>
-      </div>
+      {isPrefilled ? (
+        /* Entreprise déjà sélectionnée (arrivée depuis la fiche Discovery) */
+        <div className="flex flex-col gap-1.5 mb-4">
+          <span className="text-[13px] font-medium text-[#1E293B]">Entreprise sélectionnée</span>
+          <div className="flex items-center justify-between gap-4 px-4 py-3.5 rounded-xl border border-[#4648D4] bg-[#EEEEFF]">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-sm font-semibold text-[#0F172A]">{formData.entrepriseNom}</span>
+              <span className="text-xs text-[#64748B] font-mono">SIRET : {formData.entrepriseSiret}</span>
+            </div>
+            <button
+              type="button"
+              onClick={handleClearSelection}
+              className="shrink-0 px-3 py-1.5 bg-white border border-[#D1D5DB] rounded-lg text-[13px] font-semibold text-[#0F172A] cursor-pointer transition-[border-color] duration-150 hover:border-[#64748B]"
+            >
+              Changer
+            </button>
+          </div>
+        </div>
+      ) : (
+        /* Champ de recherche */
+        <div className="flex flex-col gap-1.5 mb-4">
+          <label htmlFor="search-entreprise" className="text-[13px] font-medium text-[#1E293B]">
+            Rechercher une entreprise <span className="text-[#4648D4]">*</span>
+          </label>
+          <input
+            id="search-entreprise"
+            type="text"
+            className="h-9 px-3.5 bg-[#F3F4F6] border border-[#E2E8F0] rounded-lg font-inherit text-sm text-[#0F172A] outline-none w-full transition-[border-color,box-shadow] duration-150 placeholder:text-[#B0B8C1] focus:border-[#4648D4] focus:shadow-[0_0_0_3px_rgba(70,72,212,0.12)] focus:bg-white"
+            placeholder="Raison sociale ou numéro SIRET"
+            value={query}
+            onChange={handleQueryChange}
+            autoComplete="off"
+          />
+          <span className="text-xs text-[#64748B]">Saisissez au moins 2 caractères pour rechercher.</span>
+        </div>
+      )}
 
       {/* État de chargement */}
       {isPending && (

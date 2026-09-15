@@ -3,7 +3,10 @@
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { updateEntrepriseProfile as updateEntrepriseController } from "@/server/entreprise/controller";
+import {
+  updateEntrepriseProfile as updateEntrepriseController,
+  updateEntrepriseImages as updateEntrepriseImagesController,
+} from "@/server/entreprise/controller";
 import { updateApporteurProfile as updateApporteurController } from "@/server/apporteur/controller";
 
 export type ActionState = { success?: boolean; error?: string };
@@ -25,6 +28,25 @@ export async function updateEntrepriseProfile(
 
   if (result.success) revalidatePath("/profil");
   return result;
+}
+
+export async function updateEntrepriseImages(data: {
+  logoUrl?: string
+  bannerUrl?: string
+}): Promise<ActionState> {
+  const { userId } = await auth()
+  if (!userId) return { error: "Non authentifié" }
+
+  const utilisateur = await prisma.utilisateur.findUnique({
+    where: { clerkId: userId },
+    select: { entreprise: { select: { id: true } } },
+  })
+  if (!utilisateur?.entreprise) return { error: "Utilisateur introuvable" }
+
+  const result = await updateEntrepriseImagesController(utilisateur.entreprise.id, data)
+
+  if (result.success) revalidatePath("/profil")
+  return result
 }
 
 export async function updateApporteurProfile(

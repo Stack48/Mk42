@@ -28,6 +28,8 @@ export default async function ProfilPage() {
           bic: true,
           nomTitulaireIban: true,
           statutKyc: true,
+          logoUrl: true,
+          bannerUrl: true,
         },
       },
       apporteur: {
@@ -76,6 +78,8 @@ export default async function ProfilPage() {
           bic={utilisateur.entreprise.bic}
           nomTitulaireIban={utilisateur.entreprise.nomTitulaireIban}
           statutKyc={utilisateur.entreprise.statutKyc}
+          logoUrl={utilisateur.entreprise.logoUrl}
+          bannerUrl={utilisateur.entreprise.bannerUrl}
         />
       ) : utilisateur.apporteur ? (
         <ProfilApporteurForm

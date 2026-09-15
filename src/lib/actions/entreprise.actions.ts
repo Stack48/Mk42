@@ -21,3 +21,10 @@ export async function searchEntreprises(query: string): Promise<EntrepriseResult
     take: 10,
   })
 }
+
+export async function getEntrepriseById(id: string): Promise<EntrepriseResult | null> {
+  return prisma.entreprise.findUnique({
+    where: { id },
+    select: { id: true, raisonSociale: true, siret: true },
+  })
+}

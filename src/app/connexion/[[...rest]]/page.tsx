@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
+import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
 import { SignIn } from '@clerk/nextjs'
 import Link from 'next/link'
+import { prisma } from '@/lib/prisma'
 import IconCheckSquare from '@/components/icons/IconCheckSquare'
 import IconLines from '@/components/icons/IconLines'
 import IconPlus from '@/components/icons/IconPlus'
@@ -28,7 +31,16 @@ const FEATURES = [
   },
 ]
 
-export default function ConnexionPage() {
+export default async function ConnexionPage() {
+  const { userId } = await auth()
+  if (userId) {
+    const utilisateur = await prisma.utilisateur.findUnique({
+      where: { clerkId: userId },
+      select: { entreprise: { select: { id: true } }, apporteur: { select: { id: true } } },
+    })
+    if (utilisateur?.entreprise || utilisateur?.apporteur) redirect('/dashboard')
+    else redirect('/inscription')
+  }
   return (
     <div className="flex min-h-screen">
 
